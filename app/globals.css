@@ -1,0 +1,79 @@
+@import 'tailwindcss';
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #0f1729;
+    --card: #ffffff;
+    --card-foreground: #0f1729;
+    --popover: #ffffff;
+    --popover-foreground: #0f1729;
+    --primary: #0f1729;
+    --primary-foreground: #fafafa;
+    --secondary: #f4f4f5;
+    --secondary-foreground: #1a1c2e;
+    --muted: #f4f4f5;
+    --muted-foreground: #757786;
+    --accent: #f4f4f5;
+    --accent-foreground: #1a1c2e;
+    --destructive: #ef4444;
+    --destructive-foreground: #fafafa;
+    --border: #e4e4e7;
+    --input: #e4e4e7;
+    --ring: #0f1729;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: #0f1729;
+    --foreground: #fafafa;
+    --card: #0f1729;
+    --card-foreground: #fafafa;
+    --popover: #0f1729;
+    --popover-foreground: #fafafa;
+    --primary: #fafafa;
+    --primary-foreground: #1a1c2e;
+    --secondary: #27272a;
+    --secondary-foreground: #fafafa;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --accent: #27272a;
+    --accent-foreground: #fafafa;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #fafafa;
+    --border: #27272a;
+    --input: #27272a;
+    --ring: #d4d4d8;
+  }
+
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}
+
+@layer utilities {
+  .perspective {
+    perspective: 1000px;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
