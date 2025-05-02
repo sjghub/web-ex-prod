@@ -18,6 +18,11 @@ export default function PaymentPasswordPage() {
     shuffleKeypad();
   }, []);
 
+
+type card = {
+  isRepresent: boolean;
+};
+
   // 대표 카드 여부 확인
   useEffect(() => {
     const fetchCardInfo = async () => {
@@ -26,7 +31,7 @@ export default function PaymentPasswordPage() {
         const data = await res.json();
 
         // 대표카드가 있는지 여부 판단 (예: 대표카드에 isRepresent: true 필드가 있다고 가정)
-        const has = data.some((card: any) => card.isRepresent === true);
+        const has = data.some((card: card) => card.isRepresent === true);
         setHasRepresentCard(has);
       } catch (error) {
         console.error("카드 정보 조회 실패:", error);

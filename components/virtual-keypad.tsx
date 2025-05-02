@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, Shuffle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -28,7 +28,7 @@ export function VirtualKeypad({
     "0",
   ]);
 
-  const shuffleKeys = () => {
+  const shuffleKeys = useCallback(() => {
     if (shuffle) {
       const shuffledKeys = [...keys];
       for (let i = shuffledKeys.length - 1; i > 0; i--) {
@@ -37,13 +37,13 @@ export function VirtualKeypad({
       }
       setKeys(shuffledKeys);
     }
-  };
+  }, [shuffle, keys, setKeys]);
 
   useEffect(() => {
     if (shuffle) {
       shuffleKeys();
     }
-  }, [shuffle]);
+  }, [shuffle, shuffleKeys]);
 
   const getGridKeys = () => {
     const grid = [...keys];

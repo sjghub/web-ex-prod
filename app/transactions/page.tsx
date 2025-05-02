@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { ChevronDown, CreditCard, Filter, Search, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -45,7 +45,7 @@ interface Transaction {
 }
 
 export default function TransactionsPage() {
-  const router = useRouter();
+  // const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
@@ -186,15 +186,15 @@ export default function TransactionsPage() {
   ];
 
   // 카테고리 목록 (필터용)
-  const categories = [
-    { id: "all", name: "전체 카테고리" },
-    { id: "cafe", name: "카페" },
-    { id: "shopping", name: "쇼핑" },
-    { id: "movie", name: "영화" },
-    { id: "delivery", name: "배달" },
-    { id: "subscription", name: "구독" },
-    { id: "transport", name: "교통" },
-  ];
+  // const categories = [
+  //   { id: "all", name: "전체 카테고리" },
+  //   { id: "cafe", name: "카페" },
+  //   { id: "shopping", name: "쇼핑" },
+  //   { id: "movie", name: "영화" },
+  //   { id: "delivery", name: "배달" },
+  //   { id: "subscription", name: "구독" },
+  //   { id: "transport", name: "교통" },
+  // ];
 
   const filteredTransactions = transactions.filter((transaction) => {
     const matchesSearch =
