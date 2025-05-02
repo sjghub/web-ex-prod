@@ -51,12 +51,12 @@ export default function TransactionsPage() {
     useState<Transaction | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
-  type DateRangeType = "all" | "1week" | "1month" | "3months" | "custom"; 
+  type DateRangeType = "all" | "1week" | "1month" | "3months" | "custom";
   const [dateRange, setDateRange] = useState<DateRangeType>("all");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [cardFilter, setCardFilter] = useState<string>("all");
-  type SortOptionType = "recent" | "oldest" | "amount-high" | "amount-low"
+  type SortOptionType = "recent" | "oldest" | "amount-high" | "amount-low";
   const [sortOption, setSortOption] = useState<SortOptionType>("recent");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
