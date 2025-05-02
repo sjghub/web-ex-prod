@@ -19,22 +19,22 @@ export default function PaymentPasswordPage() {
   }, []);
 
   // 대표 카드 여부 확인
-    useEffect(() => {
-      const fetchCardInfo = async () => {
-        try {
-          const res = await fetch('/api/cards'); // 실제 API 경로로 수정
-          const data = await res.json();
+  useEffect(() => {
+    const fetchCardInfo = async () => {
+      try {
+        const res = await fetch("/api/cards"); // 실제 API 경로로 수정
+        const data = await res.json();
 
-          // 대표카드가 있는지 여부 판단 (예: 대표카드에 isRepresent: true 필드가 있다고 가정)
-          const has = data.some((card: any) => card.isRepresent === true);
-          setHasRepresentCard(has);
-        } catch (error) {
-          console.error('카드 정보 조회 실패:', error);
-        }
-      };
+        // 대표카드가 있는지 여부 판단 (예: 대표카드에 isRepresent: true 필드가 있다고 가정)
+        const has = data.some((card: any) => card.isRepresent === true);
+        setHasRepresentCard(has);
+      } catch (error) {
+        console.error("카드 정보 조회 실패:", error);
+      }
+    };
 
-      fetchCardInfo();
-    }, []);
+    fetchCardInfo();
+  }, []);
 
   // Shuffle the keypad numbers
   const shuffleKeypad = () => {
