@@ -5,10 +5,10 @@
 
 | 유형 | URL |
 |------|-----|
-| 🐞 Bug Fix | `https://github.com/tower-of-fisa/paydeuk_server/compare/your_branch?expand=1&template=bug_fix.md` |
-| ✨ Feature | `https://github.com/tower-of-fisa/paydeuk_server/compare/your_branch?expand=1&template=feature_addition.md` |
-| 📚 Docs | `https://github.com/tower-of-fisa/paydeuk_server/compare/your_branch?expand=1&template=docs_update.md` |
-| ⚙️ Setting | `https://github.com/tower-of-fisa/paydeuk_server/compare/your_branch?expand=1&template=setting_change.md` |
+| 🐞 Bug Fix | `https://github.com/tower-of-fisa/paydeuk_web/compare/your_branch?expand=1&template=bug_fix.md` |
+| ✨ Feature | `https://github.com/tower-of-fisa/paydeuk_web/compare/your_branch?expand=1&template=feature_addition.md` |
+| 📚 Docs | `https://github.com/tower-of-fisa/paydeuk_web/compare/your_branch?expand=1&template=docs_update.md` |
+| ⚙️ Setting | `https://github.com/tower-of-fisa/paydeuk_web/compare/your_branch?expand=1&template=setting_change.md` |
 
 </details>
 
