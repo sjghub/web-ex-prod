@@ -36,7 +36,7 @@ export default function VerifyIdentityPage() {
   };
 
   /**
-   * 현재 카드 해당 페이지 닫기 버튼이 없기 때문에 해당 함수 사용되지 않아 주석 처리 하였습니다. 
+   * 현재 카드 해당 페이지 닫기 버튼이 없기 때문에 해당 함수 사용되지 않아 주석 처리 하였습니다.
    * */
   // const handleVerificationCancel = () => {
   //   // Just close the modal without completing verification

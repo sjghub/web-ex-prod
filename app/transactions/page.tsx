@@ -51,15 +51,13 @@ export default function TransactionsPage() {
     useState<Transaction | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<
-    "all" | "1week" | "1month" | "3months" | "custom"
-  >("all");
+  type DateRangeType = "all" | "1week" | "1month" | "3months" | "custom"; 
+  const [dateRange, setDateRange] = useState<DateRangeType>("all");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [cardFilter, setCardFilter] = useState<string>("all");
-  const [sortOption, setSortOption] = useState<
-    "recent" | "oldest" | "amount-high" | "amount-low"
-  >("recent");
+  type SortOptionType = "recent" | "oldest" | "amount-high" | "amount-low"
+  const [sortOption, setSortOption] = useState<SortOptionType>("recent");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -308,7 +306,7 @@ export default function TransactionsPage() {
                       <h3 className="text-sm font-medium mb-2">기간</h3>
                       <Select
                         value={dateRange}
-                        onValueChange={(value: any) => {
+                        onValueChange={(value: DateRangeType) => {
                           setDateRange(value);
                           setCurrentPage(1);
                         }}
@@ -372,7 +370,7 @@ export default function TransactionsPage() {
                       <h3 className="text-sm font-medium mb-2">카드</h3>
                       <Select
                         value={cardFilter}
-                        onValueChange={(value: any) => {
+                        onValueChange={(value: string) => {
                           setCardFilter(value);
                           setCurrentPage(1);
                         }}
@@ -441,7 +439,7 @@ export default function TransactionsPage() {
                     <DropdownMenuItem
                       key={value}
                       onClick={() => {
-                        setSortOption(value as any);
+                        setSortOption(value as SortOptionType);
                         setCurrentPage(1);
                       }}
                       className="flex justify-between cursor-pointer"

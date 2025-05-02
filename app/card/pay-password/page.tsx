@@ -18,10 +18,9 @@ export default function PaymentPasswordPage() {
     shuffleKeypad();
   }, []);
 
-
-type card = {
-  isRepresent: boolean;
-};
+  type card = {
+    isRepresent: boolean;
+  };
 
   // 대표 카드 여부 확인
   useEffect(() => {
