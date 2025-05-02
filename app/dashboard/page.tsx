@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
@@ -16,7 +16,7 @@ export default function DashboardPage() {
    * 현재 ESLint 규칙에 의해 activeTab이 사용되지 않아, 코드를 살펴본 뒤 setActiveTab이 사용되는 부분을 주석처리 해두었습니다.
    * 추후 논의 필요
    */
-  // const [activeTab, setActiveTab] = useState("home"); MARK: 
+  // const [activeTab, setActiveTab] = useState("home")
 
   // Initialize card scroll functionality
   useCardScroll();

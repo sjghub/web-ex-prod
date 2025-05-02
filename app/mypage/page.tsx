@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { HeaderNavBar } from "@/components/header-nav-bar";
 
 export default function MyPage() {
-  const router = useRouter();
+  // const router = useRouter();
   const emailInputRef = useRef<HTMLInputElement>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
