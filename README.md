@@ -1,3 +1,18 @@
+<details>
+<summary><h2>📎 Pull Request 만들기</h2></summary>
+
+> 🔧 **your_branch** 부분을 PR하려는 브랜치명으로 바꿔서 사용하세요!
+
+| 유형 | URL |
+|------|-----|
+| 🐞 Bug Fix | `https://github.com/tower-of-fisa/paydeuk_server/compare/your_branch?expand=1&template=bug_fix.md` |
+| ✨ Feature | `https://github.com/tower-of-fisa/paydeuk_server/compare/your_branch?expand=1&template=feature_addition.md` |
+| 📚 Docs | `https://github.com/tower-of-fisa/paydeuk_server/compare/your_branch?expand=1&template=docs_update.md` |
+| ⚙️ Setting | `https://github.com/tower-of-fisa/paydeuk_server/compare/your_branch?expand=1&template=setting_change.md` |
+
+</details>
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
