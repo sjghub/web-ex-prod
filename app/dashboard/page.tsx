@@ -11,7 +11,12 @@ import { HeaderNavBar } from "@/components/header-nav-bar";
 
 export default function DashboardPage() {
   const router = useRouter();
-  // const [activeTab, setActiveTab] = useState("home");
+  /**
+   * 네비게이션 바에서 현재 dashboard 페이지일 경우, dashboard 페이지로 다시 렌더링 해줘야 하는 이유?
+   * 현재 ESLint 규칙에 의해 activeTab이 사용되지 않아, 코드를 살펴본 뒤 setActiveTab이 사용되는 부분을 주석처리 해두었습니다.
+   * 추후 논의 필요
+   */
+  // const [activeTab, setActiveTab] = useState("home"); MARK: 
 
   // Initialize card scroll functionality
   useCardScroll();
@@ -144,7 +149,7 @@ export default function DashboardPage() {
       router.push("/mypage");
     } else if (tab === "cardManagement") {
       router.push("/mycard");
-    } 
+    }
     // else {
     //   setActiveTab(tab);
     //   router.push("/dashboard");
