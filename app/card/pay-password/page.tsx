@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, CreditCard, RefreshCw, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, CreditCard, RefreshCw, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function PaymentPasswordPage() {
   const router = useRouter();
-  const [password, setPassword] = useState<string>('');
+  const [password, setPassword] = useState<string>("");
   const [shuffledKeys, setShuffledKeys] = useState<number[]>([]);
   const PIN_LENGTH = 6;
   const [hasRepresentCard, setHasRepresentCard] = useState<boolean>(false);
@@ -19,22 +19,22 @@ export default function PaymentPasswordPage() {
   }, []);
 
   // 대표 카드 여부 확인
-//   useEffect(() => {
-//     const fetchCardInfo = async () => {
-//       try {
-//         const res = await fetch('/api/cards'); // 실제 API 경로로 수정
-//         const data = await res.json();
-  
-//         // 대표카드가 있는지 여부 판단 (예: 대표카드에 isRepresent: true 필드가 있다고 가정)
-//         const has = data.some((card: any) => card.isRepresent === true);
-//         setHasRepresentCard(has);
-//       } catch (error) {
-//         console.error('카드 정보 조회 실패:', error);
-//       }
-//     };
-  
-//     fetchCardInfo();
-//   }, []);
+    useEffect(() => {
+      const fetchCardInfo = async () => {
+        try {
+          const res = await fetch('/api/cards'); // 실제 API 경로로 수정
+          const data = await res.json();
+
+          // 대표카드가 있는지 여부 판단 (예: 대표카드에 isRepresent: true 필드가 있다고 가정)
+          const has = data.some((card: any) => card.isRepresent === true);
+          setHasRepresentCard(has);
+        } catch (error) {
+          console.error('카드 정보 조회 실패:', error);
+        }
+      };
+
+      fetchCardInfo();
+    }, []);
 
   // Shuffle the keypad numbers
   const shuffleKeypad = () => {
@@ -63,11 +63,11 @@ export default function PaymentPasswordPage() {
   // Handle form submission
   const handleComplete = () => {
     if (password.length === PIN_LENGTH) {
-      console.log('Payment password set:', password);
+      console.log("Payment password set:", password);
       if (hasRepresentCard) {
-        router.push('/card/change-represent-card');
+        router.push("/card/change-represent-card");
       } else {
-        router.push('/card/set-represent-card');
+        router.push("/card/set-represent-card");
       }
     }
   };
@@ -75,7 +75,11 @@ export default function PaymentPasswordPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Button variant="ghost" className="mb-4" onClick={() => router.push('/card/register')}>
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => router.push("/card/register")}
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           돌아가기
         </Button>
@@ -89,15 +93,22 @@ export default function PaymentPasswordPage() {
             </div>
 
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold mb-2">간편 결제 비밀번호 설정</h1>
-              <p className="text-gray-500">간편 결제 시 사용할 비밀번호를 설정해주세요.</p>
+              <h1 className="text-2xl font-bold mb-2">
+                간편 결제 비밀번호 설정
+              </h1>
+              <p className="text-gray-500">
+                간편 결제 시 사용할 비밀번호를 설정해주세요.
+              </p>
             </div>
 
             {/* Password display */}
             <div className="flex justify-center space-x-4 mb-8">
               {Array.from({ length: PIN_LENGTH }).map((_, index) => (
-                <span key={index} className="text-2xl font-mono w-4 text-center">
-                  {index < password.length ? '•' : '_'}
+                <span
+                  key={index}
+                  className="text-2xl font-mono w-4 text-center"
+                >
+                  {index < password.length ? "•" : "_"}
                 </span>
               ))}
             </div>

@@ -1,34 +1,40 @@
-'use client';
+"use client";
 
-import type React from 'react';
+import type React from "react";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function UserInfoPage() {
   const router = useRouter();
 
   // 인증된 사용자 정보 (예시용)
   const verifiedUser = {
-    name: '홍길동',
-    birthdate: '1999.01.01',
-    phone: '010-1234-5678',
+    name: "홍길동",
+    birthdate: "1999.01.01",
+    phone: "010-1234-5678",
   };
 
   const [formData, setFormData] = useState({
     name: verifiedUser.name,
     birthdate: verifiedUser.birthdate,
     phone: verifiedUser.phone,
-    userId: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    userId: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -55,25 +61,25 @@ export default function UserInfoPage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.userId.trim()) {
-      newErrors.userId = '아이디를 입력해주세요.';
+      newErrors.userId = "아이디를 입력해주세요.";
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = '이메일을 입력해주세요.';
+      newErrors.email = "이메일을 입력해주세요.";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = '올바른 이메일 형식이 아닙니다.';
+      newErrors.email = "올바른 이메일 형식이 아닙니다.";
     }
 
     if (!formData.password) {
-      newErrors.password = '비밀번호를 입력해주세요.';
+      newErrors.password = "비밀번호를 입력해주세요.";
     } else if (formData.password.length < 8) {
-      newErrors.password = '비밀번호는 8자 이상이어야 합니다.';
+      newErrors.password = "비밀번호는 8자 이상이어야 합니다.";
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = '비밀번호 확인을 입력해주세요.';
+      newErrors.confirmPassword = "비밀번호 확인을 입력해주세요.";
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = '비밀번호가 일치하지 않습니다.';
+      newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
     }
 
     setErrors(newErrors);
@@ -84,22 +90,29 @@ export default function UserInfoPage() {
     e.preventDefault();
 
     if (validateForm()) {
-      console.log('Form submitted:', formData);
-      router.push('/login');
+      console.log("Form submitted:", formData);
+      router.push("/login");
     }
   };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4">
       <div className="w-full max-w-md">
-        <Button variant="ghost" className="mb-4" onClick={() => router.push('/signup/verify')}>
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => router.push("/signup/verify")}
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           돌아가기
         </Button>
 
         <Card className="border-gray-100 shadow-sm">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-bold" style={{ fontFamily: 'SBAggroB' }}>
+            <CardTitle
+              className="text-3xl font-bold"
+              style={{ fontFamily: "SBAggroB" }}
+            >
               회원가입
             </CardTitle>
             <CardDescription className="text-gray-600">
@@ -155,7 +168,9 @@ export default function UserInfoPage() {
                   value={formData.userId}
                   onChange={handleChange}
                 />
-                {errors.userId && <p className="text-sm text-red-500">{errors.userId}</p>}
+                {errors.userId && (
+                  <p className="text-sm text-red-500">{errors.userId}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -170,7 +185,9 @@ export default function UserInfoPage() {
                   value={formData.email}
                   onChange={handleChange}
                 />
-                {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -181,7 +198,7 @@ export default function UserInfoPage() {
                   <Input
                     id="password"
                     name="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     placeholder="비밀번호를 입력하세요"
                     value={formData.password}
                     onChange={handleChange}
@@ -194,7 +211,9 @@ export default function UserInfoPage() {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
+                {errors.password && (
+                  <p className="text-sm text-red-500">{errors.password}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -205,7 +224,7 @@ export default function UserInfoPage() {
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
+                    type={showConfirmPassword ? "text" : "password"}
                     placeholder="비밀번호를 다시 입력하세요"
                     value={formData.confirmPassword}
                     onChange={handleChange}
@@ -215,11 +234,17 @@ export default function UserInfoPage() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showConfirmPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
                   </button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.confirmPassword}
+                  </p>
                 )}
               </div>
 

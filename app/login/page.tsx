@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import type React from 'react';
+import type React from "react";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { User, KeyRound, ArrowLeft } from 'lucide-react';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { User, KeyRound, ArrowLeft } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -17,35 +17,42 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export default function LoginPage() {
-  const [userId, setUserId] = useState('');
-  const [password, setPassword] = useState('');
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (userId === 'testuser' && password === 'test1234') {
-      console.log('Login success');
-      router.push('/dashboard');
+    if (userId === "testuser" && password === "test1234") {
+      console.log("Login success");
+      router.push("/dashboard");
     } else {
-      alert('아이디 또는 비밀번호가 올바르지 않습니다.');
+      alert("아이디 또는 비밀번호가 올바르지 않습니다.");
     }
   };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Button variant="ghost" className="mb-4" onClick={() => router.push('/')}>
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => router.push("/")}
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           홈으로 돌아가기
         </Button>
 
         <Card className="border-gray-100 shadow-sm">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-bold" style={{ fontFamily: 'SBAggroB' }}>
+            <CardTitle
+              className="text-3xl font-bold"
+              style={{ fontFamily: "SBAggroB" }}
+            >
               로그인
             </CardTitle>
             <CardDescription className="text-gray-600">
@@ -101,7 +108,10 @@ export default function LoginPage() {
           <CardFooter className="flex flex-col space-y-4">
             <Separator />
             <div className="flex justify-center space-x-4 text-sm text-gray-500">
-              <Link href="/find-id" className="hover:text-black hover:underline flex items-center">
+              <Link
+                href="/find-id"
+                className="hover:text-black hover:underline flex items-center"
+              >
                 아이디 찾기
               </Link>
               <span>|</span>

@@ -1,19 +1,28 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { CreditCard, Plus, Search, Star, StarOff, Trash2, ChevronDown, Check } from 'lucide-react';
-import { HeaderNavBar } from '@/components/header-nav-bar';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import {
+  CreditCard,
+  Plus,
+  Search,
+  Star,
+  StarOff,
+  Trash2,
+  ChevronDown,
+  Check,
+} from "lucide-react";
+import { HeaderNavBar } from "@/components/header-nav-bar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +30,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 
 interface CardItem {
   id: number;
@@ -34,62 +43,78 @@ interface CardItem {
 
 export default function MyCardPage() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCard, setSelectedCard] = useState<CardItem | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
-  const [sortOption, setSortOption] = useState('default');
+  const [sortOption, setSortOption] = useState("default");
 
   // 내 카드 목록 (예시)
   const [myCards, setMyCards] = useState<CardItem[]>([
     {
       id: 1,
-      name: '현대카드 M Black',
-      image: '/hyundaiblack.png',
-      number: '5521-9876-3412-0001',
-      benefits: ['스타벅스 10% 청구 할인', '해외 가맹점 1.5% 캐시백', '특급호텔 무료 발렛'],
+      name: "현대카드 M Black",
+      image: "/hyundaiblack.png",
+      number: "5521-9876-3412-0001",
+      benefits: [
+        "스타벅스 10% 청구 할인",
+        "해외 가맹점 1.5% 캐시백",
+        "특급호텔 무료 발렛",
+      ],
       isDefault: true,
     },
     {
       id: 2,
-      name: '카드의정석 EVERY DISCOUNT',
-      image: '/everydiscount.png',
-      number: '4582-1234-5678-0002',
-      benefits: ['대중교통 10% 할인', '이동통신 요금 10% 할인', '편의점 5% 할인'],
+      name: "카드의정석 EVERY DISCOUNT",
+      image: "/everydiscount.png",
+      number: "4582-1234-5678-0002",
+      benefits: [
+        "대중교통 10% 할인",
+        "이동통신 요금 10% 할인",
+        "편의점 5% 할인",
+      ],
     },
     {
       id: 3,
-      name: '삼성카드 taptap 0',
-      image: '/taptap0.png',
-      number: '4012-3456-7890-0003',
-      benefits: ['넷플릭스 10% 할인', '스타벅스 30% 할인', '배달앱 10% 할인'],
+      name: "삼성카드 taptap 0",
+      image: "/taptap0.png",
+      number: "4012-3456-7890-0003",
+      benefits: ["넷플릭스 10% 할인", "스타벅스 30% 할인", "배달앱 10% 할인"],
     },
     {
       id: 4,
-      name: '카드의정석 오하CHECK',
-      image: '/ohacheck.png',
-      number: '3792-0000-1111-0004',
-      benefits: ['영화 3,000원 할인', '버스/지하철 10% 할인', '배달의민족 5% 적립'],
+      name: "카드의정석 오하CHECK",
+      image: "/ohacheck.png",
+      number: "3792-0000-1111-0004",
+      benefits: [
+        "영화 3,000원 할인",
+        "버스/지하철 10% 할인",
+        "배달의민족 5% 적립",
+      ],
     },
     {
       id: 5,
-      name: 'KB국민 My WE:SH 카드',
-      image: '/mywish.png',
-      number: '6254-4444-2222-0005',
-      benefits: ['온라인 쇼핑 5% 할인', '헬스장/필라테스 10% 할인', '디지털 콘텐츠 구독 7% 할인'],
+      name: "KB국민 My WE:SH 카드",
+      image: "/mywish.png",
+      number: "6254-4444-2222-0005",
+      benefits: [
+        "온라인 쇼핑 5% 할인",
+        "헬스장/필라테스 10% 할인",
+        "디지털 콘텐츠 구독 7% 할인",
+      ],
     },
   ]);
 
   // 카드 검색 필터링
   const filteredCards = myCards.filter((card) =>
-    card.name.toLowerCase().includes(searchQuery.toLowerCase())
+    card.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // 카드 정렬
   const sortedCards = [...filteredCards].sort((a, b) => {
-    if (sortOption === 'name') {
+    if (sortOption === "name") {
       return a.name.localeCompare(b.name);
-    } else if (sortOption === 'default') {
+    } else if (sortOption === "default") {
       return a.isDefault ? -1 : b.isDefault ? 1 : 0;
     }
     return 0;
@@ -101,7 +126,7 @@ export default function MyCardPage() {
       myCards.map((c) => ({
         ...c,
         isDefault: c.id === card.id,
-      }))
+      })),
     );
   };
 
@@ -129,7 +154,9 @@ export default function MyCardPage() {
       <main className="container mx-auto px-4 py-6">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-2xl font-bold mb-2">내 카드</h1>
-          <p className="text-gray-500 mb-6">등록된 카드를 확인하고 관리할 수 있습니다.</p>
+          <p className="text-gray-500 mb-6">
+            등록된 카드를 확인하고 관리할 수 있습니다.
+          </p>
 
           {/* 검색 및 필터 영역 */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
@@ -145,20 +172,23 @@ export default function MyCardPage() {
             <div className="flex items-center gap-4">
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="hover:bg-gray-100 !ring-0 cursor-pointer">
-                    {sortOption === 'default' ? '기본 정렬' : '이름순 정렬'}
+                  <Button
+                    variant="outline"
+                    className="hover:bg-gray-100 !ring-0 cursor-pointer"
+                  >
+                    {sortOption === "default" ? "기본 정렬" : "이름순 정렬"}
                     <ChevronDown className="ml-2 w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-white">
                   <DropdownMenuItem
-                    onClick={() => setSortOption('default')}
+                    onClick={() => setSortOption("default")}
                     className="hover:bg-gray-100 cursor-pointer"
                   >
                     기본 정렬
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => setSortOption('name')}
+                    onClick={() => setSortOption("name")}
                     className="hover:bg-gray-100 cursor-pointer"
                   >
                     이름순 정렬
@@ -166,7 +196,7 @@ export default function MyCardPage() {
                 </DropdownMenuContent>
               </DropdownMenu>
               <Button
-                onClick={() => router.push('/card/register')}
+                onClick={() => router.push("/card/register")}
                 className="bg-black text-white cursor-pointer"
               >
                 카드 추가
@@ -182,7 +212,7 @@ export default function MyCardPage() {
                 <Card key={card.id} className="overflow-hidden p-0 pb-6">
                   <div className="relative aspect-[1.58/1] overflow-hidden">
                     <Image
-                      src={card.image || '/placeholder.svg'}
+                      src={card.image || "/placeholder.svg"}
                       alt={card.name}
                       fill
                       className="object-fill origin-center transform -rotate-90 scale-y-[1.58] scale-x-[0.63]"
@@ -203,7 +233,11 @@ export default function MyCardPage() {
                       </div>
                       <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                          >
                             <span className="sr-only">메뉴 열기</span>
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -223,12 +257,16 @@ export default function MyCardPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="bg-white">
-                          <DropdownMenuItem onClick={() => handleViewCardDetail(card)}>
+                          <DropdownMenuItem
+                            onClick={() => handleViewCardDetail(card)}
+                          >
                             <CreditCard className="mr-2 h-4 w-4" />
                             상세 정보
                           </DropdownMenuItem>
                           {!card.isDefault && (
-                            <DropdownMenuItem onClick={() => handleSetDefaultCard(card)}>
+                            <DropdownMenuItem
+                              onClick={() => handleSetDefaultCard(card)}
+                            >
                               <Star className="mr-2 h-4 w-4" />
                               대표카드 설정
                             </DropdownMenuItem>
@@ -271,9 +309,13 @@ export default function MyCardPage() {
           ) : (
             <div className="text-center py-12">
               <CreditCard className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">등록된 카드가 없습니다</h3>
-              <p className="text-gray-500 mb-4">카드를 등록하고 혜택을 받아보세요.</p>
-              <Button onClick={() => router.push('/card/register')}>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">
+                등록된 카드가 없습니다
+              </h3>
+              <p className="text-gray-500 mb-4">
+                카드를 등록하고 혜택을 받아보세요.
+              </p>
+              <Button onClick={() => router.push("/card/register")}>
                 <Plus className="mr-2 h-4 w-4" />
                 카드 등록하기
               </Button>
@@ -287,14 +329,19 @@ export default function MyCardPage() {
           <DialogHeader>
             <DialogTitle>카드 삭제</DialogTitle>
             <DialogDescription>
-              정말로 {selectedCard?.name} 카드를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+              정말로 {selectedCard?.name} 카드를 삭제하시겠습니까? 이 작업은
+              되돌릴 수 없습니다.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setShowDeleteDialog(false)}>
               취소
             </Button>
-            <Button variant="ghost" onClick={handleDeleteCard} className='text-red-600'>
+            <Button
+              variant="ghost"
+              onClick={handleDeleteCard}
+              className="text-red-600"
+            >
               삭제
             </Button>
           </DialogFooter>
@@ -311,7 +358,7 @@ export default function MyCardPage() {
               <div className="flex justify-center m-0 p-0">
                 <div className="relative w-50 aspect-[1/1.58] -rotate-90 origin-center">
                   <Image
-                    src={selectedCard.image || '/placeholder.svg'}
+                    src={selectedCard.image || "/placeholder.svg"}
                     alt={selectedCard.name}
                     fill
                     className="object-cover rounded-lg"

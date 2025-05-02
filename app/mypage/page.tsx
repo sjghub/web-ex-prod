@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { ChevronRight, Edit2, Pencil, Save } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { ToggleSwitch } from '@/components/ui/toggle-switch';
-import { Separator } from '@/components/ui/separator';
-import { HeaderNavBar } from '@/components/header-nav-bar';
+import { useState, useRef } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { ChevronRight, Edit2, Pencil, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ToggleSwitch } from "@/components/ui/toggle-switch";
+import { Separator } from "@/components/ui/separator";
+import { HeaderNavBar } from "@/components/header-nav-bar";
 
 export default function MyPage() {
   const router = useRouter();
@@ -18,12 +18,12 @@ export default function MyPage() {
   const addressInputRef = useRef<HTMLInputElement>(null);
 
   const user = {
-    name: '홍길동',
-    email: 'gildong@naver.com',
-    birthDate: '1999.01.01',
-    phone: '010-1234-5678',
-    address: '서울특별시 마포구 월드컵북로 434 상암 IT타워',
-    profileImage: '/profile-image.png',
+    name: "홍길동",
+    email: "gildong@naver.com",
+    birthDate: "1999.01.01",
+    phone: "010-1234-5678",
+    address: "서울특별시 마포구 월드컵북로 434 상암 IT타워",
+    profileImage: "/profile-image.png",
   };
 
   const [emailEditable, setEmailEditable] = useState(false);
@@ -58,7 +58,9 @@ export default function MyPage() {
       <main className="container mx-auto px-4 py-6">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl font-bold mb-2">내 정보</h1>
-          <p className="text-gray-500 mb-6">개인 정보를 관리하고 설정을 변경할 수 있습니다.</p>
+          <p className="text-gray-500 mb-6">
+            개인 정보를 관리하고 설정을 변경할 수 있습니다.
+          </p>
 
           <div className="flex flex-col md:flex-row gap-6">
             {/* 왼쪽: 개인정보 (2/5) */}
@@ -93,7 +95,12 @@ export default function MyPage() {
                       <Label htmlFor="name" className="mb-2">
                         이름
                       </Label>
-                      <Input id="name" value={user.name} readOnly className="bg-gray-50" />
+                      <Input
+                        id="name"
+                        value={user.name}
+                        readOnly
+                        className="bg-gray-50"
+                      />
                     </div>
 
                     <div>
@@ -112,7 +119,12 @@ export default function MyPage() {
                       <Label htmlFor="phone" className="mb-2">
                         전화번호
                       </Label>
-                      <Input id="phone" value={user.phone} readOnly className="bg-gray-50" />
+                      <Input
+                        id="phone"
+                        value={user.phone}
+                        readOnly
+                        className="bg-gray-50"
+                      />
                     </div>
 
                     <div>
@@ -124,9 +136,12 @@ export default function MyPage() {
                           className="h-5 w-5"
                           onClick={() => {
                             if (emailEditable) {
-                              console.log('이메일 저장:', formData.email);
+                              console.log("이메일 저장:", formData.email);
                             } else {
-                              setTimeout(() => emailInputRef.current?.focus(), 0);
+                              setTimeout(
+                                () => emailInputRef.current?.focus(),
+                                0,
+                              );
                             }
                             setEmailEditable(!emailEditable);
                           }}
@@ -144,7 +159,7 @@ export default function MyPage() {
                         value={formData.email}
                         readOnly={!emailEditable}
                         onChange={handleInputChange}
-                        className={emailEditable ? '' : 'bg-gray-50'}
+                        className={emailEditable ? "" : "bg-gray-50"}
                       />
                     </div>
 
@@ -157,9 +172,12 @@ export default function MyPage() {
                           className="h-5 w-5"
                           onClick={() => {
                             if (addressEditable) {
-                              console.log('주소 저장:', formData.address);
+                              console.log("주소 저장:", formData.address);
                             } else {
-                              setTimeout(() => addressInputRef.current?.focus(), 0);
+                              setTimeout(
+                                () => addressInputRef.current?.focus(),
+                                0,
+                              );
                             }
                             setAddressEditable(!addressEditable);
                           }}
@@ -177,7 +195,7 @@ export default function MyPage() {
                         value={formData.address}
                         readOnly={!addressEditable}
                         onChange={handleInputChange}
-                        className={addressEditable ? '' : 'bg-gray-50'}
+                        className={addressEditable ? "" : "bg-gray-50"}
                       />
                     </div>
                   </div>
@@ -196,7 +214,9 @@ export default function MyPage() {
                       <div className="flex items-center justify-between py-2">
                         <div>
                           <h3 className="font-medium">비밀번호 변경</h3>
-                          <p className="text-sm text-gray-500">계정 비밀번호를 변경합니다.</p>
+                          <p className="text-sm text-gray-500">
+                            계정 비밀번호를 변경합니다.
+                          </p>
                         </div>
                         <Button variant="outline" size="sm">
                           변경하기
@@ -205,7 +225,9 @@ export default function MyPage() {
                       <Separator />
                       <div className="flex items-center justify-between py-2">
                         <div>
-                          <h3 className="font-medium">간편 결제 비밀번호 변경</h3>
+                          <h3 className="font-medium">
+                            간편 결제 비밀번호 변경
+                          </h3>
                           <p className="text-sm text-gray-500">
                             결제 시 사용하는 6자리 비밀번호를 변경합니다.
                           </p>
@@ -228,11 +250,15 @@ export default function MyPage() {
                       <div className="flex items-center justify-between py-2">
                         <div>
                           <h3 className="font-medium">이메일 알림</h3>
-                          <p className="text-sm text-gray-500">중요 알림을 이메일로 받습니다.</p>
+                          <p className="text-sm text-gray-500">
+                            중요 알림을 이메일로 받습니다.
+                          </p>
                         </div>
                         <ToggleSwitch
                           checked={notifications.email}
-                          onCheckedChange={() => handleNotificationChange('email')}
+                          onCheckedChange={() =>
+                            handleNotificationChange("email")
+                          }
                         />
                       </div>
 
@@ -241,11 +267,15 @@ export default function MyPage() {
                       <div className="flex items-center justify-between py-2">
                         <div>
                           <h3 className="font-medium">SMS 알림</h3>
-                          <p className="text-sm text-gray-500">중요 알림을 SMS로 받습니다.</p>
+                          <p className="text-sm text-gray-500">
+                            중요 알림을 SMS로 받습니다.
+                          </p>
                         </div>
                         <ToggleSwitch
                           checked={notifications.sms}
-                          onCheckedChange={() => handleNotificationChange('sms')}
+                          onCheckedChange={() =>
+                            handleNotificationChange("sms")
+                          }
                         />
                       </div>
 
@@ -260,7 +290,9 @@ export default function MyPage() {
                         </div>
                         <ToggleSwitch
                           checked={notifications.marketing}
-                          onCheckedChange={() => handleNotificationChange('marketing')}
+                          onCheckedChange={() =>
+                            handleNotificationChange("marketing")
+                          }
                         />
                       </div>
 
@@ -269,11 +301,15 @@ export default function MyPage() {
                       <div className="flex items-center justify-between py-2">
                         <div>
                           <h3 className="font-medium">보안 알림</h3>
-                          <p className="text-sm text-gray-500">계정 보안 관련 알림을 받습니다.</p>
+                          <p className="text-sm text-gray-500">
+                            계정 보안 관련 알림을 받습니다.
+                          </p>
                         </div>
                         <ToggleSwitch
                           checked={notifications.security}
-                          onCheckedChange={() => handleNotificationChange('security')}
+                          onCheckedChange={() =>
+                            handleNotificationChange("security")
+                          }
                         />
                       </div>
                     </div>
@@ -288,10 +324,22 @@ export default function MyPage() {
                   <CardContent className="px-6">
                     <div className="space-y-4">
                       {[
-                        { title: '공지사항', desc: '서비스 업데이트 및 공지사항을 확인하세요.' },
-                        { title: '1:1 문의', desc: '궁금한 점이나 문제가 있으면 문의하세요.' },
-                        { title: '서비스 이용약관', desc: '서비스 이용약관을 확인하세요.' },
-                        { title: '개인정보 처리방침', desc: '개인정보 처리방침을 확인하세요.' },
+                        {
+                          title: "공지사항",
+                          desc: "서비스 업데이트 및 공지사항을 확인하세요.",
+                        },
+                        {
+                          title: "1:1 문의",
+                          desc: "궁금한 점이나 문제가 있으면 문의하세요.",
+                        },
+                        {
+                          title: "서비스 이용약관",
+                          desc: "서비스 이용약관을 확인하세요.",
+                        },
+                        {
+                          title: "개인정보 처리방침",
+                          desc: "개인정보 처리방침을 확인하세요.",
+                        },
                       ].map(({ title, desc }, index, arr) => (
                         <div key={title}>
                           <div className="flex items-center justify-between">
@@ -303,7 +351,9 @@ export default function MyPage() {
                               <ChevronRight className="h-5 w-5" />
                             </Button>
                           </div>
-                          {index < arr.length - 1 && <Separator className="my-4" />}
+                          {index < arr.length - 1 && (
+                            <Separator className="my-4" />
+                          )}
                         </div>
                       ))}
                     </div>

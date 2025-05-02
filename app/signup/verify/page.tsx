@@ -1,12 +1,23 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, Shield, Check, ChevronRight } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Shield, Check, ChevronRight } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function VerifyIdentityPage() {
   const router = useRouter();
@@ -30,20 +41,27 @@ export default function VerifyIdentityPage() {
   };
 
   const handleNext = () => {
-    router.push('/signup/info');
+    router.push("/signup/info");
   };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4">
       <div className="w-full max-w-md">
-        <Button variant="ghost" className="mb-4" onClick={() => router.push('/signup/terms')}>
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => router.push("/signup/terms")}
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           돌아가기
         </Button>
 
         <Card className="border-gray-100 shadow-sm">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-bold" style={{ fontFamily: 'SBAggroB' }}>
+            <CardTitle
+              className="text-3xl font-bold"
+              style={{ fontFamily: "SBAggroB" }}
+            >
               본인인증
             </CardTitle>
             <CardDescription className="text-gray-600">
@@ -54,12 +72,14 @@ export default function VerifyIdentityPage() {
             {/* Info Box */}
             <div
               className={`border-2 rounded-md p-6 text-center ${
-                verificationStarted ? 'border-green-500 bg-green-50' : 'border-red-500'
+                verificationStarted
+                  ? "border-green-500 bg-green-50"
+                  : "border-red-500"
               }`}
             >
               <div className="flex justify-center mb-4">
                 <Shield
-                  className={`h-12 w-12 ${verificationStarted ? 'text-green-500' : 'text-red-500'}`}
+                  className={`h-12 w-12 ${verificationStarted ? "text-green-500" : "text-red-500"}`}
                 />
               </div>
               <p className="text-gray-800 font-medium">
@@ -72,7 +92,7 @@ export default function VerifyIdentityPage() {
             {/* Verification Button */}
             <button
               className={`w-full border rounded-md p-4 flex justify-between items-center hover:bg-gray-50 transition-colors ${
-                verificationStarted ? 'bg-gray-50' : ''
+                verificationStarted ? "bg-gray-50" : ""
               }`}
               onClick={handleVerificationClick}
               disabled={verificationStarted}
@@ -96,7 +116,9 @@ export default function VerifyIdentityPage() {
             {/* Next Button */}
             <Button
               className={`w-full mt-6 ${
-                verificationStarted ? 'bg-black text-white' : 'bg-gray-400 text-gray-200'
+                verificationStarted
+                  ? "bg-black text-white"
+                  : "bg-gray-400 text-gray-200"
               }`}
               disabled={!verificationStarted}
               onClick={handleNext}
@@ -108,7 +130,10 @@ export default function VerifyIdentityPage() {
       </div>
 
       {/* Verification Modal */}
-      <Dialog open={showVerificationModal} onOpenChange={setShowVerificationModal}>
+      <Dialog
+        open={showVerificationModal}
+        onOpenChange={setShowVerificationModal}
+      >
         <DialogContent className="sm:max-w-md bg-white">
           <DialogHeader>
             <DialogTitle className="text-center">본인인증</DialogTitle>

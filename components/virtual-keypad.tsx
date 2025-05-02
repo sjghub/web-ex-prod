@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { X, Shuffle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import { X, Shuffle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface VirtualKeypadProps {
   onKeyPress: (key: string) => void;
@@ -10,8 +10,23 @@ interface VirtualKeypadProps {
   shuffle?: boolean;
 }
 
-export function VirtualKeypad({ onKeyPress, onClose, shuffle = true }: VirtualKeypadProps) {
-  const [keys, setKeys] = useState<string[]>(['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']);
+export function VirtualKeypad({
+  onKeyPress,
+  onClose,
+  shuffle = true,
+}: VirtualKeypadProps) {
+  const [keys, setKeys] = useState<string[]>([
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "0",
+  ]);
 
   const shuffleKeys = () => {
     if (shuffle) {
@@ -32,8 +47,8 @@ export function VirtualKeypad({ onKeyPress, onClose, shuffle = true }: VirtualKe
 
   const getGridKeys = () => {
     const grid = [...keys];
-    while (grid.length < 11) grid.push(''); // 빈 칸 채우기
-    grid.push('backspace');
+    while (grid.length < 11) grid.push(""); // 빈 칸 채우기
+    grid.push("backspace");
     return grid;
   };
 
@@ -69,7 +84,7 @@ export function VirtualKeypad({ onKeyPress, onClose, shuffle = true }: VirtualKe
 
       <div className="grid grid-cols-3 gap-2">
         {getGridKeys().map((key, index) =>
-          key === '' ? (
+          key === "" ? (
             <div key={index} />
           ) : (
             <Button
@@ -79,9 +94,9 @@ export function VirtualKeypad({ onKeyPress, onClose, shuffle = true }: VirtualKe
               className="h-12 text-lg font-medium hover:bg-gray-100"
               onClick={() => onKeyPress(key)}
             >
-              {key === 'backspace' ? '←' : key}
+              {key === "backspace" ? "←" : key}
             </Button>
-          )
+          ),
         )}
       </div>
     </div>
