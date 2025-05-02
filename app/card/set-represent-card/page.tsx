@@ -10,7 +10,7 @@ import { Check } from "lucide-react";
 
 export default function SetRepresentCardPage() {
   const router = useRouter();
-  const [checked, setChecked] = useState(true);
+  // const [checked, setChecked] = useState(true);
 
   // Mock data for the newly registered card
   const newCard = {

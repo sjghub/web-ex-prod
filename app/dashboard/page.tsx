@@ -11,7 +11,7 @@ import { HeaderNavBar } from "@/components/header-nav-bar";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("home");
+  // const [activeTab, setActiveTab] = useState("home");
 
   // Initialize card scroll functionality
   useCardScroll();
@@ -144,10 +144,11 @@ export default function DashboardPage() {
       router.push("/mypage");
     } else if (tab === "cardManagement") {
       router.push("/mycard");
-    } else {
-      setActiveTab(tab);
-      router.push("/dashboard");
-    }
+    } 
+    // else {
+    //   setActiveTab(tab);
+    //   router.push("/dashboard");
+    // }
   };
 
   return (
