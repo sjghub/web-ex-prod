@@ -22,13 +22,13 @@ export default function SetRepresentCardPage() {
   const handleYes = () => {
     // Here you would typically send the data to your backend
     console.log("Set as default card: Yes");
-    router.push("/dashboard");
+    router.push("/mycard");
   };
 
   const handleNo = () => {
     // Here you would typically send the data to your backend
     console.log("Set as default card: No");
-    router.push("/dashboard");
+    router.push("/mycard");
   };
 
   return (

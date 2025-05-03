@@ -23,12 +23,12 @@ export default function ChangeRepresentCardPage() {
 
   const handleChange = () => {
     console.log("Change default card: Yes");
-    router.push("/dashboard");
+    router.push("/mycard");
   };
 
   const handleNoChange = () => {
     console.log("Change default card: No");
-    router.push("/dashboard");
+    router.push("/mycard");
   };
 
   return (
