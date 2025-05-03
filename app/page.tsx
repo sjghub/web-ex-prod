@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  // LogIn,
-  // UserPlus,
   ChevronDown,
   CheckCircle,
   CreditCard,
@@ -21,6 +19,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import Footer from "@/components/footer-bar";
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
@@ -95,12 +94,9 @@ export default function Home() {
               className="text-6xl md:text-7xl lg:text-8xl font-medium text-center text-white mb-6"
               style={{ fontFamily: "SBAggroB" }}
             >
-              쓸수록 이득, 페이
-              <span
-                style={{ display: "inline-block", transform: "rotate(-20deg)" }}
-              >
-                득
-              </span>
+              <span className="text-gray-300">쓸수록 이득, </span>
+              페이
+              <span className="inline-block ml-2 -rotate-20">득</span>
             </h1>
             <p className="text-white text-xl md:text-2xl mb-8">
               카드 혜택을 놓치지 말고 자동으로 챙겨보세요
@@ -110,7 +106,7 @@ export default function Home() {
               className="bg-white text-black hover:bg-white/90 font-bold text-lg px-8 py-6"
               asChild
             >
-              <Link href="/signup/terms">지금 시작하기</Link>
+              <Link href="/login">지금 시작하기</Link>
             </Button>
           </div>
 
@@ -389,25 +385,25 @@ export default function Home() {
             <TabsList className="flex justify-between items-center gap-4 mb-8 bg-gray-100 p-1 rounded-lg w-full h-10">
               <TabsTrigger
                 value="cafe"
-                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium focus-visible:ring-0 transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500"
+                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium focus-visible:ring-0 transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500 cursor-pointer"
               >
                 카페
               </TabsTrigger>
               <TabsTrigger
                 value="shopping"
-                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium focus-visible:ring-0 transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500"
+                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium focus-visible:ring-0 transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500 cursor-pointer"
               >
                 쇼핑
               </TabsTrigger>
               <TabsTrigger
                 value="dining"
-                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium focus-visible:ring-0 transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500"
+                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium focus-visible:ring-0 transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500 cursor-pointer"
               >
                 식당
               </TabsTrigger>
               <TabsTrigger
                 value="transport"
-                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium focus-visible:ring-0 transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500"
+                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium focus-visible:ring-0 transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500 cursor-pointer"
               >
                 교통
               </TabsTrigger>
@@ -569,7 +565,7 @@ export default function Home() {
             <div className="max-w-3xl mx-auto">
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1">
-                  <AccordionTrigger className="text-left">
+                  <AccordionTrigger className="text-left cursor-pointer">
                     페이득은 어떤 서비스인가요?
                   </AccordionTrigger>
                   <AccordionContent>
@@ -580,7 +576,7 @@ export default function Home() {
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-2">
-                  <AccordionTrigger className="text-left">
+                  <AccordionTrigger className="text-left cursor-pointer">
                     카드 정보는 안전한가요?
                   </AccordionTrigger>
                   <AccordionContent>
@@ -590,17 +586,15 @@ export default function Home() {
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-3">
-                  <AccordionTrigger className="text-left">
+                  <AccordionTrigger className="text-left cursor-pointer">
                     서비스 이용 요금은 얼마인가요?
                   </AccordionTrigger>
                   <AccordionContent>
-                    페이득의 기본 서비스는 무료로 이용하실 수 있습니다. 추가적인
-                    프리미엄 기능은 월 4,900원부터 시작하는 구독 서비스로
-                    제공됩니다.
+                    페이득 서비스는 무료로 이용하실 수 있습니다.
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-4">
-                  <AccordionTrigger className="text-left">
+                  <AccordionTrigger className="text-left cursor-pointer">
                     어떤 카드를 지원하나요?
                   </AccordionTrigger>
                   <AccordionContent>
@@ -610,7 +604,7 @@ export default function Home() {
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-5">
-                  <AccordionTrigger className="text-left">
+                  <AccordionTrigger className="text-left cursor-pointer">
                     카드를 등록하는 방법은 무엇인가요?
                   </AccordionTrigger>
                   <AccordionContent>
@@ -642,7 +636,7 @@ export default function Home() {
               className="bg-white text-black hover:bg-white/90 font-bold text-lg px-8 py-6"
               asChild
             >
-              <Link href="/signup/terms">
+              <Link href="/login">
                 무료로 시작하기
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
@@ -652,11 +646,7 @@ export default function Home() {
       </main>
 
       {/* 푸터 */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="border-gray-800 text-center text-gray-400">
-          <p>© 2025 페이득. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
 
       <style jsx global>{`
         @font-face {
