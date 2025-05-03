@@ -30,14 +30,15 @@ export function VirtualKeypad({
 
   const shuffleKeys = useCallback(() => {
     if (shuffle) {
-      const shuffledKeys = [...keys];
+      const baseKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+      const shuffledKeys = [...baseKeys];
       for (let i = shuffledKeys.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffledKeys[i], shuffledKeys[j]] = [shuffledKeys[j], shuffledKeys[i]];
       }
       setKeys(shuffledKeys);
     }
-  }, [shuffle, keys, setKeys]);
+  }, [shuffle]);
 
   useEffect(() => {
     if (shuffle) {
