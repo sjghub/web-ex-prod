@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ChevronRight, Edit2, Pencil, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { HeaderNavBar } from "@/components/header-nav-bar";
 
 export default function MyPage() {
-  // const router = useRouter();
+  const router = useRouter();
   const emailInputRef = useRef<HTMLInputElement>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
@@ -218,7 +218,7 @@ export default function MyPage() {
                             계정 비밀번호를 변경합니다.
                           </p>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" onClick={() => router.push("/mypage/change-password")}>
                           변경하기
                         </Button>
                       </div>
