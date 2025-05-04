@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Shield, Check, ChevronRight } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Check, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -34,14 +34,6 @@ export default function VerifyIdentityPage() {
     setShowVerificationModal(false);
     setVerificationStarted(true);
   };
-
-  /**
-   * 현재 카드 해당 페이지 닫기 버튼이 없기 때문에 해당 함수 사용되지 않아 주석 처리 하였습니다.
-   * */
-  // const handleVerificationCancel = () => {
-  //   // Just close the modal without completing verification
-  //   setShowVerificationModal(false);
-  // };
 
   const handleNext = () => {
     router.push("/signup/info");
@@ -81,7 +73,7 @@ export default function VerifyIdentityPage() {
               }`}
             >
               <div className="flex justify-center mb-4">
-                <Shield
+                <ShieldCheck
                   className={`h-12 w-12 ${verificationStarted ? "text-green-500" : "text-red-500"}`}
                 />
               </div>

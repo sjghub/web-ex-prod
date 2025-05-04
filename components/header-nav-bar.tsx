@@ -79,7 +79,7 @@ export function HeaderNavBar() {
           <Button
             variant="ghost"
             className="cursor-pointer hover:bg-gray-100"
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/")}
           >
             로그아웃
           </Button>

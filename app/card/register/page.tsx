@@ -115,7 +115,7 @@ export default function CardRegisterPage() {
         : name === "expiryYear"
           ? cleaned.slice(0, 2)
           : name === "cvc"
-            ? cleaned.slice(0, 4)
+            ? cleaned.slice(0, 3)
             : name === "password"
               ? cleaned.slice(0, 2)
               : value;

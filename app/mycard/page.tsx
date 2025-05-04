@@ -8,7 +8,6 @@ import {
   Plus,
   Search,
   Star,
-  StarOff,
   Trash2,
   ChevronDown,
   Check,
@@ -269,12 +268,6 @@ export default function MyCardPage() {
                             >
                               <Star className="mr-2 h-4 w-4" />
                               대표카드 설정
-                            </DropdownMenuItem>
-                          )}
-                          {card.isDefault && (
-                            <DropdownMenuItem disabled>
-                              <StarOff className="mr-2 h-4 w-4" />
-                              대표카드 해제
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuItem

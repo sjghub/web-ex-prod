@@ -129,7 +129,7 @@ export default function UserInfoPage() {
                   placeholder="홍길동"
                   value={formData.name}
                   readOnly
-                  className="bg-gray-50 text-gray-400 cursor-not-allowed"
+                  className="bg-gray-50 text-gray-400 cursor-not-allowed !ring-0"
                 />
               </div>
 
@@ -141,7 +141,7 @@ export default function UserInfoPage() {
                   placeholder="1999.01.01"
                   value={formData.birthdate}
                   readOnly
-                  className="bg-gray-50 text-gray-400 cursor-not-allowed"
+                  className="bg-gray-50 text-gray-400 cursor-not-allowed !ring-0"
                 />
               </div>
 
@@ -153,7 +153,7 @@ export default function UserInfoPage() {
                   placeholder="010-1234-5678"
                   value={formData.phone}
                   readOnly
-                  className="bg-gray-50 text-gray-400 cursor-not-allowed"
+                  className="bg-gray-50 text-gray-400 cursor-not-allowed !ring-0"
                 />
               </div>
 

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCardScroll } from "./page-script";
 import { HeaderNavBar } from "@/components/header-nav-bar";
+import Footer from "@/components/footer-bar";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -143,30 +144,13 @@ export default function DashboardPage() {
     },
   ];
 
-  /*
-    네비게이션 바 자체에 라우팅 로직이 존재해서 위 함수는 사용하고 있지 않아 주석처리하였습니다.
-  */
-
-  // Handle tab navigation
-  // const handleTabClick = (tab: string) => {
-  //   if (tab === "myInfo") {
-  //     router.push("/mypage");
-  //   } else if (tab === "cardManagement") {
-  //     router.push("/mycard");
-  //   }
-  //   // else {
-  //   //   setActiveTab(tab);
-  //   //   router.push("/dashboard");
-  //   // }
-  // };
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 내비게이션 바 */}
       <HeaderNavBar />
 
       {/* 메인 콘텐츠 */}
-      <main className="container mx-auto px-4 py-6 space-y-6">
+      <main className="container mx-auto px-4 py-16 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* 혜택별 최고의 카드 */}
           <Card>
@@ -371,6 +355,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
