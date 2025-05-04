@@ -39,7 +39,7 @@ export default function ChangePasswordPage() {
                   className="absolute right-3 top-2.5 text-gray-400"
                   onClick={() => setShowNew(!showNew)}
                 >
-                  {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showNew ? <Eye size={18} /> : <EyeOff size={18} />}
                 </button>
               </div>
             </div>
@@ -58,7 +58,7 @@ export default function ChangePasswordPage() {
                   className="absolute right-3 top-2.5 text-gray-400"
                   onClick={() => setShowConfirm(!showConfirm)}
                 >
-                  {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showConfirm ? <Eye size={18} /> : <EyeOff size={18} />}
                 </button>
               </div>
             </div>
