@@ -61,7 +61,7 @@ export default function IdLookupResultPage() {
               <Button
                 variant="outline"
                 className="w-full border-gray-300 hover:bg-gray-100 text-black py-2 rounded"
-                onClick={() => router.push("/reset-password")}
+                onClick={() => router.push("login/find-password")}
               >
                 비밀번호 재설정
               </Button>
