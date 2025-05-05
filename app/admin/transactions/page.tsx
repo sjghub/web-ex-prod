@@ -1,0 +1,552 @@
+"use client";
+
+import { useState } from "react";
+import { MoreHorizontal, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// 거래 내역 타입 정의
+interface Transaction {
+  id: string;
+  merchantName: string;
+  category: string;
+  amount: number;
+  paymentMethod: string;
+  dateTime: string;
+  status: "승인" | "취소";
+}
+
+export default function AdminTransactionsPage() {
+  const [statusFilter, setStatusFilter] = useState("모든 상태");
+  const [sortOrder, setSortOrder] = useState("최신순");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
+  const [showTransactionDetailDialog, setShowTransactionDetailDialog] =
+    useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // 거래 내역 데이터 (예시)
+  const transactions: Transaction[] = [
+    {
+      id: "TRX-100000",
+      merchantName: "무신사",
+      category: "의류",
+      amount: 58000,
+      paymentMethod: "신용카드",
+      dateTime: "2025-04-28 오후 16:10",
+      status: "승인",
+    },
+    {
+      id: "TRX-100001",
+      merchantName: "LG전자",
+      category: "가전",
+      amount: 580000,
+      paymentMethod: "신용카드",
+      dateTime: "2025-04-27 오후 13:00",
+      status: "승인",
+    },
+    {
+      id: "TRX-100002",
+      merchantName: "쿠팡",
+      category: "생활",
+      amount: 5800,
+      paymentMethod: "신용카드",
+      dateTime: "2025-04-26 오후 12:00",
+      status: "승인",
+    },
+    {
+      id: "TRX-100003",
+      merchantName: "배달의민족",
+      category: "생활",
+      amount: 28000,
+      paymentMethod: "신용카드",
+      dateTime: "2025-04-25 오후 20:00",
+      status: "승인",
+    },
+    {
+      id: "TRX-100004",
+      merchantName: "스타벅스",
+      category: "카페",
+      amount: 8000,
+      paymentMethod: "신용카드",
+      dateTime: "2025-04-24 오전 10:00",
+      status: "승인",
+    },
+    {
+      id: "TRX-100005",
+      merchantName: "인터파크",
+      category: "문화",
+      amount: 158000,
+      paymentMethod: "신용카드",
+      dateTime: "2025-04-20 오후 16:00",
+      status: "승인",
+    },
+    {
+      id: "TRX-100006",
+      merchantName: "무신사",
+      category: "의류",
+      amount: 58000,
+      paymentMethod: "신용카드",
+      dateTime: "2025-04-01 오후 17:00",
+      status: "승인",
+    },
+  ];
+
+  // 필터링된 거래 내역 목록
+  const filteredTransactions = transactions.filter((transaction) => {
+    // 상태 필터링
+    if (statusFilter !== "모든 상태" && transaction.status !== statusFilter)
+      return false;
+
+    // 검색어 필터링
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      return (
+        transaction.merchantName.toLowerCase().includes(query) ||
+        transaction.id.toLowerCase().includes(query) ||
+        transaction.category.toLowerCase().includes(query)
+      );
+    }
+
+    return true;
+  });
+
+  // 정렬된 거래 내역 목록
+  const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+    switch (sortOrder) {
+      case "최신순":
+        return new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime();
+      case "오래된순":
+        return new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime();
+      case "금액높은순":
+        return b.amount - a.amount;
+      case "금액낮은순":
+        return a.amount - b.amount;
+      default:
+        return 0;
+    }
+  });
+
+  // 거래 상세 정보 보기
+  const handleViewTransactionDetail = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setShowTransactionDetailDialog(true);
+  };
+
+  // 금액 포맷팅 함수
+  const formatAmount = (amount: number) => {
+    return amount.toLocaleString() + "원";
+  };
+
+  // 총 페이지 수 계산
+  const totalPages = Math.ceil(sortedTransactions.length / itemsPerPage);
+
+  // 현재 페이지 데이터 슬라이싱
+  const paginatedTransactions = sortedTransactions.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
+  return (
+    <div>
+      {/* 메인 콘텐츠 */}
+      <div>
+        {/* 거래 내역 콘텐츠 */}
+        <main>
+          <h1 className="text-3xl font-bold mb-4">거래 내역</h1>
+          <h2 className="text-gray-600 mb-4">
+            모든 가맹점의 거래 내역을 확인하세요.
+          </h2>
+          <div className="mb-6">
+            {/* 통계 카드 */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <Card className="bg-white">
+                <CardContent className="px-6">
+                  <div className="flex flex-col">
+                    <span className="text-base text-gray-500 mb-2">
+                      총 거래 건수
+                    </span>
+                    <span className="text-3xl font-bold">
+                      {transactions.length.toLocaleString()}건
+                    </span>
+                    <span className="text-sm text-gray-500 mt-2">
+                      전일 대비 +12%
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white">
+                <CardContent className="px-6">
+                  <div className="flex flex-col">
+                    <span className="text-base text-gray-500 mb-2">
+                      총 거래 금액
+                    </span>
+                    <span className="text-3xl font-bold">
+                      {formatAmount(
+                        transactions.reduce((sum, t) => sum + t.amount, 0),
+                      )}
+                    </span>
+                    <span className="text-sm text-gray-500 mt-2">
+                      전일 대비 +8.5%
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white">
+                <CardContent className="px-6">
+                  <div className="flex flex-col">
+                    <span className="text-base text-gray-500 mb-2">
+                      평균 거래 금액
+                    </span>
+                    <span className="text-3xl font-bold">
+                      {formatAmount(
+                        transactions.reduce((sum, t) => sum + t.amount, 0) /
+                          transactions.length,
+                      )}
+                    </span>
+                    <span className="text-sm text-gray-500 mt-2">
+                      전일 대비 -2.3%
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white">
+                <CardContent className="px-6">
+                  <div className="flex flex-col">
+                    <span className="text-base text-gray-500 mb-2">
+                      활성 거래 비율
+                    </span>
+                    <span className="text-3xl font-bold">
+                      {Math.round(
+                        (transactions.filter((t) => t.status === "승인")
+                          .length /
+                          transactions.length) *
+                          100,
+                      )}
+                      %
+                    </span>
+                    <span className="text-sm text-gray-500 mt-2">
+                      전일 대비 동일
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* 거래 내역 목록 */}
+            <div className="bg-white rounded-md border shadow-sm">
+              <div className="p-4 border-b flex justify-between items-center">
+                <h3 className="text-lg font-medium">거래 내역 목록</h3>
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="거래 검색..."
+                      className="pl-10 w-64"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Select
+                      value={statusFilter}
+                      onValueChange={setStatusFilter}
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="상태 필터" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem
+                          value="모든 상태"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          모든 상태
+                        </SelectItem>
+                        <SelectItem
+                          value="활성"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          승인
+                        </SelectItem>
+                        <SelectItem
+                          value="취소"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          취소
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={sortOrder} onValueChange={setSortOrder}>
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="정렬 방식" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem
+                          value="최신순"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          최신순
+                        </SelectItem>
+                        <SelectItem
+                          value="오래된순"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          오래된순
+                        </SelectItem>
+                        <SelectItem
+                          value="금액높은순"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          금액높은순
+                        </SelectItem>
+                        <SelectItem
+                          value="금액낮은순"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          금액낮은순
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-left text-gray-500 border-b">
+                      <th className="px-6 py-3 font-medium">거래 ID</th>
+                      <th className="px-6 py-3 font-medium">가맹점명</th>
+                      <th className="px-6 py-3 font-medium">카테고리</th>
+                      <th className="px-6 py-3 font-medium">금액</th>
+                      <th className="px-6 py-3 font-medium">결제수단</th>
+                      <th className="px-6 py-3 font-medium">날짜/시간</th>
+                      <th className="px-6 py-3 font-medium text-center">
+                        상태
+                      </th>
+                      <th className="px-6 py-3 font-medium text-center">
+                        작업
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedTransactions.map((transaction) => (
+                      <tr
+                        key={transaction.id}
+                        className="border-b last:border-0 hover:bg-gray-50"
+                      >
+                        <td className="px-6 py-4">{transaction.id}</td>
+                        <td className="px-6 py-4">
+                          {transaction.merchantName}
+                        </td>
+                        <td className="px-6 py-4">{transaction.category}</td>
+                        <td className="px-6 py-4">
+                          {formatAmount(transaction.amount)}
+                        </td>
+                        <td className="px-6 py-4">
+                          {transaction.paymentMethod}
+                        </td>
+                        <td className="px-6 py-4">{transaction.dateTime}</td>
+                        <td className="px-6 py-4 text-center">
+                          <span
+                            className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                              transaction.status === "승인"
+                                ? "bg-green-100 text-green-800"
+                                : transaction.status === "취소"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-amber-100 text-amber-800"
+                            }`}
+                          >
+                            {transaction.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                              >
+                                <span className="sr-only">메뉴 열기</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                              align="end"
+                              className="bg-white"
+                            >
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleViewTransactionDetail(transaction)
+                                }
+                              >
+                                상세 정보
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>영수증 보기</DropdownMenuItem>
+                              <DropdownMenuItem>상태 변경</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* 페이지네이션 */}
+              <div className="p-4 flex items-center justify-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                >
+                  이전
+                </Button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <Button
+                      key={page}
+                      variant="ghost"
+                      size="sm"
+                      className={
+                        page === currentPage ? "bg-black text-white" : ""
+                      }
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </Button>
+                  ),
+                )}
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                >
+                  다음
+                </Button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      {/* 거래 상세 정보 다이얼로그 */}
+      <Dialog
+        open={showTransactionDetailDialog}
+        onOpenChange={setShowTransactionDetailDialog}
+      >
+        <DialogContent className="sm:max-w-md bg-white">
+          <DialogHeader>
+            <DialogTitle>거래 상세 정보</DialogTitle>
+          </DialogHeader>
+          {selectedTransaction && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500">거래 ID</p>
+                  <p className="font-medium">{selectedTransaction.id}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">가맹점명</p>
+                  <p className="font-medium">
+                    {selectedTransaction.merchantName}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">카테고리</p>
+                  <p className="font-medium">{selectedTransaction.category}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">금액</p>
+                  <p className="font-medium">
+                    {formatAmount(selectedTransaction.amount)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">결제수단</p>
+                  <p className="font-medium">
+                    {selectedTransaction.paymentMethod}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">날짜/시간</p>
+                  <p className="font-medium">{selectedTransaction.dateTime}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">상태</p>
+                  <p className="font-medium">
+                    <span
+                      className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                        selectedTransaction.status === "승인"
+                          ? "bg-green-100 text-green-800"
+                          : selectedTransaction.status === "취소"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-amber-100 text-amber-800"
+                      }`}
+                    >
+                      {selectedTransaction.status}
+                    </span>
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">승인번호</p>
+                  <p className="font-medium">
+                    {Math.floor(Math.random() * 1000000)
+                      .toString()
+                      .padStart(6, "0")}
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-4 flex justify-end gap-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowTransactionDetailDialog(false)}
+                  className="text-red-500"
+                >
+                  닫기
+                </Button>
+                <Button variant="ghost">영수증 보기</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

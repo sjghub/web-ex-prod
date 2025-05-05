@@ -1,0 +1,354 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ChevronRight, Plus, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// 가맹점 타입 정의
+interface Merchant {
+  id: number;
+  name: string;
+  category: string;
+  transactions: number;
+  amount: string;
+  status: "활성" | "비활성";
+}
+
+export default function AdminMerchantsPage() {
+  const router = useRouter();
+  const [statusFilter, setStatusFilter] = useState("모든 상태");
+  const [sortOrder, setSortOrder] = useState("최신순");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // 가맹점 데이터 (예시)
+  const merchants: Merchant[] = [
+    {
+      id: 1,
+      name: "스타벅스",
+      category: "카페",
+      transactions: 8456,
+      amount: "15,678 만원",
+      status: "활성",
+    },
+    {
+      id: 2,
+      name: "CGV",
+      category: "영화",
+      transactions: 6234,
+      amount: "12,456 만원",
+      status: "활성",
+    },
+    {
+      id: 3,
+      name: "배달의민족",
+      category: "배달",
+      transactions: 5678,
+      amount: "9,876 만원",
+      status: "활성",
+    },
+    {
+      id: 4,
+      name: "쿠팡",
+      category: "쇼핑",
+      transactions: 4567,
+      amount: "8,765 만원",
+      status: "활성",
+    },
+    {
+      id: 5,
+      name: "올리브영",
+      category: "쇼핑",
+      transactions: 3456,
+      amount: "6,543 만원",
+      status: "비활성",
+    },
+    {
+      id: 6,
+      name: "GS25",
+      category: "편의점",
+      transactions: 3210,
+      amount: "4,321 만원",
+      status: "활성",
+    },
+    {
+      id: 7,
+      name: "이디야커피",
+      category: "카페",
+      transactions: 2987,
+      amount: "3,654 만원",
+      status: "활성",
+    },
+  ];
+
+  // 필터링된 가맹점 목록
+  const filteredMerchants = merchants.filter((merchant) => {
+    // 상태 필터링
+    if (statusFilter === "활성" && merchant.status !== "활성") return false;
+    if (statusFilter === "비활성" && merchant.status !== "비활성") return false;
+
+    // 검색어 필터링
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      return (
+        merchant.name.toLowerCase().includes(query) ||
+        merchant.category.toLowerCase().includes(query)
+      );
+    }
+
+    return true;
+  });
+
+  // 정렬된 가맹점 목록
+  const sortedMerchants = [...filteredMerchants].sort((a, b) => {
+    switch (sortOrder) {
+      case "이름순":
+        return a.name.localeCompare(b.name);
+      case "거래건수순":
+        return b.transactions - a.transactions;
+      case "금액순":
+        return (
+          Number.parseInt(b.amount.replace(/[^0-9]/g, "")) -
+          Number.parseInt(a.amount.replace(/[^0-9]/g, ""))
+        );
+      default:
+        return a.id - b.id;
+    }
+  });
+
+  // 가맹점 상세 정보 보기
+  const handleViewMerchantDetail = (merchant: Merchant) => {
+    router.push(`/admin/merchants/${merchant.id}`);
+  };
+
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const paginatedMerchants = sortedMerchants.slice(startIdx, endIdx);
+  const totalPages = Math.ceil(sortedMerchants.length / itemsPerPage);
+
+  return (
+    <div>
+      {/* 메인 콘텐츠 */}
+      <div>
+        {/* 가맹점 관리 콘텐츠 */}
+        <main>
+          <h1 className="text-3xl font-bold mb-4">가맹점 관리</h1>
+          <h2 className="text-gray-600 mb-4">
+            등록된 가맹점 목록과 서비스 이용 현황을 확인하세요.
+          </h2>
+          <div className="mb-6">
+            {/* 통계 카드 */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <Card className="bg-white">
+                <CardContent className="px-6">
+                  <div className="flex flex-col">
+                    <span className="text-base text-gray-500 mb-2">
+                      총 가맹점
+                    </span>
+                    <span className="text-3xl font-bold">
+                      {merchants.length.toLocaleString()}개
+                    </span>
+                    <span className="text-sm text-gray-500 mt-2">
+                      전월 대비 +5%
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="bg-white">
+                <CardContent className="px-6">
+                  <div className="flex flex-col">
+                    <span className="text-base text-gray-500 mb-2">
+                      활성 가맹점
+                    </span>
+                    <span className="text-3xl font-bold">
+                      {merchants
+                        .filter((m) => m.status === "활성")
+                        .length.toLocaleString()}
+                      개
+                    </span>
+                    <span className="text-sm text-gray-500 mt-2">
+                      전체의{" "}
+                      {Math.round(
+                        (merchants.filter((m) => m.status === "활성").length /
+                          merchants.length) *
+                          100,
+                      )}
+                      %
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="bg-white">
+                <CardContent className="px-6">
+                  <div className="flex flex-col">
+                    <span className="text-base text-gray-500 mb-2">
+                      평균 거래 건수
+                    </span>
+                    <span className="text-3xl font-bold">
+                      {Math.round(
+                        merchants.reduce((sum, m) => sum + m.transactions, 0) /
+                          merchants.length,
+                      ).toLocaleString()}
+                      건
+                    </span>
+                    <span className="text-sm text-gray-500 mt-2">
+                      가맹점당 평균
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* 가맹점 목록 */}
+            <div className="bg-white rounded-md border shadow-sm">
+              <div className="p-4 border-b flex justify-between items-center">
+                <h3 className="text-lg font-medium">가맹점 목록</h3>
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="가맹점 검색..."
+                      className="pl-10 w-64"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Select
+                      value={statusFilter}
+                      onValueChange={setStatusFilter}
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="모든 상태" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="모든 상태">모든 상태</SelectItem>
+                        <SelectItem value="활성">활성</SelectItem>
+                        <SelectItem value="비활성">비활성</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={sortOrder} onValueChange={setSortOrder}>
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="정렬 방식" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="최신순">최신순</SelectItem>
+                        <SelectItem value="이름순">이름순</SelectItem>
+                        <SelectItem value="거래건수순">거래건수순</SelectItem>
+                        <SelectItem value="금액순">금액순</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button onClick={() => {}} className="bg-black text-white">
+                    <Plus className="mr-2 h-4 w-4" />
+                    가맹점 추가
+                  </Button>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full table-fixed">
+                  <thead>
+                    <tr className="text-left text-gray-500 border-b">
+                      <th className="px-6 py-3 font-medium">가맹점명</th>
+                      <th className="px-6 py-3 font-medium">카테고리</th>
+                      <th className="px-6 py-3 font-medium">거래 건수</th>
+                      <th className="px-6 py-3 font-medium">거래 금액</th>
+                      <th className="px-6 py-3 w-[120px] font-medium text-center">
+                        상태
+                      </th>
+                      <th className="px-6 py-3 font-medium text-center">
+                        상세
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedMerchants.map((merchant) => (
+                      <tr
+                        key={merchant.id}
+                        className="border-b last:border-0 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleViewMerchantDetail(merchant)}
+                      >
+                        <td className="px-6 py-4">{merchant.name}</td>
+                        <td className="px-6 py-4">{merchant.category}</td>
+                        <td className="px-6 py-4">
+                          {merchant.transactions.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4">{merchant.amount}</td>
+                        <td className="px-6 py-4 w-[120px] text-center">
+                          <span
+                            className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                              merchant.status === "활성"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {merchant.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center flex justify-center items-center">
+                          <ChevronRight className="w-8 h-8" />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* 페이지네이션 */}
+              <div className="p-4 flex items-center justify-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  이전
+                </Button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <Button
+                      key={page}
+                      variant="ghost"
+                      size="sm"
+                      className={
+                        page === currentPage ? "bg-black text-white" : ""
+                      }
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </Button>
+                  ),
+                )}
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                >
+                  다음
+                </Button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
