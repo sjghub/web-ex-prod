@@ -161,7 +161,7 @@ export default function CardRegisterPage() {
     if (validateForm()) {
       const fullCardNumber = `${cardParts.part1}${cardParts.part2}${cardParts.part3}${cardParts.part4}`;
       console.log("Submitted:", { cardNumber: fullCardNumber, ...formData });
-      router.push("/card/pay-password");
+      router.push("/card/set-pay-pincode");
     }
   };
 
