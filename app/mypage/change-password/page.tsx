@@ -20,7 +20,8 @@ export default function ChangePasswordPage() {
       <div className="w-full max-w-md space-y-4">
         <div className="text-left">
             <h1 className="text-2xl font-bold mb-1">새 비밀번호 설정</h1>
-            <p className="text-sm text-gray-500">새 비밀번호를 입력해주세요.</p>
+            <p className="text-sm text-gray-500">보안을 위해 새 비밀번호를 설정해주세요.<br />
+            이전 비밀번호는 더 이상 사용되지 않습니다.</p>
         </div>
 
         <Card className="shadow-sm border-gray-100">
