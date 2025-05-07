@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
+import { MonthSelectBox, YearSelectBox } from "@/components/ui/selectbox";
 import { VirtualKeypad } from "@/components/virtual-keypad";
 
 export default function CardRegisterPage() {
@@ -244,11 +245,12 @@ export default function CardRegisterPage() {
                   <Label>
                     만료 월 <span className="text-red-500">*</span>
                   </Label>
-                  <Input
-                    name="expiryMonth"
-                    placeholder="MM"
+                  <MonthSelectBox
                     value={formData.expiryMonth}
-                    onChange={handleOtherInput}
+                    onChange={(val) =>{
+                       setFormData((prev) => ({ ...prev, expiryMonth: val }));
+                       setShowKeypad(false);
+                    }}
                   />
                   {errors.expiryMonth && (
                     <p className="text-xs text-red-500 pl-1">
@@ -260,12 +262,13 @@ export default function CardRegisterPage() {
                   <Label>
                     만료 년 <span className="text-red-500">*</span>
                   </Label>
-                  <Input
-                    name="expiryYear"
-                    placeholder="YY"
+                  <YearSelectBox
                     value={formData.expiryYear}
-                    onChange={handleOtherInput}
-                  />
+                    onChange={(val) =>
+                      setFormData((prev) => ({ ...prev, expiryYear: val }))
+                    }
+                  >
+                  </YearSelectBox>
                   {errors.expiryYear && (
                     <p className="text-xs text-red-500 pl-1">
                       {errors.expiryYear}
