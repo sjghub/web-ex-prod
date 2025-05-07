@@ -11,6 +11,7 @@ export function HeaderNavBar() {
 
   const getActiveTab = () => {
     if (pathname.startsWith("/mycard")) return "cardManagement";
+    if (pathname.startsWith("/card-recommendation")) return "cardRecommendation";
     if (pathname.startsWith("/mypage")) return "myInfo";
     return "home";
   };
@@ -41,6 +42,17 @@ export function HeaderNavBar() {
             onClick={() => router.push("/mycard")}
           >
             카드 관리
+          </Button>
+          <Button
+            variant="ghost"
+            className={`cursor-pointer px-3 py-2 hover:bg-gray-100 ${
+              activeTab === "cardRecommendation"
+                ? "font-bold bg-gray-100 rounded-md"
+                : ""
+            }`}
+            onClick={() => router.push("/card-recommendation")}
+          >
+            카드 추천
           </Button>
           <Button
             variant="ghost"
