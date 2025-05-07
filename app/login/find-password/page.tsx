@@ -24,7 +24,7 @@ export default function PasswordFindForm() {
     e.preventDefault();
 
     if (name === "testname" && userId === "testuser") {
-      router.push("/login/find-password/verify");
+      router.push("/verify?type=find-password");
     }
   };
 

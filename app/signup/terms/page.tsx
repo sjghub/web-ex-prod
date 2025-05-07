@@ -72,7 +72,7 @@ export default function SignupTermsPage() {
   const handleNext = () => {
     if (isNextEnabled) {
       // Navigate to the next step (identity verification)
-      router.push("/signup/verify");
+      router.push("/verify?type=signup");
     }
   };
 
