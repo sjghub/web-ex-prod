@@ -23,7 +23,6 @@ export default function ChangePincodePage() {
           */
           router.push("/mypage");
         }}
-        
       />
     </div>
   );

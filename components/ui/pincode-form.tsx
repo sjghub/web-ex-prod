@@ -41,7 +41,9 @@ export default function PincodeForm({
     try {
       const res = await fetch("/api/cards");
       const data = await res.json();
-      const hasRepresent = data.some((card: { isRepresent: boolean }) => card.isRepresent);
+      const hasRepresent = data.some(
+        (card: { isRepresent: boolean }) => card.isRepresent,
+      );
       if (!hasRepresent) router.replace("/card/register");
     } catch (e) {
       console.error("대표카드 확인 실패", e);
@@ -101,10 +103,7 @@ export default function PincodeForm({
 
           <div className="flex justify-center space-x-4 mb-8">
             {Array.from({ length: maxLength }).map((_, index) => (
-              <span
-                key={index}
-                className="text-2xl font-mono w-4 text-center"
-              >
+              <span key={index} className="text-2xl font-mono w-4 text-center">
                 {index < password.length ? "•" : "_"}
               </span>
             ))}

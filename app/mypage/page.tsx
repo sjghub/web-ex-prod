@@ -218,7 +218,11 @@ export default function MyPage() {
                             계정 비밀번호를 변경합니다.
                           </p>
                         </div>
-                        <Button variant="outline" size="sm" onClick={() => router.push("/mypage/change-password")}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => router.push("/mypage/change-password")}
+                        >
                           변경하기
                         </Button>
                       </div>
@@ -232,7 +236,13 @@ export default function MyPage() {
                             결제 시 사용하는 6자리 비밀번호를 변경합니다.
                           </p>
                         </div>
-                        <Button variant="outline" size="sm" onClick={() => router.push("/mypage/verify-pay-pincode")}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            router.push("/mypage/verify-pay-pincode")
+                          }
+                        >
                           변경하기
                         </Button>
                       </div>
