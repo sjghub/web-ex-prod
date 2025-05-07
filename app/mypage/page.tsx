@@ -11,6 +11,14 @@ import { Label } from "@/components/ui/label";
 import { ToggleSwitch } from "@/components/ui/toggle-switch";
 import { Separator } from "@/components/ui/separator";
 import { HeaderNavBar } from "@/components/header-nav-bar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function MyPage() {
   const router = useRouter();
@@ -43,6 +51,8 @@ export default function MyPage() {
     marketing: false,
     security: true,
   });
+
+  const [showDialog, setShowDialog] = useState(false);
 
   const handleNotificationChange = (key: keyof typeof notifications) => {
     setNotifications({
@@ -137,6 +147,10 @@ export default function MyPage() {
                           onClick={() => {
                             if (emailEditable) {
                               console.log("이메일 저장:", formData.email);
+                              setShowDialog(true);
+                              setTimeout(() => {
+                                setShowDialog(false);
+                              }, 1000);
                             } else {
                               setTimeout(
                                 () => emailInputRef.current?.focus(),
@@ -173,6 +187,10 @@ export default function MyPage() {
                           onClick={() => {
                             if (addressEditable) {
                               console.log("주소 저장:", formData.address);
+                              setShowDialog(true);
+                              setTimeout(() => {
+                                setShowDialog(false);
+                              }, 1000);
                             } else {
                               setTimeout(
                                 () => addressInputRef.current?.focus(),
@@ -370,6 +388,16 @@ export default function MyPage() {
           </div>
         </div>
       </main>
+      {/* 프로필 수정 확인 다이얼로그 */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="bg-white" showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>프로필 수정 완료</DialogTitle>
+            <DialogDescription>프로필 수정이 완료되었습니다.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter></DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

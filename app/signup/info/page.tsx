@@ -16,6 +16,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function UserInfoPage() {
   const router = useRouter();
@@ -40,6 +48,7 @@ export default function UserInfoPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showDialog, setShowDialog] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -91,7 +100,10 @@ export default function UserInfoPage() {
 
     if (validateForm()) {
       console.log("Form submitted:", formData);
-      router.push("/login");
+      setShowDialog(true);
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
     }
   };
 
@@ -254,6 +266,15 @@ export default function UserInfoPage() {
             </form>
           </CardContent>
         </Card>
+        <Dialog open={showDialog} onOpenChange={setShowDialog}>
+          <DialogContent className="bg-white" showCloseButton={false}>
+            <DialogHeader>
+              <DialogTitle>회원가입 완료</DialogTitle>
+              <DialogDescription>회원가입이 완료되었습니다.</DialogDescription>
+            </DialogHeader>
+            <DialogFooter></DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
