@@ -2,14 +2,12 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { ArrowLeft, KeyRound, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, KeyRound, ArrowLeft } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -18,6 +16,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
 export default function LoginPage() {
@@ -109,14 +109,14 @@ export default function LoginPage() {
             <Separator />
             <div className="flex justify-center space-x-4 text-sm text-gray-500">
               <Link
-                href="/find-id"
+                href="/find-id/verify"
                 className="hover:text-black hover:underline flex items-center"
               >
                 아이디 찾기
               </Link>
               <span>|</span>
               <Link
-                href="/find-password"
+                href="login/find-password"
                 className="hover:text-black hover:underline flex items-center"
               >
                 비밀번호 찾기
