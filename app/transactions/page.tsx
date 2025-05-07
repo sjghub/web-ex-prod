@@ -2,18 +2,12 @@
 
 import { useState } from "react";
 // import { useRouter } from "next/navigation";
-import { ChevronDown, CreditCard, Filter, Search, Check } from "lucide-react";
+import { CreditCard, Filter, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { HeaderNavBar } from "@/components/header-nav-bar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -418,40 +412,43 @@ export default function TransactionsPage() {
                 </PopoverContent>
               </Popover>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-1"
+              <Select
+                value={sortOption}
+                onValueChange={(value: SortOptionType) => {
+                  setSortOption(value);
+                  setCurrentPage(1);
+                }}
+              >
+                <SelectTrigger className="w-[140px] cursor-pointer hover:bg-gray-100">
+                  <SelectValue placeholder="정렬 방식" />
+                </SelectTrigger>
+                <SelectContent className="bg-white">
+                  <SelectItem
+                    value="recent"
+                    className="hover:bg-gray-100 cursor-pointer"
                   >
-                    정렬
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-white">
-                  {[
-                    { label: "최신순", value: "recent" },
-                    { label: "오래된순", value: "oldest" },
-                    { label: "금액 높은순", value: "amount-high" },
-                    { label: "금액 낮은순", value: "amount-low" },
-                  ].map(({ label, value }) => (
-                    <DropdownMenuItem
-                      key={value}
-                      onClick={() => {
-                        setSortOption(value as SortOptionType);
-                        setCurrentPage(1);
-                      }}
-                      className="flex justify-between cursor-pointer"
-                    >
-                      {label}
-                      {sortOption === value && (
-                        <Check className="h-4 w-4 text-primary" />
-                      )}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    최신순
+                  </SelectItem>
+                  <SelectItem
+                    value="oldest"
+                    className="hover:bg-gray-100 cursor-pointer"
+                  >
+                    오래된순
+                  </SelectItem>
+                  <SelectItem
+                    value="amount-high"
+                    className="hover:bg-gray-100 cursor-pointer"
+                  >
+                    금액 높은순
+                  </SelectItem>
+                  <SelectItem
+                    value="amount-low"
+                    className="hover:bg-gray-100 cursor-pointer"
+                  >
+                    금액 낮은순
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

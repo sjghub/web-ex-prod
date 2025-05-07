@@ -277,7 +277,7 @@ export default function AdminTransactionsPage() {
                       value={statusFilter}
                       onValueChange={setStatusFilter}
                     >
-                      <SelectTrigger className="w-[140px]">
+                      <SelectTrigger className="w-[140px] cursor-pointer hover:bg-gray-100">
                         <SelectValue placeholder="상태 필터" />
                       </SelectTrigger>
                       <SelectContent className="bg-white">
@@ -303,7 +303,7 @@ export default function AdminTransactionsPage() {
                     </Select>
 
                     <Select value={sortOrder} onValueChange={setSortOrder}>
-                      <SelectTrigger className="w-[140px]">
+                      <SelectTrigger className="w-[140px] cursor-pointer hover:bg-gray-100">
                         <SelectValue placeholder="정렬 방식" />
                       </SelectTrigger>
                       <SelectContent className="bg-white">
@@ -392,7 +392,7 @@ export default function AdminTransactionsPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 w-8 p-0"
+                                className="h-8 w-8 p-0 hover:bg-gray-100 cursor-pointer"
                               >
                                 <span className="sr-only">메뉴 열기</span>
                                 <MoreHorizontal className="h-4 w-4" />
@@ -406,11 +406,16 @@ export default function AdminTransactionsPage() {
                                 onClick={() =>
                                   handleViewTransactionDetail(transaction)
                                 }
+                                className="hover:bg-gray-100 cursor-pointer"
                               >
                                 상세 정보
                               </DropdownMenuItem>
-                              <DropdownMenuItem>영수증 보기</DropdownMenuItem>
-                              <DropdownMenuItem>상태 변경</DropdownMenuItem>
+                              <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer">
+                                영수증 보기
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer">
+                                상태 변경
+                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </td>
