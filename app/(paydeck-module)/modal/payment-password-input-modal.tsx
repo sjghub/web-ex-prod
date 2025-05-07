@@ -1,18 +1,26 @@
 "use client";
 
-
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RefreshCw, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Dialog, DialogContent, Description,DialogTitle } from "@radix-ui/react-dialog";
+import {
+  Dialog,
+  DialogContent,
+  Description,
+  DialogTitle,
+} from "@radix-ui/react-dialog";
 import Image from "next/image";
 interface PaymentPasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
   onBack: () => void;
 }
-export default function PaymentPasswordModal({ isOpen, onClose, onBack }: PaymentPasswordModalProps) {
+export default function PaymentPasswordModal({
+  isOpen,
+  onClose,
+  onBack,
+}: PaymentPasswordModalProps) {
   const [shuffledKeys, setShuffledKeys] = useState<number[]>([]);
   const router = useRouter();
   const PIN_LENGTH = 6;
@@ -49,7 +57,6 @@ export default function PaymentPasswordModal({ isOpen, onClose, onBack }: Paymen
   };
   // Handle form submission
   const handleComplete = () => {
-
     // if 비밀번호가 일치하면
     // 다음 결제 모듈로
     // else (1/N) 비밀번호가 일치 하지 않습니다.
@@ -58,7 +65,6 @@ export default function PaymentPasswordModal({ isOpen, onClose, onBack }: Paymen
 
     // 예시 URL
     router.push("/card/change-represent-card");
-
   };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -95,7 +101,9 @@ export default function PaymentPasswordModal({ isOpen, onClose, onBack }: Paymen
               height={24}
               className={"mb-4"}
             />
-            <Description className="text-sm font-semibold">카드의정석 오하CHECK</Description>
+            <Description className="text-sm font-semibold">
+              카드의정석 오하CHECK
+            </Description>
             <span className="text-xs text-gray-500 mb-4">
               **** **** **** 1234
             </span>
@@ -126,7 +134,7 @@ export default function PaymentPasswordModal({ isOpen, onClose, onBack }: Paymen
             ))}
             <button
               className="h-14 flex items-center justify-center text-xl font-medium active:bg-gray-100 cursor-pointer"
-              onClick={()=>{
+              onClick={() => {
                 shuffleKeypad();
                 setPassword("");
               }}
@@ -169,4 +177,4 @@ export default function PaymentPasswordModal({ isOpen, onClose, onBack }: Paymen
       </DialogContent>
     </Dialog>
   );
-};
+}

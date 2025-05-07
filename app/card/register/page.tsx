@@ -247,9 +247,9 @@ export default function CardRegisterPage() {
                   </Label>
                   <MonthSelectBox
                     value={formData.expiryMonth}
-                    onChange={(val) =>{
-                       setFormData((prev) => ({ ...prev, expiryMonth: val }));
-                       setShowKeypad(false);
+                    onChange={(val) => {
+                      setFormData((prev) => ({ ...prev, expiryMonth: val }));
+                      setShowKeypad(false);
                     }}
                   />
                   {errors.expiryMonth && (
@@ -267,8 +267,7 @@ export default function CardRegisterPage() {
                     onChange={(val) =>
                       setFormData((prev) => ({ ...prev, expiryYear: val }))
                     }
-                  >
-                  </YearSelectBox>
+                  ></YearSelectBox>
                   {errors.expiryYear && (
                     <p className="text-xs text-red-500 pl-1">
                       {errors.expiryYear}

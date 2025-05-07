@@ -265,10 +265,7 @@ export default function MerchantDetailPage() {
             </div>
 
             {/* 탭 네비게이션 */}
-            <Tabs
-              defaultValue="거래 내역"
-              className="w-full"
-            >
+            <Tabs defaultValue="거래 내역" className="w-full">
               <TabsList>
                 <TabsTrigger
                   value="거래 내역"
@@ -341,7 +338,9 @@ export default function MerchantDetailPage() {
                   <CardContent className="p-0">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                       <div>
-                        <p className="text-base text-gray-500">사업자 등록번호</p>
+                        <p className="text-base text-gray-500">
+                          사업자 등록번호
+                        </p>
                         <p className="font-medium">123-45-67890</p>
                       </div>
                       <div>
