@@ -4,16 +4,9 @@ import type React from "react";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -109,29 +102,16 @@ export default function UserInfoPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4">
-      <div className="w-full max-w-md">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => router.push("/signup/verify")}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          돌아가기
-        </Button>
+      <div className="w-full max-w-md space-y-4">
+        <div className="text-left">
+          <h1 className="text-2xl font-bold mb-1">회원가입</h1>
+          <p className="text-sm text-gray-500">
+            페이득 서비스 이용을 위한 계정을 만들어보세요.
+          </p>
+        </div>
 
         <Card className="border-gray-100 shadow-sm">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle
-              className="text-3xl font-bold"
-              style={{ fontFamily: "SBAggroB" }}
-            >
-              회원가입
-            </CardTitle>
-            <CardDescription className="text-gray-600">
-              페이득 서비스 이용을 위한 계정을 만들어보세요.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="py-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">이름</Label>

@@ -1,16 +1,9 @@
 "use client";
 
-import { ArrowLeft, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
-
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function IdLookupResultPage() {
   const router = useRouter();
@@ -18,28 +11,14 @@ export default function IdLookupResultPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 ">
-      <div className="w-full max-w-md">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => router.push("/")}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          돌아가기
-        </Button>
-
+      <div className="w-full max-w-md space-y-4">
+        <div className="text-left">
+          <h1 className="text-2xl font-bold mb-1">아이디 조회 결과</h1>
+          <p className="text-sm text-gray-500">
+            입증 정보와 일치하는 아이디예요.
+          </p>
+        </div>
         <Card className="border-gray-100 shadow-sm">
-          <CardHeader className="space-y-1">
-            <CardTitle
-              className="text-2xl font-bold"
-              style={{ fontFamily: "SBAggroB" }}
-            >
-              아이디 조회 결과
-            </CardTitle>
-            <CardDescription className="text-gray-600">
-              입증 정보와 일치하는 아이디예요
-            </CardDescription>
-          </CardHeader>
           <CardContent className="space-y-6">
             <div className="bg-gray-100 p-4 rounded-md flex items-center justify-between mb-10">
               <div>

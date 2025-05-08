@@ -1,17 +1,9 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -30,26 +22,14 @@ export default function PasswordFindForm() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-white">
-      <div className="w-full max-w-md">
-        <Button variant="ghost" className="mb-4" onClick={() => router.back()}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          돌아가기
-        </Button>
-
+      <div className="w-full max-w-md space-y-4">
+        <div className="text-left">
+          <h1 className="text-2xl font-bold mb-1">비밀번호 찾기</h1>
+          <p className="text-sm text-gray-500">이름과 아이디를 입력해주세요.</p>
+        </div>
         <Card className="border border-gray-100 shadow-sm">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle
-              className="text-3xl font-bold"
-              style={{ fontFamily: "SBAggroB" }}
-            >
-              비밀번호 찾기
-            </CardTitle>
-            <CardDescription className="text-gray-600">
-              이름과 아이디를 입력해주세요.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <CardContent className="py-4">
+            <form onSubmit={handleSubmit} className="space-y-10">
               <div className="space-y-2">
                 <Label htmlFor="name" className="font-medium">
                   이름
