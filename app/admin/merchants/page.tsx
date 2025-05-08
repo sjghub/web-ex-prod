@@ -229,25 +229,60 @@ export default function AdminMerchantsPage() {
                       value={statusFilter}
                       onValueChange={setStatusFilter}
                     >
-                      <SelectTrigger className="w-[140px]">
+                      <SelectTrigger className="w-[140px] cursor-pointer hover:bg-gray-100">
                         <SelectValue placeholder="모든 상태" />
                       </SelectTrigger>
                       <SelectContent className="bg-white">
-                        <SelectItem value="모든 상태">모든 상태</SelectItem>
-                        <SelectItem value="활성">활성</SelectItem>
-                        <SelectItem value="비활성">비활성</SelectItem>
+                        <SelectItem
+                          value="모든 상태"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          모든 상태
+                        </SelectItem>
+                        <SelectItem
+                          value="활성"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          활성
+                        </SelectItem>
+                        <SelectItem
+                          value="비활성"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          비활성
+                        </SelectItem>
                       </SelectContent>
                     </Select>
 
                     <Select value={sortOrder} onValueChange={setSortOrder}>
-                      <SelectTrigger className="w-[140px]">
+                      <SelectTrigger className="w-[140px] cursor-pointer hover:bg-gray-100">
                         <SelectValue placeholder="정렬 방식" />
                       </SelectTrigger>
                       <SelectContent className="bg-white">
-                        <SelectItem value="최신순">최신순</SelectItem>
-                        <SelectItem value="이름순">이름순</SelectItem>
-                        <SelectItem value="거래건수순">거래건수순</SelectItem>
-                        <SelectItem value="금액순">금액순</SelectItem>
+                        <SelectItem
+                          value="최신순"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          최신순
+                        </SelectItem>
+                        <SelectItem
+                          value="이름순"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          이름순
+                        </SelectItem>
+                        <SelectItem
+                          value="거래건수순"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          거래건수순
+                        </SelectItem>
+                        <SelectItem
+                          value="금액순"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          금액순
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

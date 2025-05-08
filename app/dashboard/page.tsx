@@ -300,10 +300,10 @@ export default function DashboardPage() {
 
                   {/* 카드 등록 */}
                   <div
-                    className="relative flex-none w-[150px] md:w-[180px] aspect-[1/1.58] border-2 border-dashed rounded-lg flex items-center justify-center"
+                    className="relative flex-none w-[150px] md:w-[180px] aspect-[1/1.58] border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer"
                     onClick={() => router.push("/card/register")}
                   >
-                    <div className="flex flex-col items-center text-gray-500 pointer-events-none">
+                    <div className="flex flex-col items-center text-gray-500">
                       <Plus className="h-6 w-6 mb-1" />
                       <span className="text-sm">카드 등록하기</span>
                     </div>

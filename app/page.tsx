@@ -10,6 +10,7 @@ import {
   Gift,
   Shield,
   ArrowRight,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -289,15 +290,11 @@ export default function Home() {
                 </p>
                 <div className="flex mt-3">
                   {[...Array(5)].map((_, i) => (
-                    <svg
+                    <Star
                       key={i}
                       className="w-5 h-5 text-yellow-400"
                       fill="currentColor"
-                      viewBox="0 0 20 20"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                    </svg>
+                    />
                   ))}
                 </div>
               </div>
@@ -316,15 +313,11 @@ export default function Home() {
                 </p>
                 <div className="flex mt-3">
                   {[...Array(5)].map((_, i) => (
-                    <svg
+                    <Star
                       key={i}
                       className="w-5 h-5 text-yellow-400"
                       fill="currentColor"
-                      viewBox="0 0 20 20"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                    </svg>
+                    />
                   ))}
                 </div>
               </div>
@@ -343,24 +336,13 @@ export default function Home() {
                 </p>
                 <div className="flex mt-3">
                   {[...Array(4)].map((_, i) => (
-                    <svg
+                    <Star
                       key={i}
                       className="w-5 h-5 text-yellow-400"
                       fill="currentColor"
-                      viewBox="0 0 20 20"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                    </svg>
+                    />
                   ))}
-                  <svg
-                    className="w-5 h-5 text-gray-300"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                  </svg>
+                  <Star className="w-5 h-5 text-gray-300" fill="currentColor" />
                 </div>
               </div>
             </div>
@@ -385,25 +367,25 @@ export default function Home() {
             <TabsList className="flex justify-between items-center gap-4 mb-8 bg-gray-100 p-1 rounded-lg w-full h-10">
               <TabsTrigger
                 value="cafe"
-                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium focus-visible:ring-0 transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500 cursor-pointer"
+                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500 cursor-pointer"
               >
                 카페
               </TabsTrigger>
               <TabsTrigger
                 value="shopping"
-                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium focus-visible:ring-0 transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500 cursor-pointer"
+                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500 cursor-pointer"
               >
                 쇼핑
               </TabsTrigger>
               <TabsTrigger
                 value="dining"
-                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium focus-visible:ring-0 transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500 cursor-pointer"
+                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500 cursor-pointer"
               >
                 식당
               </TabsTrigger>
               <TabsTrigger
                 value="transport"
-                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium focus-visible:ring-0 transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500 cursor-pointer"
+                className="h-full flex items-center justify-center flex-1 rounded-md text-sm font-medium transition-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-500 cursor-pointer"
               >
                 교통
               </TabsTrigger>
@@ -647,29 +629,6 @@ export default function Home() {
 
       {/* 푸터 */}
       <Footer />
-
-      <style jsx global>{`
-        @font-face {
-          font-family: "SBAggroB";
-          src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff")
-            format("woff");
-          font-weight: normal;
-          font-style: normal;
-        }
-
-        .animate-on-scroll {
-          opacity: 0;
-          transform: translateY(20px);
-          transition:
-            opacity 0.6s ease-out,
-            transform 0.6s ease-out;
-        }
-
-        .animate-fade-in {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      `}</style>
     </>
   );
 }
