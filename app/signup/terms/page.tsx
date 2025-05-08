@@ -2,16 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ChevronDown } from "lucide-react";
-
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function SignupTermsPage() {
@@ -77,30 +70,16 @@ export default function SignupTermsPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4">
-      <div className="w-full max-w-md">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => router.push("/")}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          돌아가기
-        </Button>
-
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-4">
+        <div className="text-left">
+          <h1 className="text-2xl font-bold mb-1">약관 동의</h1>
+          <p className="text-sm text-gray-500">
+            서비스 이용을 위한 약관에 동의해주세요.
+          </p>
+        </div>
         <Card className="border-gray-100 shadow-sm">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle
-              className="text-3xl font-bold"
-              style={{ fontFamily: "SBAggroB" }}
-            >
-              약관 동의
-            </CardTitle>
-            <CardDescription className="text-gray-600">
-              서비스 이용을 위한 약관에 동의해주세요.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="py-4 space-y-4">
             {/* Agree to all */}
             <div className="rounded-md bg-blue-100 p-4">
               <div className="flex items-center space-x-2">

@@ -1,16 +1,7 @@
-"use client";
-
-import { ArrowLeft, Check, ChevronRight, ShieldCheck } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Check, ChevronRight, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -21,12 +12,9 @@ import { KeyRound } from "lucide-react";
 
 export default function VerifyIdentityPage({
   onSuccess,
-  backLink,
 }: {
   onSuccess: () => void;
-  backLink: string;
 }) {
-  const router = useRouter();
   const [verificationStarted, setVerificationStarted] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
@@ -46,30 +34,16 @@ export default function VerifyIdentityPage({
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4">
-      <div className="w-full max-w-md">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => router.push(backLink)}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          돌아가기
-        </Button>
-
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-4">
+        <div className="text-left">
+          <h1 className="text-2xl font-bold mb-1">본인인증</h1>
+          <p className="text-sm text-gray-500">
+            안전한 서비스 이용을 위해 본인인증을 진행해주세요.
+          </p>
+        </div>
         <Card className="border-gray-100 shadow-sm">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle
-              className="text-3xl font-bold"
-              style={{ fontFamily: "SBAggroB" }}
-            >
-              본인인증
-            </CardTitle>
-            <CardDescription className="text-gray-600">
-              안전한 서비스 이용을 위해 본인인증을 진행해주세요.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="py-4 space-y-4">
             {/* Info Box */}
             <div
               className={`border-2 rounded-md p-6 text-center ${
@@ -137,22 +111,21 @@ export default function VerifyIdentityPage({
       >
         <DialogContent className="sm:max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle className="text-center">간편 본인인증</DialogTitle>
+            <DialogTitle className="text-center mb-6">
+              인증 방법 선택
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium mb-2">인증 방법 선택</h3>
-              <div className="flex flex-col gap-3">
-                <button
-                  className="border rounded-md p-3 text-center hover:bg-gray-50 transition-colors"
-                  onClick={handleVerificationComplete}
-                >
-                  <div className="flex justify-center mb-2">
-                    <KeyRound className="text-blue-500 w-6 h-6" />
-                  </div>
-                  <span className="text-sm">간편 본인인증</span>
-                </button>
-              </div>
+            <div className="flex flex-col">
+              <button
+                className="border rounded-md p-3 text-center hover:bg-gray-50 transition-colors"
+                onClick={handleVerificationComplete}
+              >
+                <div className="flex justify-center mb-2">
+                  <KeyRound className="text-blue-500 w-6 h-6" />
+                </div>
+                <span className="text-sm">간편 본인인증</span>
+              </button>
             </div>
           </div>
         </DialogContent>

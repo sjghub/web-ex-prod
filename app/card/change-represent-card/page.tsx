@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ArrowLeft, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -22,39 +22,26 @@ export default function ChangeRepresentCardPage() {
   };
 
   const handleChange = () => {
-    console.log("Change default card: Yes");
     router.push("/mycard");
   };
 
   const handleNoChange = () => {
-    console.log("Change default card: No");
     router.push("/mycard");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => router.push("/card/register/payment-password")}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          돌아가기
-        </Button>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-4">
+        <div className="text-left">
+          <h1 className="text-2xl font-bold mb-1">대표카드를 설정할까요?</h1>
+          <p className="text-sm text-gray-500">
+            대표카드는 혜택 비교 시 우선적으로 선택되는 카드입니다.
+          </p>
+        </div>
 
-        <Card className="shadow-sm border-gray-100">
-          <CardContent className="pt-6 pb-6">
-            <div className="text-center mb-6">
-              <h1 className="text-2xl font-bold mb-2">
-                대표카드를 변경할까요?
-              </h1>
-              <p className="text-gray-500">
-                대표카드는 혜택 비교 시 우선적으로 선택되는 카드입니다.
-              </p>
-            </div>
-
-            <div className="flex items-center justify-center mb-6">
+        <Card className="shadow-sm border-gray-100 pb-0">
+          <CardContent className="pb-6">
+            <div className="flex items-center justify-center">
               <div className="text-center">
                 <p className="text-sm text-gray-500">현재 대표 카드</p>
                 <div className="relative w-[192px] h-[128px] rounded-md overflow-hidden">

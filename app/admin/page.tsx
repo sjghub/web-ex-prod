@@ -152,7 +152,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50">
       <h1 className="text-3xl font-bold mb-4">관리자 대시보드</h1>
       <h2 className="text-gray-600 mb-4">
         가맹점 서비스 이용 현황을 확인하세요.
@@ -267,6 +267,6 @@ export default function AdminDashboard() {
           </Card>
         </div>
       </div>
-    </>
+    </div>
   );
 }

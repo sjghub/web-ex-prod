@@ -16,16 +16,19 @@ export default function ChangePasswordPage() {
   const [showConfirm, setShowConfirm] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-4">
         <div className="text-left">
-            <h1 className="text-2xl font-bold mb-1">새 비밀번호 설정</h1>
-            <p className="text-sm text-gray-500">보안을 위해 새 비밀번호를 설정해주세요.<br />
-            이전 비밀번호는 더 이상 사용되지 않습니다.</p>
+          <h1 className="text-2xl font-bold mb-1">새 비밀번호 설정</h1>
+          <p className="text-sm text-gray-500">
+            보안을 위해 새 비밀번호를 설정해주세요.
+            <br />
+            이전 비밀번호는 더 이상 사용되지 않습니다.
+          </p>
         </div>
 
-        <Card className="shadow-sm border-gray-100">
-            <CardContent className="py-6 space-y-10">
+        <Card>
+          <CardContent className="py-6 space-y-10">
             <div className="space-y-2">
               <Label>새로운 비밀번호</Label>
               <div className="relative">
@@ -64,7 +67,10 @@ export default function ChangePasswordPage() {
               </div>
             </div>
 
-            <Button className="w-full bg-black text-white text-sm py-3 mt-10" onClick={() => router.push("/mypage")}>
+            <Button
+              className="w-full bg-black text-white text-sm py-3 mt-10"
+              onClick={() => router.push("/mypage")}
+            >
               비밀번호 변경
             </Button>
           </CardContent>

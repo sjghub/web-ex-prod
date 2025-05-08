@@ -8,19 +8,6 @@ export default function VerifyPage() {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
 
-  const getBackLink = () => {
-    switch (type) {
-      case "signup":
-        return "/signup/terms";
-      case "find-id":
-        return "/login";
-      case "find-password":
-        return "/login/find-password";
-      default:
-        return "/";
-    }
-  };
-
   const getSuccessPath = () => {
     switch (type) {
       case "signup":
@@ -36,7 +23,6 @@ export default function VerifyPage() {
 
   return (
     <VerifyIdentity
-      backLink={getBackLink()}
       onSuccess={() => router.push(getSuccessPath())}
     />
   );

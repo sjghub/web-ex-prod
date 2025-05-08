@@ -145,7 +145,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* 헤더 내비게이션 바 */}
       <HeaderNavBar />
 

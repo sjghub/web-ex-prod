@@ -7,13 +7,12 @@ export default function ChangePincodePage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <PincodeForm
         title="간편 결제 비밀번호 설정"
         description="간편 결제 시 사용할 비밀번호를 입력해주세요."
         onBack={() => router.push("/card/register")}
         onComplete={async (pincode) => {
-
           //대표카드가 있는지 여부를 확인하고 분기별로 router를 다르게 설정(백엔드 API연동시)
           /*
           try {
@@ -37,9 +36,8 @@ export default function ChangePincodePage() {
             console.error("대표카드 확인 또는 저장 실패", err);
           }
           */
-         router.push("/card/set-represent-card");
+          router.push("/card/set-represent-card");
         }}
-        
         validateHasPincode={true}
       />
     </div>
