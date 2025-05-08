@@ -12,7 +12,7 @@ export default function ChangePincodePage() {
         title="간편 결제 비밀번호 설정"
         description="간편 결제 시 사용할 비밀번호를 입력해주세요."
         onBack={() => router.push("/card/register")}
-        onComplete={async (pincode) => {
+        onComplete={async () => {
           //대표카드가 있는지 여부를 확인하고 분기별로 router를 다르게 설정(백엔드 API연동시)
           /*
           try {
