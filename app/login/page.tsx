@@ -28,7 +28,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white px-4 pt-20">
+    <div className="min-h-screen px-4 pt-20">
       <div className="flex justify-center mb-10">
         <Image
           src="/logo_transparent.png"

@@ -145,7 +145,7 @@ export default function MyCardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* 상단 네비게이션 바 */}
       <HeaderNavBar />
 

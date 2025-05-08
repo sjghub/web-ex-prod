@@ -21,7 +21,7 @@ export default function PasswordFindForm() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-white">
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-4">
         <div className="text-left">
           <h1 className="text-2xl font-bold mb-1">비밀번호 찾기</h1>
