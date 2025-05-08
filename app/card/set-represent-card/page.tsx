@@ -1,18 +1,15 @@
 "use client";
 
-// import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check } from "lucide-react";
 
 export default function SetRepresentCardPage() {
   const router = useRouter();
-  // const [checked, setChecked] = useState(true);
 
-  // Mock data for the newly registered card
+  // Mock data
   const newCard = {
     id: "new-card-123",
     name: "현대카드 M Black",
@@ -20,40 +17,23 @@ export default function SetRepresentCardPage() {
   };
 
   const handleYes = () => {
-    // Here you would typically send the data to your backend
-    console.log("Set as default card: Yes");
+    // 대표 카드 설정 처리
     router.push("/mycard");
   };
 
   const handleNo = () => {
-    // Here you would typically send the data to your backend
-    console.log("Set as default card: No");
     router.push("/mycard");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => router.push("/card/register/payment-password")}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          돌아가기
-        </Button>
-
-        <Card className="shadow-sm border-gray-100">
-          <CardContent className="pt-6 pb-6">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold mb-2">
-                대표카드로 설정할까요?
-              </h1>
-              <p className="text-gray-500">
-                대표카드는 혜택 비교 시 우선적으로 선택되는 카드입니다.
-              </p>
-            </div>
-
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-4">
+        <div className="text-left">
+          <h1 className="text-2xl font-bold mb-1">대표카드로 설정할까요?</h1>
+          <p className="text-sm text-gray-500">대표카드는 혜택 비교 시 우선적으로 선택되는 카드입니다.</p>
+        </div>
+        <Card className="shadow-sm border-gray-100 p-0">
+          <CardContent className="pb-6">
             <div className="flex justify-center">
               <div className="relative w-90 h-60 rounded-md overflow-hidden">
                 <Image

@@ -1,9 +1,7 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -167,24 +165,14 @@ export default function CardRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <Button
-          variant="ghost"
-          className="cursor-pointer mb-4"
-          onClick={() => router.back()}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          돌아가기
-        </Button>
-
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-4">
+        <div className="text-left">
+          <h1 className="text-2xl font-bold mb-1">카드 등록</h1>
+          <p className="text-sm text-gray-500">카드 정보를 입력해주세요.</p>
+        </div>
         <Card className="shadow-sm border-gray-100">
-          <CardContent className="pt-6">
-            <div className="text-center mb-6">
-              <h1 className="text-2xl font-bold mb-2">카드 등록</h1>
-              <p className="text-gray-500">카드 정보를 입력해주세요.</p>
-            </div>
-
+          <CardContent className="py-4">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label>
@@ -249,6 +237,7 @@ export default function CardRegisterPage() {
                     value={formData.expiryMonth}
                     onChange={(val) => {
                       setFormData((prev) => ({ ...prev, expiryMonth: val }));
+                      setErrors((prev) => ({ ...prev, expiryMonth: "" }));
                       setShowKeypad(false);
                     }}
                   />
@@ -264,10 +253,11 @@ export default function CardRegisterPage() {
                   </Label>
                   <YearSelectBox
                     value={formData.expiryYear}
-                    onChange={(val) =>
-                      setFormData((prev) => ({ ...prev, expiryYear: val }))
-                    }
-                  ></YearSelectBox>
+                    onChange={(val) => {
+                      setFormData((prev) => ({ ...prev, expiryYear: val }));
+                      setErrors((prev) => ({ ...prev, expiryYear: "" }));
+                    }}
+                  />
                   {errors.expiryYear && (
                     <p className="text-xs text-red-500 pl-1">
                       {errors.expiryYear}
@@ -308,7 +298,7 @@ export default function CardRegisterPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-black hover:bg-gray-800 text-white"
+                className="w-full bg-black hover:bg-gray-800 text-white mt-6"
               >
                 다음
               </Button>

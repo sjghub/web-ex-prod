@@ -145,7 +145,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* 헤더 내비게이션 바 */}
       <HeaderNavBar />
 
@@ -157,7 +157,7 @@ export default function DashboardPage() {
             <CardContent className="px-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-3xl font-bold">혜택별 최고의 카드</h2>
-                <Button variant="ghost" size="sm" className="text-gray-500">
+                <Button variant="ghost" size="sm" className="text-gray-500" onClick={() => router.push("/card-recommendation")}>
                   더보기
                 </Button>
               </div>
@@ -300,10 +300,10 @@ export default function DashboardPage() {
 
                   {/* 카드 등록 */}
                   <div
-                    className="relative flex-none w-[150px] md:w-[180px] aspect-[1/1.58] border-2 border-dashed rounded-lg flex items-center justify-center"
+                    className="relative flex-none w-[150px] md:w-[180px] aspect-[1/1.58] border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer"
                     onClick={() => router.push("/card/register")}
                   >
-                    <div className="flex flex-col items-center text-gray-500 pointer-events-none">
+                    <div className="flex flex-col items-center text-gray-500">
                       <Plus className="h-6 w-6 mb-1" />
                       <span className="text-sm">카드 등록하기</span>
                     </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, CreditCard, RefreshCw, X } from "lucide-react";
+import { CreditCard, RefreshCw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -17,7 +17,6 @@ interface PincodeFormProps {
 export default function PincodeForm({
   title,
   description,
-  onBack,
   onComplete,
   maxLength = 6,
   validateCardCondition = false,
@@ -84,10 +83,6 @@ export default function PincodeForm({
 
   return (
     <div className="w-full max-w-md">
-      <Button variant="ghost" className="mb-4" onClick={onBack}>
-        <ArrowLeft className="h-4 w-4" /> 돌아가기
-      </Button>
-
       <Card className="shadow-sm border-gray-100">
         <CardContent className="pt-6 pb-8">
           <div className="flex justify-center mb-6">

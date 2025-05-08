@@ -16,7 +16,7 @@ export default function ChangePasswordPage() {
   const [showConfirm, setShowConfirm] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-4">
         <div className="text-left">
           <h1 className="text-2xl font-bold mb-1">새 비밀번호 설정</h1>

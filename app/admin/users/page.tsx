@@ -326,7 +326,7 @@ export default function AdminUsersPage() {
                     />
                   </div>
                   <Select value={sortOrder} onValueChange={setSortOrder}>
-                    <SelectTrigger className="w-[180px] cursor-pointer">
+                    <SelectTrigger className="w-[180px] cursor-pointer hover:bg-gray-100">
                       <SelectValue placeholder="정렬 방식" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
@@ -402,7 +402,7 @@ export default function AdminUsersPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 w-8 p-0"
+                                className="h-8 w-8 p-0 hover:bg-gray-100 cursor-pointer"
                               >
                                 <span className="sr-only">메뉴 열기</span>
                                 <MoreHorizontal className="h-4 w-4" />
@@ -425,7 +425,7 @@ export default function AdminUsersPage() {
                                 상태 변경
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                className="text-red-500 hover:bg-gray-100 cursor-pointer"
+                                className="text-red-500 hover:bg-red-50 cursor-pointer"
                                 onClick={() => handleDeleteUser(user)}
                               >
                                 사용자 삭제

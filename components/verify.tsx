@@ -1,32 +1,20 @@
-"use client";
-
-import { ArrowLeft, Check, ChevronRight, ShieldCheck } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Check, ChevronRight, ShieldCheck } from "lucide-react";
 import { useState } from "react";
-
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { KeyRound } from "lucide-react";
 
 export default function VerifyIdentityPage({
   onSuccess,
-  backLink,
 }: {
   onSuccess: () => void;
-  backLink: string;
 }) {
-  const router = useRouter();
   const [verificationStarted, setVerificationStarted] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
@@ -41,43 +29,21 @@ export default function VerifyIdentityPage({
     setVerificationStarted(true);
   };
 
-  /**
-   * 현재 카드 해당 페이지 닫기 버튼이 없기 때문에 해당 함수 사용되지 않아 주석 처리 하였습니다.
-   * */
-  // const handleVerificationCancel = () => {
-  //   // Just close the modal without completing verification
-  //   setShowVerificationModal(false);
-  // };
-
   const handleNext = () => {
     onSuccess();
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4">
-      <div className="w-full max-w-md">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => router.push(backLink)}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          돌아가기
-        </Button>
-
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-4">
+        <div className="text-left">
+          <h1 className="text-2xl font-bold mb-1">본인인증</h1>
+          <p className="text-sm text-gray-500">
+            안전한 서비스 이용을 위해 본인인증을 진행해주세요.
+          </p>
+        </div>
         <Card className="border-gray-100 shadow-sm">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle
-              className="text-3xl font-bold"
-              style={{ fontFamily: "SBAggroB" }}
-            >
-              본인인증
-            </CardTitle>
-            <CardDescription className="text-gray-600">
-              안전한 서비스 이용을 위해 본인인증을 진행해주세요.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="py-4 space-y-4">
             {/* Info Box */}
             <div
               className={`border-2 rounded-md p-6 text-center ${
@@ -145,35 +111,21 @@ export default function VerifyIdentityPage({
       >
         <DialogContent className="sm:max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle className="text-center">본인인증</DialogTitle>
+            <DialogTitle className="text-center mb-6">
+              인증 방법 선택
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium mb-2">인증 방법 선택</h3>
-              <div className="flex flex-col gap-3">
-                <button
-                  className="border rounded-md p-3 text-center hover:bg-gray-50 transition-colors"
-                  onClick={handleVerificationComplete}
-                >
-                  <div className="flex justify-center mb-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-blue-500"
-                    >
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                  </div>
-                  <span className="text-sm">휴대폰 인증</span>
-                </button>
-              </div>
+            <div className="flex flex-col">
+              <button
+                className="border rounded-md p-3 text-center hover:bg-gray-50 transition-colors"
+                onClick={handleVerificationComplete}
+              >
+                <div className="flex justify-center mb-2">
+                  <KeyRound className="text-blue-500 w-6 h-6" />
+                </div>
+                <span className="text-sm">간편 본인인증</span>
+              </button>
             </div>
           </div>
         </DialogContent>

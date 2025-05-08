@@ -9,8 +9,8 @@ import {
   Search,
   Star,
   Trash2,
-  ChevronDown,
   Check,
+  MoreVertical,
 } from "lucide-react";
 import { HeaderNavBar } from "@/components/header-nav-bar";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface CardItem {
   id: number;
@@ -145,7 +152,7 @@ export default function MyCardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* 상단 네비게이션 바 */}
       <HeaderNavBar />
 
@@ -169,31 +176,25 @@ export default function MyCardPage() {
               />
             </div>
             <div className="flex items-center gap-4">
-              <DropdownMenu modal={false}>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="hover:bg-gray-100 !ring-0 cursor-pointer"
-                  >
-                    {sortOption === "default" ? "기본 정렬" : "이름순 정렬"}
-                    <ChevronDown className="ml-2 w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-white">
-                  <DropdownMenuItem
-                    onClick={() => setSortOption("default")}
+              <Select value={sortOption} onValueChange={setSortOption}>
+                <SelectTrigger className="w-[140px] cursor-pointer hover:bg-gray-100">
+                  <SelectValue placeholder="정렬 방식" />
+                </SelectTrigger>
+                <SelectContent className="bg-white">
+                  <SelectItem
+                    value="default"
                     className="hover:bg-gray-100 cursor-pointer"
                   >
                     기본 정렬
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setSortOption("name")}
+                  </SelectItem>
+                  <SelectItem
+                    value="name"
                     className="hover:bg-gray-100 cursor-pointer"
                   >
                     이름순 정렬
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
               <Button
                 onClick={() => router.push("/card/register")}
                 className="bg-black text-white cursor-pointer"
@@ -235,29 +236,16 @@ export default function MyCardPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0"
+                            className="h-8 w-8 p-0 hover:bg-gray-100 cursor-pointer"
                           >
                             <span className="sr-only">메뉴 열기</span>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <circle cx="12" cy="12" r="1" />
-                              <circle cx="12" cy="5" r="1" />
-                              <circle cx="12" cy="19" r="1" />
-                            </svg>
+                            <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="bg-white">
                           <DropdownMenuItem
                             onClick={() => handleViewCardDetail(card)}
+                            className="hover:bg-gray-100 cursor-pointer"
                           >
                             <CreditCard className="mr-2 h-4 w-4" />
                             상세 정보
@@ -265,13 +253,14 @@ export default function MyCardPage() {
                           {!card.isDefault && (
                             <DropdownMenuItem
                               onClick={() => handleSetDefaultCard(card)}
+                              className="hover:bg-gray-100 cursor-pointer"
                             >
                               <Star className="mr-2 h-4 w-4" />
                               대표카드 설정
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuItem
-                            className="text-red-500"
+                            className="text-red-500 hover:bg-red-50 cursor-pointer"
                             onClick={() => {
                               setSelectedCard(card);
                               setShowDeleteDialog(true);
