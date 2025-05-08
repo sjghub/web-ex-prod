@@ -157,7 +157,7 @@ export default function DashboardPage() {
             <CardContent className="px-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-3xl font-bold">혜택별 최고의 카드</h2>
-                <Button variant="ghost" size="sm" className="text-gray-500">
+                <Button variant="ghost" size="sm" className="text-gray-500" onClick={() => router.push("/card-recommendation")}>
                   더보기
                 </Button>
               </div>
