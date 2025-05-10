@@ -2,17 +2,9 @@ import { Check, ChevronRight, ShieldCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { KeyRound } from "lucide-react";
 import Script from "next/script";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+const API_BASE_URL = "http://localhost:8080";
 
 interface IamportResponse {
   success: boolean;
@@ -57,7 +49,6 @@ export default function VerifyIdentityPage({
   onSuccess: () => void;
 }) {
   const [verificationStarted, setVerificationStarted] = useState(false);
-  const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isIamportReady, setIsIamportReady] = useState(false);
 
@@ -67,10 +58,6 @@ export default function VerifyIdentityPage({
       setIsIamportReady(true);
     }
   }, []);
-
-  const handleVerificationClick = () => {
-    setShowVerificationModal(true);
-  };
 
   const requestCertification = () => {
     if (!isIamportReady || !window.IMP) {
@@ -108,7 +95,6 @@ export default function VerifyIdentityPage({
 
             if (result.success) {
               setVerificationStarted(true);
-              setShowVerificationModal(false);
             } else {
               alert(result.message || "본인인증에 실패했습니다.");
             }
@@ -177,10 +163,12 @@ export default function VerifyIdentityPage({
                 className={`w-full border rounded-md p-4 flex justify-between items-center hover:bg-gray-50 transition-colors ${
                   verificationStarted ? "bg-gray-50" : ""
                 }`}
-                onClick={handleVerificationClick}
+                onClick={requestCertification}
                 disabled={verificationStarted || isLoading || !isIamportReady}
               >
-                <span className="font-medium">간편 본인인증</span>
+                <div className="flex items-center">
+                  <span className="font-medium">간편 본인인증</span>
+                </div>
                 <div className="flex items-center">
                   {verificationStarted ? (
                     <span className="text-green-600 flex items-center">
@@ -211,36 +199,6 @@ export default function VerifyIdentityPage({
             </CardContent>
           </Card>
         </div>
-
-        {/* Verification Modal */}
-        <Dialog
-          open={showVerificationModal}
-          onOpenChange={setShowVerificationModal}
-        >
-          <DialogContent className="sm:max-w-md bg-white">
-            <DialogHeader>
-              <DialogTitle className="text-center mb-6">
-                인증 방법 선택
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-6">
-              <div className="flex flex-col">
-                <button
-                  className="border rounded-md p-3 text-center hover:bg-gray-50 transition-colors"
-                  onClick={requestCertification}
-                  disabled={isLoading || !isIamportReady}
-                >
-                  <div className="flex justify-center mb-2">
-                    <KeyRound className="text-blue-500 w-6 h-6" />
-                  </div>
-                  <span className="text-sm">
-                    {isLoading ? "인증 중..." : "간편 본인인증"}
-                  </span>
-                </button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
     </>
   );
