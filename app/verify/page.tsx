@@ -21,9 +21,5 @@ export default function VerifyPage() {
     }
   };
 
-  return (
-    <VerifyIdentity
-      onSuccess={() => router.push(getSuccessPath())}
-    />
-  );
+  return <VerifyIdentity onSuccess={() => router.push(getSuccessPath())} />;
 }
