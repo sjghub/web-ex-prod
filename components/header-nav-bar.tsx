@@ -11,7 +11,8 @@ export function HeaderNavBar() {
 
   const getActiveTab = () => {
     if (pathname.startsWith("/mycard")) return "cardManagement";
-    if (pathname.startsWith("/card-recommendation")) return "cardRecommendation";
+    if (pathname.startsWith("/card-recommendation"))
+      return "cardRecommendation";
     if (pathname.startsWith("/mypage")) return "myInfo";
     return "home";
   };

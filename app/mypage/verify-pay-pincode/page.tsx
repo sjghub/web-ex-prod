@@ -14,8 +14,8 @@ export default function ChangePincodePage() {
         onBack={() => router.push("/mypage")}
         onComplete={(pincode) => {
           console.log("변경된 PIN:", pincode);
-        // 추후 검증 API 적용
-        /*
+          // 추후 검증 API 적용
+          /*
         fetch("/api/cards/verify-pincode", {
           method: "POST",
           body: JSON.stringify({ pincode: enteredPincode }),
@@ -25,7 +25,7 @@ export default function ChangePincodePage() {
             else alert("비밀번호가 일치하지 않습니다.");
           });
         */
-          
+
           router.push("/mypage/change-pay-pincode");
         }}
         validateHasPincode={true}

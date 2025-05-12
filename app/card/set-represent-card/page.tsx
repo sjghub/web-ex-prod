@@ -30,7 +30,9 @@ export default function SetRepresentCardPage() {
       <div className="w-full max-w-md space-y-4">
         <div className="text-left">
           <h1 className="text-2xl font-bold mb-1">대표카드로 설정할까요?</h1>
-          <p className="text-sm text-gray-500">대표카드는 혜택 비교 시 우선적으로 선택되는 카드입니다.</p>
+          <p className="text-sm text-gray-500">
+            대표카드는 혜택 비교 시 우선적으로 선택되는 카드입니다.
+          </p>
         </div>
         <Card className="shadow-sm border-gray-100 p-0">
           <CardContent className="pb-6">

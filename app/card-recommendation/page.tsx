@@ -231,7 +231,13 @@ export default function CardBenefitsPage() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button variant="outline" className="flex-1" onClick={() => router.push(`/card-recommendation/${card.id}`)}>
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() =>
+                        router.push(`/card-recommendation/${card.id}`)
+                      }
+                    >
                       상세 정보
                     </Button>
                     <Button className="flex-1 bg-black hover:bg-gray-800 text-white">
