@@ -54,7 +54,7 @@ export default function VerifyIdentityPage({
 
   useEffect(() => {
     if (window.IMP) {
-      const impKey = process.env.IAMPORT_IMP_KEY || "";
+      const impKey = process.env.NEXT_PUBLIC_IAMPORT_IMP_KEY || "";
       window.IMP.init(impKey);
       setIsIamportReady(true);
     }
@@ -124,7 +124,7 @@ export default function VerifyIdentityPage({
         strategy="afterInteractive"
         onLoad={() => {
           if (window.IMP) {
-            window.IMP.init(process.env.IAMPORT_IMP_KEY || "");
+            window.IMP.init(process.env.NEXT_PUBLIC_IAMPORT_IMP_KEY || "");
             setIsIamportReady(true);
           }
         }}
