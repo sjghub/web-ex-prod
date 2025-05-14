@@ -1,8 +1,17 @@
+import { useRouter } from "next/navigation";
 import { Check, ChevronRight, ShieldCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Script from "next/script";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const API_BASE_URL = "http://localhost:8080";
 
@@ -16,12 +25,13 @@ interface IamportResponse {
 interface VerificationResponse {
   success: boolean;
   message: string;
-  data?: {
+  response?: {
     certified: boolean;
     birthday: string;
     name: string;
     phone: string;
-    unique_key: string;
+    personalAuthKey: string;
+    duplicate: boolean;
   };
 }
 
@@ -51,6 +61,12 @@ export default function VerifyIdentityPage({
   const [verificationStarted, setVerificationStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isIamportReady, setIsIamportReady] = useState(false);
+  const [errorDialog, setErrorDialog] = useState({
+    show: false,
+    message: "",
+    onConfirm: () => {},
+  });
+  const router = useRouter();
 
   useEffect(() => {
     if (window.IMP) {
@@ -62,7 +78,14 @@ export default function VerifyIdentityPage({
 
   const requestCertification = () => {
     if (!isIamportReady || !window.IMP) {
-      alert("본인인증 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
+      setErrorDialog({
+        show: true,
+        message:
+          "본인인증 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.",
+        onConfirm: () => {
+          setErrorDialog({ ...errorDialog, show: false });
+        },
+      });
       return;
     }
 
@@ -94,19 +117,59 @@ export default function VerifyIdentityPage({
 
             const result = (await response.json()) as VerificationResponse;
 
-            if (result.success) {
+            if (result.success && result.response) {
+              const { name, birthday, phone, personalAuthKey } =
+                result.response;
+
+              if (result.response.duplicate) {
+                setErrorDialog({
+                  show: true,
+                  message: "이미 가입된 사용자입니다.",
+                  onConfirm: () => router.push("/"),
+                });
+                return;
+              }
+
+              const verifiedUser = {
+                name,
+                birthdate: birthday,
+                phone,
+                personalAuthKey,
+              };
+
+              sessionStorage.setItem(
+                "verifiedUser",
+                JSON.stringify(verifiedUser),
+              );
               setVerificationStarted(true);
             } else {
-              alert(result.message || "본인인증에 실패했습니다.");
+              setErrorDialog({
+                show: true,
+                message: result.message || "본인인증에 실패했습니다.",
+                onConfirm: () => {
+                  setErrorDialog({ ...errorDialog, show: false });
+                },
+              });
             }
           } catch (error) {
             console.error("인증 결과 조회 중 에러 발생:", error);
-            alert(
-              "본인인증 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
-            );
+            setErrorDialog({
+              show: true,
+              message:
+                "본인인증 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+              onConfirm: () => {
+                setErrorDialog({ ...errorDialog, show: false });
+              },
+            });
           }
         } else {
-          alert("본인인증에 실패했습니다.");
+          setErrorDialog({
+            show: true,
+            message: "본인인증에 실패했습니다.",
+            onConfirm: () => {
+              setErrorDialog({ ...errorDialog, show: false });
+            },
+          });
         }
         setIsLoading(false);
       },
@@ -139,7 +202,6 @@ export default function VerifyIdentityPage({
           </div>
           <Card className="border-gray-100 shadow-sm">
             <CardContent className="py-4 space-y-4">
-              {/* Info Box */}
               <div
                 className={`border-2 rounded-md p-6 text-center ${
                   verificationStarted
@@ -149,7 +211,9 @@ export default function VerifyIdentityPage({
               >
                 <div className="flex justify-center mb-4">
                   <ShieldCheck
-                    className={`h-12 w-12 ${verificationStarted ? "text-green-500" : "text-red-500"}`}
+                    className={`h-12 w-12 ${
+                      verificationStarted ? "text-green-500" : "text-red-500"
+                    }`}
                   />
                 </div>
                 <p className="text-gray-800 font-medium">
@@ -159,7 +223,6 @@ export default function VerifyIdentityPage({
                 </p>
               </div>
 
-              {/* Verification Button */}
               <button
                 className={`w-full border rounded-md p-4 flex justify-between items-center hover:bg-gray-50 transition-colors ${
                   verificationStarted ? "bg-gray-50" : ""
@@ -185,7 +248,6 @@ export default function VerifyIdentityPage({
                 </div>
               </button>
 
-              {/* Next Button */}
               <Button
                 className={`w-full mt-6 ${
                   verificationStarted
@@ -201,6 +263,21 @@ export default function VerifyIdentityPage({
           </Card>
         </div>
       </div>
+
+      <Dialog
+        open={errorDialog.show}
+        onOpenChange={(open) => setErrorDialog({ ...errorDialog, show: open })}
+      >
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>알림</DialogTitle>
+            <DialogDescription>{errorDialog.message}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={errorDialog.onConfirm}>확인</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

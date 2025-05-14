@@ -1,8 +1,7 @@
 "use client";
 
 import type React from "react";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,18 +20,12 @@ import {
 export default function UserInfoPage() {
   const router = useRouter();
 
-  // 인증된 사용자 정보 (예시용)
-  const verifiedUser = {
-    name: "홍길동",
-    birthdate: "1999.01.01",
-    phone: "010-1234-5678",
-  };
-
   const [formData, setFormData] = useState({
-    name: verifiedUser.name,
-    birthdate: verifiedUser.birthdate,
-    phone: verifiedUser.phone,
-    userId: "",
+    name: "",
+    birthdate: "",
+    phone: "",
+    personalAuthKey: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -42,6 +35,30 @@ export default function UserInfoPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showDialog, setShowDialog] = useState(false);
+  const [errorDialog, setErrorDialog] = useState({ show: false, message: "" });
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem("verifiedUser");
+    if (stored) {
+      const formatBirthdate = (str: string) => str.replace(/-/g, ".");
+      const formatPhone = (str: string) =>
+        str.replace(/^(\d{3})(\d{3,4})(\d{4})$/, "$1-$2-$3");
+      const verified = JSON.parse(stored);
+      setFormData((prev) => ({
+        ...prev,
+        name: verified.name,
+        birthdate: formatBirthdate(verified.birthdate),
+        phone: formatPhone(verified.phone),
+        personalAuthKey: verified.personalAuthKey,
+      }));
+    } else {
+      setErrorDialog({
+        show: true,
+        message: "본인인증을 먼저 진행해주세요.",
+      });
+      router.replace("/verify");
+    }
+  }, [router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -59,44 +76,66 @@ export default function UserInfoPage() {
     }
   };
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.userId.trim()) {
-      newErrors.userId = "아이디를 입력해주세요.";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "이메일을 입력해주세요.";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "올바른 이메일 형식이 아닙니다.";
-    }
-
-    if (!formData.password) {
-      newErrors.password = "비밀번호를 입력해주세요.";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "비밀번호는 8자 이상이어야 합니다.";
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "비밀번호 확인을 입력해주세요.";
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({}); // 기존 에러 초기화
 
-    if (validateForm()) {
-      console.log("Form submitted:", formData);
+    if (formData.password !== formData.confirmPassword) {
+      setErrors({
+        confirmPassword: "비밀번호가 일치하지 않습니다.",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          birthdate: formData.birthdate,
+          phone: formData.phone,
+          personalAuthKey: formData.personalAuthKey,
+        }),
+      });
+
+      const resBody = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          setErrorDialog({
+            show: true,
+            message: resBody.message || "이미 사용 중인 아이디입니다.",
+          });
+        } else if (response.status === 422 && resBody?.response?.errors) {
+          const fieldErrors: Record<string, string> = {};
+          resBody.response.errors.forEach(
+            (err: { field: string; message: string }) => {
+              fieldErrors[err.field] = err.message;
+            },
+          );
+          setErrors(fieldErrors);
+        } else {
+          throw new Error("회원가입 실패");
+        }
+        return;
+      }
+
       setShowDialog(true);
       setTimeout(() => {
         router.push("/login");
       }, 2000);
+    } catch (err) {
+      console.error(err);
+      setErrorDialog({
+        show: true,
+        message: "회원가입 중 오류가 발생했습니다.",
+      });
     }
   };
 
@@ -118,7 +157,6 @@ export default function UserInfoPage() {
                 <Input
                   id="name"
                   name="name"
-                  placeholder="홍길동"
                   value={formData.name}
                   readOnly
                   className="bg-gray-50 text-gray-400 cursor-not-allowed !ring-0"
@@ -130,7 +168,6 @@ export default function UserInfoPage() {
                 <Input
                   id="birthdate"
                   name="birthdate"
-                  placeholder="1999.01.01"
                   value={formData.birthdate}
                   readOnly
                   className="bg-gray-50 text-gray-400 cursor-not-allowed !ring-0"
@@ -142,7 +179,6 @@ export default function UserInfoPage() {
                 <Input
                   id="phone"
                   name="phone"
-                  placeholder="010-1234-5678"
                   value={formData.phone}
                   readOnly
                   className="bg-gray-50 text-gray-400 cursor-not-allowed !ring-0"
@@ -150,18 +186,18 @@ export default function UserInfoPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="userId">
+                <Label htmlFor="username">
                   아이디 <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  id="userId"
-                  name="userId"
+                  id="username"
+                  name="username" // userId → username
                   placeholder="아이디를 입력하세요"
-                  value={formData.userId}
+                  value={formData.username}
                   onChange={handleChange}
                 />
-                {errors.userId && (
-                  <p className="text-sm text-red-500">{errors.userId}</p>
+                {errors.username && (
+                  <p className="text-sm text-red-500">{errors.username}</p>
                 )}
               </div>
 
@@ -191,7 +227,7 @@ export default function UserInfoPage() {
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="비밀번호를 입력하세요"
+                    placeholder="영문 대소문자, 숫자, 특수문자를 포함한 8자 이상"
                     value={formData.password}
                     onChange={handleChange}
                   />
@@ -246,13 +282,28 @@ export default function UserInfoPage() {
             </form>
           </CardContent>
         </Card>
+
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogContent className="bg-white" showCloseButton={false}>
             <DialogHeader>
               <DialogTitle>회원가입 완료</DialogTitle>
               <DialogDescription>회원가입이 완료되었습니다.</DialogDescription>
             </DialogHeader>
-            <DialogFooter></DialogFooter>
+            <DialogFooter />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog
+          open={errorDialog.show}
+          onOpenChange={(open) =>
+            setErrorDialog({ ...errorDialog, show: open })
+          }
+        >
+          <DialogContent className="bg-white">
+            <DialogHeader>
+              <DialogTitle>알림</DialogTitle>
+              <DialogDescription>{errorDialog.message}</DialogDescription>
+            </DialogHeader>
           </DialogContent>
         </Dialog>
       </div>
