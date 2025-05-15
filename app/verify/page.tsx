@@ -13,9 +13,9 @@ export default function VerifyPage() {
       case "signup":
         return "/signup/info";
       case "find-id":
-        return "/find-id";
+        return "/idInquiry";
       case "find-password":
-        return "/login/find-password/change-password";
+        return "/pwInquiry/reset";
       default:
         return "/";
     }

@@ -17,12 +17,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+const API_URL = "http://localhost:8080/api/auth/signup";
+const VERIFIED_KEY = "verifiedUser";
+const DEFAULT_ERROR_MSG = "회원가입 중 오류가 발생했습니다.";
+
 export default function UserInfoPage() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
     name: "",
-    birthdate: "",
+    birthday: "",
     phone: "",
     personalAuthKey: "",
     username: "",
@@ -34,108 +38,106 @@ export default function UserInfoPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errorMessage, setErrorMessage] = useState("");
   const [showDialog, setShowDialog] = useState(false);
-  const [errorDialog, setErrorDialog] = useState({ show: false, message: "" });
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("verifiedUser");
-    if (stored) {
-      const formatBirthdate = (str: string) => str.replace(/-/g, ".");
-      const formatPhone = (str: string) =>
-        str.replace(/^(\d{3})(\d{3,4})(\d{4})$/, "$1-$2-$3");
+    const stored = sessionStorage.getItem(VERIFIED_KEY);
+    if (!stored) {
+      setErrorMessage("본인인증을 먼저 진행해주세요.");
+      router.replace("/verify");
+      return;
+    }
+
+    try {
       const verified = JSON.parse(stored);
+      const formattedBirthdate = verified.birthday.replace(/-/g, ".");
+      const formattedPhone = verified.phone.replace(
+        /^(\d{3})(\d{3,4})(\d{4})$/,
+        "$1-$2-$3",
+      );
+
       setFormData((prev) => ({
         ...prev,
         name: verified.name,
-        birthdate: formatBirthdate(verified.birthdate),
-        phone: formatPhone(verified.phone),
+        birthday: formattedBirthdate,
+        phone: formattedPhone,
         personalAuthKey: verified.personalAuthKey,
       }));
-    } else {
-      setErrorDialog({
-        show: true,
-        message: "본인인증을 먼저 진행해주세요.",
-      });
+    } catch (err) {
+      console.error("본인인증 세션 파싱 실패:", err);
+      setErrorMessage("본인인증 정보가 올바르지 않습니다.");
       router.replace("/verify");
     }
   }, [router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
     if (errors[name]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
+      const newErrors = { ...errors };
+      delete newErrors[name];
+      setErrors(newErrors);
     }
+  };
+
+  const handleErrorResponse = async (res: Response) => {
+    const data = await res.json();
+    if (res.status === 409) {
+      setErrorMessage(data.message || "이미 사용 중인 아이디입니다.");
+      return;
+    }
+
+    if (res.status === 422 && data.response?.errors) {
+      const fieldErrors: Record<string, string> = {};
+      data.response.errors.forEach(
+        (err: { field: string; message: string }) => {
+          fieldErrors[err.field] = err.message;
+        },
+      );
+      setErrors(fieldErrors);
+      return;
+    }
+
+    throw new Error();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors({}); // 기존 에러 초기화
+    setErrors({});
+    setErrorMessage("");
 
     if (formData.password !== formData.confirmPassword) {
-      setErrors({
-        confirmPassword: "비밀번호가 일치하지 않습니다.",
-      });
+      setErrors({ confirmPassword: "비밀번호가 일치하지 않습니다." });
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/signup", {
+      const response = await fetch(API_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: formData.username,
           email: formData.email,
           password: formData.password,
           name: formData.name,
-          birthdate: formData.birthdate,
+          birthdate: formData.birthday,
           phone: formData.phone,
           personalAuthKey: formData.personalAuthKey,
         }),
       });
 
-      const resBody = await response.json();
-
       if (!response.ok) {
-        if (response.status === 409) {
-          setErrorDialog({
-            show: true,
-            message: resBody.message || "이미 사용 중인 아이디입니다.",
-          });
-        } else if (response.status === 422 && resBody?.response?.errors) {
-          const fieldErrors: Record<string, string> = {};
-          resBody.response.errors.forEach(
-            (err: { field: string; message: string }) => {
-              fieldErrors[err.field] = err.message;
-            },
-          );
-          setErrors(fieldErrors);
-        } else {
-          throw new Error("회원가입 실패");
-        }
+        await handleErrorResponse(response);
         return;
       }
 
       setShowDialog(true);
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
+      setTimeout(() => router.push("/login"), 2000);
     } catch (err) {
       console.error(err);
-      setErrorDialog({
-        show: true,
-        message: "회원가입 중 오류가 발생했습니다.",
-      });
+      setErrorMessage(DEFAULT_ERROR_MSG);
     }
   };
 
@@ -168,7 +170,7 @@ export default function UserInfoPage() {
                 <Input
                   id="birthdate"
                   name="birthdate"
-                  value={formData.birthdate}
+                  value={formData.birthday}
                   readOnly
                   className="bg-gray-50 text-gray-400 cursor-not-allowed !ring-0"
                 />
@@ -289,21 +291,18 @@ export default function UserInfoPage() {
               <DialogTitle>회원가입 완료</DialogTitle>
               <DialogDescription>회원가입이 완료되었습니다.</DialogDescription>
             </DialogHeader>
-            <DialogFooter />
           </DialogContent>
         </Dialog>
 
-        <Dialog
-          open={errorDialog.show}
-          onOpenChange={(open) =>
-            setErrorDialog({ ...errorDialog, show: open })
-          }
-        >
+        <Dialog open={!!errorMessage} onOpenChange={() => setErrorMessage("")}>
           <DialogContent className="bg-white">
             <DialogHeader>
               <DialogTitle>알림</DialogTitle>
-              <DialogDescription>{errorDialog.message}</DialogDescription>
+              <DialogDescription>{errorMessage}</DialogDescription>
             </DialogHeader>
+            <DialogFooter>
+              <Button onClick={() => setErrorMessage("")}>확인</Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>

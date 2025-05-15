@@ -132,7 +132,6 @@ export default function LoginPage() {
                         setUserId(e.target.value);
                         setError("");
                       }}
-                      required
                     />
                   </div>
                 </div>
@@ -152,7 +151,6 @@ export default function LoginPage() {
                         setPassword(e.target.value);
                         setError("");
                       }}
-                      required
                     />
                   </div>
                   {error && (
@@ -181,7 +179,7 @@ export default function LoginPage() {
                 </Link>
                 <span>|</span>
                 <Link
-                  href="login/find-password"
+                  href="/pwInquiry"
                   className="hover:text-black hover:underline flex items-center"
                 >
                   비밀번호 찾기
