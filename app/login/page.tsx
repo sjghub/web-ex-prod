@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { KeyRound, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -46,8 +46,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const from = searchParams.get("from") || "/dashboard";
 
   const handleErrorResponse = async (res: Response) => {
     if (res.status === 401) {
@@ -83,11 +81,11 @@ export default function LoginPage() {
         throw new Error(result.message || DEFAULT_ERROR_MSG);
       }
 
-      const { accessToken, refreshToken } = result.response;
+      const { accessToken, refreshToken, redirectUrl } = result.response;
       document.cookie = `accessToken=${accessToken}; path=/`;
       document.cookie = `refreshToken=${refreshToken}; path=/`;
 
-      router.push(from);
+      router.push(redirectUrl);
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : DEFAULT_ERROR_MSG);
     } finally {
