@@ -61,6 +61,59 @@ export default function MyPage() {
     });
   };
 
+  const getCookie = (name: string): string | null => {
+    const matches = document.cookie.match(
+      new RegExp("(^| )" + name + "=([^;]+)"),
+    );
+    return matches ? decodeURIComponent(matches[2]) : null;
+  };
+
+  const handleSaveEmail = async () => {
+    const token = getCookie("accessToken");
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/user/profile/email",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ email: formData.email }),
+        },
+      );
+
+      if (!response.ok) throw new Error("이메일 저장 실패");
+
+      console.log("✅ 이메일 변경 성공");
+    } catch (error) {
+      console.error("❌ 이메일 저장 에러:", error);
+    }
+  };
+
+  const handleSaveAddress = async () => {
+    const token = getCookie("accessToken");
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/user/profile/address",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ address: formData.address }),
+        },
+      );
+
+      if (!response.ok) throw new Error("주소 저장 실패");
+
+      console.log("✅ 주소 변경 성공");
+    } catch (error) {
+      console.error("❌ 주소 저장 에러:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <HeaderNavBar />
@@ -146,6 +199,7 @@ export default function MyPage() {
                           className="h-5 w-5"
                           onClick={() => {
                             if (emailEditable) {
+                              handleSaveEmail();
                               console.log("이메일 저장:", formData.email);
                               setShowDialog(true);
                               setTimeout(() => {
@@ -186,6 +240,7 @@ export default function MyPage() {
                           className="h-5 w-5"
                           onClick={() => {
                             if (addressEditable) {
+                              handleSaveAddress();
                               console.log("주소 저장:", formData.address);
                               setShowDialog(true);
                               setTimeout(() => {
