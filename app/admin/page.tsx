@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useState } from "react";
 
 // 차트 컴포넌트
 const TransactionChart = () => {
@@ -99,6 +100,49 @@ const TransactionChart = () => {
 };
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    merchantCount: 0,
+    transactionCount: 0,
+    totalTransactionAmount: 0,
+    averageTransactionAmount: 0,
+    activeMerchantCount: 0,
+    recent24hTransactionIncrease: 0,
+    transactionAmountChangePercent: 0,
+  });
+
+  const getCookie = (name: string): string | null => {
+    const matches = document.cookie.match(
+      new RegExp("(^| )" + name + "=([^;]+)"),
+    );
+    return matches ? decodeURIComponent(matches[2]) : null;
+  };
+
+  const fetchMerchantStats = async () => {
+    const token = getCookie("accessToken");
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/admin/merchants/stats",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) throw new Error("가맹점 통계 조회 실패");
+
+      const data = await response.json();
+      setStats(data.response); // 바로 상태 저장
+    } catch (error) {
+      console.error("❌ 가맹점 통계 에러:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMerchantStats();
+  }, []);
   // 가맹점 데이터
   const merchants = [
     {
@@ -164,9 +208,11 @@ export default function AdminDashboard() {
             <CardContent className="px-6">
               <div className="flex flex-col">
                 <span className="text-base text-gray-500 mb-2">총 가맹점</span>
-                <span className="text-3xl font-bold">1,248</span>
+                <span className="text-3xl font-bold">
+                  {stats.merchantCount.toLocaleString()}
+                </span>
                 <span className="text-sm text-gray-500 mt-2">
-                  활성 가맹점: 1,156
+                  활성 가맹점: {stats.activeMerchantCount.toLocaleString()}
                 </span>
               </div>
             </CardContent>
@@ -178,9 +224,12 @@ export default function AdminDashboard() {
                 <span className="text-base text-gray-500 mb-2">
                   총 거래 건수
                 </span>
-                <span className="text-3xl font-bold">28,456</span>
+                <span className="text-3xl font-bold">
+                  {stats.totalTransactionAmount.toLocaleString()}
+                </span>
                 <span className="text-sm text-gray-500 mt-2">
-                  최근 24시간: +342
+                  최근 24시간: +
+                  {stats.recent24hTransactionIncrease.toLocaleString()}
                 </span>
               </div>
             </CardContent>
@@ -192,9 +241,14 @@ export default function AdminDashboard() {
                 <span className="text-base text-gray-500 mb-2">
                   총 거래 금액
                 </span>
-                <span className="text-3xl font-bold">45,892만원</span>
+                <span className="text-3xl font-bold">
+                  {stats.totalTransactionAmount.toLocaleString()}원
+                </span>
                 <span className="text-sm text-green-500 mt-2">
-                  전월 대비: +8.5%
+                  전월 대비:{" "}
+                  {stats.transactionAmountChangePercent >= 0
+                    ? `+${stats.transactionAmountChangePercent.toFixed(1)}%`
+                    : `${stats.transactionAmountChangePercent.toFixed(1)}%`}
                 </span>
               </div>
             </CardContent>
@@ -206,7 +260,9 @@ export default function AdminDashboard() {
                 <span className="text-base text-gray-500 mb-2">
                   평균 거래 금액
                 </span>
-                <span className="text-3xl font-bold">16,127원</span>
+                <span className="text-3xl font-bold">
+                  {stats.averageTransactionAmount.toLocaleString()}원
+                </span>
                 <span className="text-sm text-gray-500 mt-2">
                   거래당 평균 금액
                 </span>
