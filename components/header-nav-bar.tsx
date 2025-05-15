@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import Image from "next/image";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Logo from "./logo";
 
 export function HeaderNavBar() {
   const router = useRouter();
@@ -67,17 +67,10 @@ export function HeaderNavBar() {
         </div>
 
         {/* 가운데 로고 */}
-        <div className="text-center">
-          <Image
-            src="/logo.png"
-            alt="페이득 로고"
-            width={100}
-            height={32}
-            className="cursor-pointer inline-block"
-            onClick={() => router.push("/dashboard")}
-            priority
-          />
-        </div>
+        <Logo
+          className="text-center text-3xl"
+          onClick={() => router.push("/dashboard")}
+        />
 
         {/* 오른쪽 영역 */}
         <div className="absolute right-0 flex items-center space-x-4">

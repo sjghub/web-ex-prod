@@ -130,7 +130,7 @@ export default function Home() {
           </div>
           <div className="md:w-1/2">
             <h2
-              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
+              className="text-3xl md:text-4xl lg:text-5xl mb-4"
               style={{ fontFamily: "SBAggroB" }}
             >
               사용하는 카드를 한번에 간편하게
@@ -165,7 +165,7 @@ export default function Home() {
         <section className="container mx-auto px-4 py-16 md:py-24 flex flex-col md:flex-row items-center justify-between animate-on-scroll">
           <div className="md:w-1/2 order-2 md:order-1">
             <h2
-              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
+              className="text-3xl md:text-4xl lg:text-5xl mb-4"
               style={{ fontFamily: "SBAggroB" }}
             >
               결제 버튼 클릭 한 번에 자동으로 쌓아지는 혜택
