@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Edit2, Pencil, Save } from "lucide-react";
@@ -24,15 +24,15 @@ export default function MyPage() {
   const router = useRouter();
   const emailInputRef = useRef<HTMLInputElement>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
-
-  const user = {
-    name: "홍길동",
-    email: "gildong@naver.com",
-    birthDate: "1999.01.01",
-    phone: "010-1234-5678",
-    address: "서울특별시 마포구 월드컵북로 434 상암 IT타워",
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    birthDate: "",
+    phone: "",
+    address: "",
+    //TODO: 사용자 프로필을 받을지 안 받을지 미정, 우선 기본값으로 지정, DB자체에 저장을 안함함
     profileImage: "/profile-image.png",
-  };
+  });
 
   const [emailEditable, setEmailEditable] = useState(false);
   const [addressEditable, setAddressEditable] = useState(false);
@@ -68,49 +68,68 @@ export default function MyPage() {
     return matches ? decodeURIComponent(matches[2]) : null;
   };
 
-  const handleSaveEmail = async () => {
+  useEffect(() => {
     const token = getCookie("accessToken");
+    if (!token) return;
+
+    fetch("http://localhost:8080/api/user/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const { name, email, birth, phoneNumber, address } = data.response;
+        setUser({
+          name,
+          email,
+          birthDate: birth,
+          phone: phoneNumber,
+          address,
+          profileImage: "/profile-image.png",
+        });
+        setFormData((prev) => ({
+          ...prev,
+          email,
+          address,
+        }));
+      })
+      .catch((err) => {
+        console.error("유저 정보 불러오기 실패:", err);
+      });
+  }, []);
+
+  const handleSaveProfile = async (
+    field: "email" | "address",
+    value: string,
+  ) => {
+    const token = getCookie("accessToken");
+    const fieldNameKor = field === "email" ? "이메일" : "주소";
     try {
       const response = await fetch(
-        "http://localhost:8080/api/user/profile/email",
+        `http://localhost:8080/api/user/profile/${field}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ email: formData.email }),
+          body: JSON.stringify({ [field]: value }),
         },
       );
 
-      if (!response.ok) throw new Error("이메일 저장 실패");
+      if (!response.ok) {
+        throw new Error(`${fieldNameKor} 저장 실패`);
+      }
 
-      console.log("✅ 이메일 변경 성공");
+      if (field === "email") {
+        setUser((prev) => ({ ...prev, email: value }));
+        console.log(` ${fieldNameKor} 변경 성공`, formData.email);
+      } else {
+        console.log(` ${fieldNameKor} 변경 성공`, formData.address);
+      }
     } catch (error) {
-      console.error("❌ 이메일 저장 에러:", error);
-    }
-  };
-
-  const handleSaveAddress = async () => {
-    const token = getCookie("accessToken");
-    try {
-      const response = await fetch(
-        "http://localhost:8080/api/user/profile/address",
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ address: formData.address }),
-        },
-      );
-
-      if (!response.ok) throw new Error("주소 저장 실패");
-
-      console.log("✅ 주소 변경 성공");
-    } catch (error) {
-      console.error("❌ 주소 저장 에러:", error);
+      console.error(` ${fieldNameKor} 저장 에러:`, error);
     }
   };
 
@@ -199,8 +218,7 @@ export default function MyPage() {
                           className="h-5 w-5"
                           onClick={() => {
                             if (emailEditable) {
-                              handleSaveEmail();
-                              console.log("이메일 저장:", formData.email);
+                              handleSaveProfile("email", formData.email);
                               setShowDialog(true);
                               setTimeout(() => {
                                 setShowDialog(false);
@@ -240,8 +258,7 @@ export default function MyPage() {
                           className="h-5 w-5"
                           onClick={() => {
                             if (addressEditable) {
-                              handleSaveAddress();
-                              console.log("주소 저장:", formData.address);
+                              handleSaveProfile("address", formData.address);
                               setShowDialog(true);
                               setTimeout(() => {
                                 setShowDialog(false);
