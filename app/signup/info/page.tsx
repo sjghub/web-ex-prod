@@ -103,7 +103,7 @@ export default function UserInfoPage() {
     throw new Error();
   };
 
-  const handleSignin = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
     setErrorMessage("");
@@ -153,7 +153,7 @@ export default function UserInfoPage() {
 
         <Card className="border-gray-100 shadow-sm">
           <CardContent className="py-4">
-            <form onSubmit={handleSignin} className="space-y-4">
+            <form onSubmit={handleSignup} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">이름</Label>
                 <Input
