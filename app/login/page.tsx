@@ -59,7 +59,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMessage("");
@@ -106,7 +106,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           <Card className="border-gray-100 shadow-sm py-10">
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-10">
+              <form onSubmit={handleLogin} className="space-y-10">
                 <div className="space-y-2">
                   <Label htmlFor="userId">아이디</Label>
                   <div className="relative">
