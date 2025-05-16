@@ -33,7 +33,6 @@ interface CommonResponse<T> {
 
 interface TokenResponse {
   accessToken: string;
-  refreshToken: string;
   redirectUrl: string;
 }
 
@@ -81,9 +80,8 @@ export default function LoginPage() {
         throw new Error(result.message || DEFAULT_ERROR_MSG);
       }
 
-      const { accessToken, refreshToken, redirectUrl } = result.response;
+      const { accessToken, redirectUrl } = result.response;
       document.cookie = `accessToken=${accessToken}; path=/`;
-      document.cookie = `refreshToken=${refreshToken}; path=/`;
 
       router.push(redirectUrl);
     } catch (err) {
