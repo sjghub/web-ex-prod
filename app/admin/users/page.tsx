@@ -226,7 +226,8 @@ export default function AdminUsersPage() {
                     {stats.activeUsers.toLocaleString()}명
                   </span>
                   <span className="text-sm text-gray-500 mt-2">
-                    전체의 {(stats.activeUsers / stats.totalUsers) * 100}%
+                    전체의{" "}
+                    {((stats.activeUsers / stats.totalUsers) * 100).toFixed(1)}%
                   </span>
                 </div>
               </CardContent>
@@ -242,7 +243,11 @@ export default function AdminUsersPage() {
                     {stats.inactiveUsers.toLocaleString()}명
                   </span>
                   <span className="text-sm text-gray-500 mt-2">
-                    전체의 {(stats.inactiveUsers / stats.totalUsers) * 100}%
+                    전체의{" "}
+                    {((stats.inactiveUsers / stats.totalUsers) * 100).toFixed(
+                      1,
+                    )}
+                    %
                   </span>
                 </div>
               </CardContent>
@@ -440,7 +445,7 @@ export default function AdminUsersPage() {
                 key="prev"
                 variant="ghost"
                 size="sm"
-                disabled={currentPage === 1}
+                disabled={currentPage === 1 || totalPages === 0}
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               >
                 이전
@@ -460,7 +465,7 @@ export default function AdminUsersPage() {
                 key="next"
                 variant="ghost"
                 size="sm"
-                disabled={currentPage === totalPages}
+                disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() =>
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
