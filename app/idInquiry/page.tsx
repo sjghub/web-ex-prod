@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { fetchWithoutAuth } from "@/lib/api-fetch";
 
-const API_URL = "http://localhost:8080/api/auth/find-id";
 const STORAGE_KEY = "verifiedUser";
 const DEFAULT_ERROR_MESSAGE = "아이디를 불러오는 데 실패했습니다.";
 const REDIRECT_ON_FAIL = "/login";
@@ -35,34 +35,55 @@ export default function IdLookupResultPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
-  const handleErrorResponse = (response: Response, data?: ErrorResponse) => {
-    setErrorMessage(data?.message || DEFAULT_ERROR_MESSAGE);
-    setShouldRedirect(true);
-  };
+  const handleErrorResponse = useCallback(
+    (response: Response, data?: ErrorResponse) => {
+      setErrorMessage(data?.message || DEFAULT_ERROR_MESSAGE);
+      setShouldRedirect(true);
+    },
+    [],
+  );
+
+  const fetchUserId = useCallback(async () => {
+    try {
+      const stored = sessionStorage.getItem(STORAGE_KEY);
+      if (!stored) {
+        setErrorMessage("본인인증 정보가 없습니다.");
+        setShouldRedirect(true);
+        return;
+      }
+
+      const verified = JSON.parse(stored);
+      const personalAuthKey = verified.personalAuthKey;
+
+      if (!personalAuthKey) {
+        setErrorMessage("본인인증 정보가 올바르지 않습니다.");
+        setShouldRedirect(true);
+        return;
+      }
+
+      const response = await fetchWithoutAuth("/auth/find-id", {
+        method: "POST",
+        body: JSON.stringify({ personalAuthKey }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        handleErrorResponse(response, data);
+        return;
+      }
+
+      setFoundId(data.response.username);
+    } catch (err) {
+      console.error(err);
+      setErrorMessage(DEFAULT_ERROR_MESSAGE);
+      setShouldRedirect(true);
+    }
+  }, [handleErrorResponse]);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem(STORAGE_KEY);
-    if (!stored) return;
-
-    const { personalAuthKey } = JSON.parse(stored);
-
-    fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ personalAuthKey }),
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok || data.success === false) {
-          handleErrorResponse(res, data);
-        } else {
-          setFoundId(data.response.username);
-        }
-      })
-      .catch(() => {
-        handleErrorResponse(new Response());
-      });
-  }, []);
+    fetchUserId();
+  }, [fetchUserId]);
 
   const handleDialogConfirm = () => {
     setErrorMessage("");

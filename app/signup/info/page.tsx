@@ -16,8 +16,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { fetchWithoutAuth } from "@/lib/api-fetch";
 
-const API_URL = "http://localhost:8080/api/auth/signup";
 const VERIFIED_KEY = "verifiedUser";
 const DEFAULT_ERROR_MSG = "회원가입 중 오류가 발생했습니다.";
 
@@ -114,9 +114,8 @@ export default function UserInfoPage() {
     }
 
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetchWithoutAuth("/auth/signup", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: formData.username,
           email: formData.email,

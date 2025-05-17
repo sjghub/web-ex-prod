@@ -15,8 +15,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { fetchWithoutAuth } from "@/lib/api-fetch";
 
-const API_URL = "http://localhost:8080/api/auth/reset-password";
 const REDIRECT_AFTER_SUCCESS = "/login";
 const REDIRECT_AFTER_FAIL = "/pwInquiry";
 const DEFAULT_ERROR_MESSAGE = "비밀번호 변경에 실패했습니다.";
@@ -76,11 +76,10 @@ export default function ChangePasswordPage() {
     }
 
     try {
-      const response = await fetch(
-        `${API_URL}?username=${encodeURIComponent(username)}`,
+      const response = await fetchWithoutAuth(
+        `/auth/reset-password?username=${encodeURIComponent(username)}`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ password: newPassword }),
         },
       );

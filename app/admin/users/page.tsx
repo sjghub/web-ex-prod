@@ -27,9 +27,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { fetchWithAuth } from "@/lib/api-fetch";
 
 // 상수 정의
-const API_URL = "http://localhost:8080/api/admin";
 const USERS_PER_PAGE = 10;
 const STATUS_COLORS = {
   ACTIVE: "bg-green-100 text-green-800",
@@ -62,34 +62,18 @@ interface UserStats {
 }
 
 // API 호출 함수
-const fetchUsers = async (token: string): Promise<User[]> => {
-  const response = await fetch(`${API_URL}/users`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+const fetchUsers = async (): Promise<User[]> => {
+  const response = await fetchWithAuth("/admin/users");
   const data = await response.json();
   return data.success ? data.response : [];
 };
 
-const fetchUserStats = async (token: string): Promise<UserStats> => {
-  const response = await fetch(`${API_URL}/users/stats`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+const fetchUserStats = async (): Promise<UserStats> => {
+  const response = await fetchWithAuth("/admin/users/stats");
   const data = await response.json();
   return data.success
     ? data.response
     : { totalUsers: 0, activeUsers: 0, inactiveUsers: 0, newUsers: 0 };
-};
-
-// 유틸리티 함수
-const getCookie = (name: string): string | null => {
-  const matches = document.cookie.match(
-    new RegExp("(^| )" + name + "=([^;]+)"),
-  );
-  return matches ? decodeURIComponent(matches[2]) : null;
 };
 
 const formatDate = (dateString: string): string => {
@@ -115,13 +99,10 @@ export default function AdminUsersPage() {
 
   // 데이터 로드
   useEffect(() => {
-    const token = getCookie("accessToken");
-    if (!token) return;
-
     const loadData = async () => {
       const [usersData, statsData] = await Promise.all([
-        fetchUsers(token),
-        fetchUserStats(token),
+        fetchUsers(),
+        fetchUserStats(),
       ]);
       setUsers(usersData);
       setStats(statsData);

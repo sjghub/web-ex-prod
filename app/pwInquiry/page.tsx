@@ -14,8 +14,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { fetchWithoutAuth } from "@/lib/api-fetch";
 
-const API_ENDPOINT = "http://localhost:8080/api/auth/find-password";
 const REDIRECT_SUCCESS = "/verify?type=find-password";
 const REDIRECT_FAIL = "/pwInquiry";
 const DEFAULT_ERROR_MESSAGE = "비밀번호 찾기 요청에 실패했습니다.";
@@ -68,9 +68,8 @@ export default function PasswordFindForm() {
     setShouldRedirect(false);
 
     try {
-      const response = await fetch(API_ENDPOINT, {
+      const response = await fetchWithoutAuth("/auth/find-password", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 

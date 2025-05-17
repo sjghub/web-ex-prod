@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
+import { fetchWithAuth } from "@/lib/api-fetch";
 
 // 차트 컴포넌트
 const TransactionChart = () => {
@@ -110,31 +111,13 @@ export default function AdminDashboard() {
     transactionAmountChangePercent: 0,
   });
 
-  const getCookie = (name: string): string | null => {
-    const matches = document.cookie.match(
-      new RegExp("(^| )" + name + "=([^;]+)"),
-    );
-    return matches ? decodeURIComponent(matches[2]) : null;
-  };
-
   const fetchMerchantStats = async () => {
-    const token = getCookie("accessToken");
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/admin/merchants/stats",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
+      const response = await fetchWithAuth("/admin/merchants/stats");
       if (!response.ok) throw new Error("가맹점 통계 조회 실패");
 
       const data = await response.json();
-      setStats(data.response); // 바로 상태 저장
+      setStats(data.response);
     } catch (error) {
       console.error("❌ 가맹점 통계 에러:", error);
     }

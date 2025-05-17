@@ -18,6 +18,7 @@ import {
   DialogFooter as DialogFooterContent,
 } from "@/components/ui/dialog";
 import Logo from "@/components/logo";
+import { fetchWithoutAuth } from "@/lib/api-fetch";
 
 interface SigninRequest {
   username: string;
@@ -36,7 +37,6 @@ interface TokenResponse {
   redirectUrl: string;
 }
 
-const SIGNIN_URL = "http://localhost:8080/api/auth/signin";
 const DEFAULT_ERROR_MSG = "로그인 중 오류가 발생했습니다. 다시 시도해주세요.";
 
 export default function LoginPage() {
@@ -63,11 +63,9 @@ export default function LoginPage() {
 
     try {
       const body: SigninRequest = { username: userId, password };
-      const res = await fetch(SIGNIN_URL, {
+      const res = await fetchWithoutAuth("/auth/signin", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-        credentials: "include",
       });
 
       if (!res.ok) {

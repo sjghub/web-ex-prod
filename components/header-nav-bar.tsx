@@ -4,13 +4,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "./logo";
-
-const COOKIE_NAMES = {
-  accessToken: "accessToken",
-  refreshToken: "refreshToken",
-};
-
-const API_URL = "http://localhost:8080/api/auth/logout";
+import { fetchWithAuth } from "@/lib/api-fetch";
+import { removeCookie } from "@/lib/auth";
 
 const NAV_ITEMS = [
   { path: "/dashboard", label: "홈", key: "home" },
@@ -23,27 +18,14 @@ const NAV_ITEMS = [
   { path: "/mypage", label: "내 정보", key: "myInfo" },
 ];
 
-const getCookie = (name: string): string | null => {
-  const matches = document.cookie.match(
-    new RegExp("(^| )" + name + "=([^;]+)"),
-  );
-  return matches ? decodeURIComponent(matches[2]) : null;
-};
-
 export function HeaderNavBar() {
   const router = useRouter();
   const pathname = usePathname();
 
   const handleLogout = async () => {
-    const accessToken = getCookie(COOKIE_NAMES.accessToken);
-
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetchWithAuth("/auth/logout", {
         method: "POST",
-        credentials: "include",
-        headers: {
-          Authorization: accessToken ? `Bearer ${accessToken}` : "",
-        },
       });
 
       if (!response.ok) {
@@ -52,10 +34,7 @@ export function HeaderNavBar() {
         throw new Error("로그아웃에 실패했습니다.");
       }
 
-      Object.values(COOKIE_NAMES).forEach((name) => {
-        document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-      });
-
+      removeCookie("accessToken");
       router.push("/");
     } catch (error) {
       console.error("로그아웃 중 오류 발생:", error);

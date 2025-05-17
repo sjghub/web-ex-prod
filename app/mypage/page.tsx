@@ -19,31 +19,33 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { fetchWithAuth } from "@/lib/api-fetch";
+
+const DEFAULT_PROFILE_IMAGE = "/profile-image.png";
 
 export default function MyPage() {
   const router = useRouter();
+
   const emailInputRef = useRef<HTMLInputElement>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
+
   const [user, setUser] = useState({
     name: "",
     email: "",
     birthDate: "",
     phone: "",
     address: "",
-    //TODO: 사용자 프로필을 받을지 안 받을지 미정, 우선 기본값으로 지정, DB자체에 저장을 안함함
-    profileImage: "/profile-image.png",
+    profileImage: DEFAULT_PROFILE_IMAGE,
+  });
+
+  const [formData, setFormData] = useState({
+    email: "",
+    address: "",
   });
 
   const [emailEditable, setEmailEditable] = useState(false);
   const [addressEditable, setAddressEditable] = useState(false);
-  const [formData, setFormData] = useState({
-    email: user.email,
-    address: user.address,
-  });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
+  const [showDialog, setShowDialog] = useState(false);
 
   const [notifications, setNotifications] = useState({
     email: true,
@@ -52,85 +54,63 @@ export default function MyPage() {
     security: true,
   });
 
-  const [showDialog, setShowDialog] = useState(false);
-
-  const handleNotificationChange = (key: keyof typeof notifications) => {
-    setNotifications({
-      ...notifications,
-      [key]: !notifications[key],
-    });
-  };
-
-  const getCookie = (name: string): string | null => {
-    const matches = document.cookie.match(
-      new RegExp("(^| )" + name + "=([^;]+)"),
-    );
-    return matches ? decodeURIComponent(matches[2]) : null;
-  };
-
   useEffect(() => {
-    const token = getCookie("accessToken");
-    if (!token) return;
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetchWithAuth("/user/profile");
+        const data = await response.json();
 
-    fetch("http://localhost:8080/api/user/profile", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
+        if (!response.ok)
+          throw new Error(data.message || "프로필 정보 불러오기 실패");
+
         const { name, email, birth, phoneNumber, address } = data.response;
         setUser({
           name,
           email,
           birthDate: birth,
           phone: phoneNumber,
-          address,
-          profileImage: "/profile-image.png",
+          address: address || "",
+          profileImage: DEFAULT_PROFILE_IMAGE,
         });
-        setFormData((prev) => ({
-          ...prev,
-          email,
-          address,
-        }));
-      })
-      .catch((err) => {
+        setFormData({ email: email || "", address: address || "" });
+      } catch (err) {
         console.error("유저 정보 불러오기 실패:", err);
-      });
+      }
+    };
+
+    fetchUserProfile();
   }, []);
 
-  const handleSaveProfile = async (
-    field: "email" | "address",
-    value: string,
-  ) => {
-    const token = getCookie("accessToken");
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleProfileUpdate = async (field: "email" | "address") => {
+    const value = formData[field];
     const fieldNameKor = field === "email" ? "이메일" : "주소";
+
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/user/profile/${field}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ [field]: value }),
-        },
-      );
+      const response = await fetchWithAuth(`/user/profile/${field}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [field]: value }),
+      });
 
       if (!response.ok) {
-        throw new Error(`${fieldNameKor} 저장 실패`);
+        const data = await response.json();
+        throw new Error(data.message || `${fieldNameKor} 저장 실패`);
       }
 
-      if (field === "email") {
-        setUser((prev) => ({ ...prev, email: value }));
-        console.log(` ${fieldNameKor} 변경 성공`, formData.email);
-      } else {
-        console.log(` ${fieldNameKor} 변경 성공`, formData.address);
-      }
-    } catch (error) {
-      console.error(` ${fieldNameKor} 저장 에러:`, error);
+      setUser((prev) => ({ ...prev, [field]: value }));
+      setShowDialog(true);
+      setTimeout(() => setShowDialog(false), 1000);
+    } catch (err) {
+      console.error(`${fieldNameKor} 저장 에러:`, err);
     }
+  };
+
+  const handleNotificationChange = (key: keyof typeof notifications) => {
+    setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
@@ -218,11 +198,7 @@ export default function MyPage() {
                           className="h-5 w-5"
                           onClick={() => {
                             if (emailEditable) {
-                              handleSaveProfile("email", formData.email);
-                              setShowDialog(true);
-                              setTimeout(() => {
-                                setShowDialog(false);
-                              }, 1000);
+                              handleProfileUpdate("email");
                             } else {
                               setTimeout(
                                 () => emailInputRef.current?.focus(),
@@ -258,11 +234,7 @@ export default function MyPage() {
                           className="h-5 w-5"
                           onClick={() => {
                             if (addressEditable) {
-                              handleSaveProfile("address", formData.address);
-                              setShowDialog(true);
-                              setTimeout(() => {
-                                setShowDialog(false);
-                              }, 1000);
+                              handleProfileUpdate("address");
                             } else {
                               setTimeout(
                                 () => addressInputRef.current?.focus(),

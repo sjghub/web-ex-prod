@@ -14,8 +14,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { fetchWithoutAuth } from "@/lib/api-fetch";
 
-const API_URL = "http://localhost:8080/api/auth/verification";
 const STORAGE_KEY = "verifiedUser";
 const DEFAULT_ERROR_MSG = "본인인증 처리 중 오류가 발생했습니다.";
 const REDIRECT_PW = "/pwInquiry";
@@ -118,10 +118,12 @@ export default function VerifyIdentityPage({
         }
 
         try {
-          const res = await fetch(`${API_URL}?imp_uid=${rsp.imp_uid}`);
-          const data = (await res.json()) as VerificationResponse;
+          const response = await fetchWithoutAuth(
+            `/auth/verification?imp_uid=${rsp.imp_uid}`,
+          );
+          const data = (await response.json()) as VerificationResponse;
 
-          if (!res.ok || !data.success || !data.response) {
+          if (!response.ok || !data.success || !data.response) {
             handleError(data.message);
             return;
           }
