@@ -49,45 +49,32 @@ export default function DashboardPage() {
     },
   ];
 
-  // 내 카드 목록 (API 연동)
-  interface ApiCardItem {
+  // 내 카드 목록
+  interface CardBenefit {
+    content: string;
+  }
+  interface CardResponse {
     id: number;
     cardName: string;
     cardNumber: string;
     isDefaultCard: boolean;
-    cardBenefits: { content: string }[];
+    cardBenefits: CardBenefit[];
+    imageUrl?: string;
   }
-  interface CardItem {
-    id: number;
-    name: string;
-    image: string;
-    number: string;
-    benefits: string[];
-    isMain?: boolean;
-  }
-  const [myCards, setMyCards] = useState<CardItem[]>([]);
+  const [myCards, setMyCards] = useState<CardResponse[]>([]);
 
   useEffect(() => {
     fetchWithAuth("/card/my", { method: "GET" })
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.response)) {
-          setMyCards(
-            data.response.map((item: ApiCardItem) => ({
-              id: item.id,
-              name: item.cardName,
-              image: "/placeholder.svg", // 실제 이미지 경로가 있으면 수정
-              number: item.cardNumber,
-              benefits: item.cardBenefits.map((b) => b.content),
-              isMain: item.isDefaultCard,
-            })),
-          );
+          setMyCards(data.response);
         }
       });
   }, []);
 
   const sortedCards = [...myCards].sort(
-    (a, b) => (b.isMain ? 1 : 0) - (a.isMain ? 1 : 0),
+    (a, b) => (b.isDefaultCard ? 1 : 0) - (a.isDefaultCard ? 1 : 0),
   );
 
   // 최근 결제 내역 (예시)
@@ -244,33 +231,38 @@ export default function DashboardPage() {
                         {/* 앞면 */}
                         <div className="absolute inset-0 backface-hidden">
                           <Image
-                            src={card.image || "/placeholder.svg"}
-                            alt={card.name}
+                            src={card.imageUrl || "/placeholder.png"}
+                            alt={card.cardName}
                             fill
                             className="rounded-lg shadow-sm object-cover"
                           />
+                          {card.isDefaultCard && (
+                            <div className="absolute top-2 right-2 bg-black text-white text-xs px-2 py-1 rounded-full">
+                              대표
+                            </div>
+                          )}
                         </div>
 
                         {/* 뒷면 */}
                         <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-lg overflow-hidden">
                           <Image
-                            src={card.image || "/placeholder.svg"}
-                            alt={card.name}
+                            src={card.imageUrl || "/placeholder.png"}
+                            alt={card.cardName}
                             fill
                             className="object-cover"
                           />
                           <div className="absolute inset-0 bg-white/60 backdrop-blur-md px-4 py-3 flex flex-col justify-between text-left text-gray-800">
                             <div>
                               <h3 className="text-base font-semibold mb-1">
-                                {card.name}
+                                {card.cardName}
                               </h3>
                               <p className="text-sm">
-                                **** **** **** {card.number.slice(-4)}
+                                **** **** **** {card.cardNumber.slice(-4)}
                               </p>
                             </div>
                             <ul className="text-xs space-y-1">
-                              {card.benefits.map((benefit, index) => (
-                                <li key={index}>• {benefit}</li>
+                              {card.cardBenefits.map((benefit, index) => (
+                                <li key={index}>• {benefit.content}</li>
                               ))}
                             </ul>
                           </div>
