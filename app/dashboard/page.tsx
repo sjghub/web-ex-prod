@@ -1,12 +1,13 @@
 "use client";
 
-// import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCardScroll } from "./page-script";
+import { fetchWithAuth } from "@/lib/api-fetch";
 import { HeaderNavBar } from "@/components/header-nav-bar";
 import Footer from "@/components/footer-bar";
 
@@ -48,65 +49,42 @@ export default function DashboardPage() {
     },
   ];
 
-  // 내 카드 목록 (예시)
-  const myCards = [
-    {
-      id: 1,
-      name: "현대카드 M Black",
-      image: "/hyundaiblack.png",
-      number: "5521-9876-3412-0001",
-      benefits: [
-        "스타벅스 10% 청구 할인",
-        "해외 가맹점 1.5% 캐시백",
-        "특급호텔 무료 발렛",
-      ],
-      isMain: false,
-    },
-    {
-      id: 2,
-      name: "카드의정석 EVERY DISCOUNT",
-      image: "/everydiscount.png",
-      number: "4582-1234-5678-0002",
-      benefits: [
-        "대중교통 10% 할인",
-        "이동통신 요금 10% 할인",
-        "편의점 5% 할인",
-      ],
-      isMain: true,
-    },
-    {
-      id: 3,
-      name: "삼성카드 taptap 0",
-      image: "/taptap0.png",
-      number: "4012-3456-7890-0003",
-      benefits: ["넷플릭스 10% 할인", "스타벅스 30% 할인", "배달앱 10% 할인"],
-      isMain: false,
-    },
-    {
-      id: 4,
-      name: "카드의정석 오하CHECK",
-      image: "/ohacheck.png",
-      number: "3792-0000-1111-0004",
-      benefits: [
-        "영화 3,000원 할인",
-        "버스/지하철 10% 할인",
-        "배달의민족 5% 적립",
-      ],
-      isMain: false,
-    },
-    {
-      id: 5,
-      name: "KB국민 My WE:SH 카드",
-      image: "/mywish.png",
-      number: "6254-4444-2222-0005",
-      benefits: [
-        "온라인 쇼핑 5% 할인",
-        "헬스장/필라테스 10% 할인",
-        "디지털 콘텐츠 구독 7% 할인",
-      ],
-      isMain: false,
-    },
-  ];
+  // 내 카드 목록 (API 연동)
+  interface ApiCardItem {
+    id: number;
+    cardName: string;
+    cardNumber: string;
+    isDefaultCard: boolean;
+    cardBenefits: { content: string }[];
+  }
+  interface CardItem {
+    id: number;
+    name: string;
+    image: string;
+    number: string;
+    benefits: string[];
+    isMain?: boolean;
+  }
+  const [myCards, setMyCards] = useState<CardItem[]>([]);
+
+  useEffect(() => {
+    fetchWithAuth("/card/my", { method: "GET" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.response)) {
+          setMyCards(
+            data.response.map((item: ApiCardItem) => ({
+              id: item.id,
+              name: item.cardName,
+              image: "/placeholder.svg", // 실제 이미지 경로가 있으면 수정
+              number: item.cardNumber,
+              benefits: item.cardBenefits.map((b) => b.content),
+              isMain: item.isDefaultCard,
+            })),
+          );
+        }
+      });
+  }, []);
 
   const sortedCards = [...myCards].sort(
     (a, b) => (b.isMain ? 1 : 0) - (a.isMain ? 1 : 0),
@@ -291,11 +269,9 @@ export default function DashboardPage() {
                               </p>
                             </div>
                             <ul className="text-xs space-y-1">
-                              {card.benefits
-                                .slice(0, 3)
-                                .map((benefit, index) => (
-                                  <li key={index}>• {benefit}</li>
-                                ))}
+                              {card.benefits.map((benefit, index) => (
+                                <li key={index}>• {benefit}</li>
+                              ))}
                             </ul>
                           </div>
                         </div>
