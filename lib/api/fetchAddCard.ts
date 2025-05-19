@@ -9,9 +9,7 @@ interface AddCardRequest {
   pinPrefix: string;
 }
 
-interface EmptyResponse {
-  // 빈 응답 객체
-}
+type EmptyResponse = Record<string, never>; // 빈 응답 객체
 
 export const fetchAddCard = async (cardData: AddCardRequest) => {
   const response = await fetchWithAuth("/card", {
