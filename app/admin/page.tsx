@@ -5,47 +5,82 @@ import { useEffect, useState } from "react";
 import { fetchWithAuth } from "@/lib/api-fetch";
 
 // 차트 컴포넌트
-const TransactionChart = () => {
-  const amountData = [58000, 62000, 78000, 76000, 56000, 78000, 64000];
-  const countData = [3200, 3000, 3600, 1800, 1200, 3200, 1600];
-  const labels = [
-    "4월 20일",
-    "4월 21일",
-    "4월 22일",
-    "4월 23일",
-    "4월 24일",
-    "4월 25일",
-    "4월 26일",
-  ];
+
+interface Trend {
+  date: string;
+  transactionAmount: number;
+  transactionCount: number;
+}
+
+export const TransactionChart = () => {
+  const [trendData, setTrendData] = useState<Trend[]>([]);
+
+  useEffect(() => {
+    const fetchTrends = async () => {
+      try {
+        const response = await fetchWithAuth("/admin/merchants/trends");
+        const data = await response.json();
+        console.log(data);
+        console.log(data.response);
+
+        setTrendData(data.response);
+      } catch (error) {
+        console.error("❌ 거래 추이 데이터 로딩 실패:", error);
+      }
+    };
+    fetchTrends();
+  }, []);
+
+  const labels = trendData.map((item) =>
+    new Date(item.date).toLocaleDateString("ko-KR", {
+      month: "numeric",
+      day: "numeric",
+    }),
+  );
+
+  if (trendData.length === 0) {
+    return (
+      <div className="text-gray-400 text-sm">
+        거래 추이 데이터를 불러오는 중입니다...
+      </div>
+    );
+  }
+
+  const amountData = trendData.map((item) => item.transactionAmount);
+  const countData = trendData.map((item) => item.transactionCount);
 
   const chartHeight = 260;
-  const yTicks = 10;
+  // 1. 최대값 계산
+  const maxAmount = Math.max(...amountData, 100000); // 최소 10만 보장
+  const maxCount = Math.max(...countData, 100); // 최소 100 보장
 
-  const amountStep = 10000;
-  const countStep = 1000;
-  const maxAmount = amountStep * yTicks;
-  const maxCount = countStep * yTicks;
+  // 2. 스텝 자동 설정 (반올림해서 보기 좋게)
+  const yTicks = 10;
+  const amountStep = Math.ceil(maxAmount / yTicks / 1000) * 1000; // 천 단위
+  const countStep = Math.ceil(maxCount / yTicks / 10) * 10; // 10 단위
+
+  // 3. 축 최대값 재계산
+  const adjustedMaxAmount = amountStep * yTicks;
+  const adjustedMaxCount = countStep * yTicks;
 
   return (
     <div className="w-full flex flex-col items-center">
       <div className="flex w-full px-4">
         {/* 왼쪽 Y축 (금액) */}
         <div className="flex flex-col justify-between items-end pr-2 text-xs text-blue-500 h-[320px]">
-          {Array.from({ length: yTicks + 1 }).map((_, i) => {
-            const value = (yTicks - i) * amountStep;
-            return (
-              <div key={i} className="h-[32px] leading-none">
-                {value.toLocaleString()}
-              </div>
-            );
-          })}
+          {Array.from({ length: yTicks + 1 }).map((_, i) => (
+            <div key={i} className="h-[32px] leading-none">
+              {((yTicks - i) * amountStep).toLocaleString()}
+            </div>
+          ))}
         </div>
 
-        {/* 차트 */}
+        {/* 차트 영역 */}
         <div className="relative flex-1 flex items-end justify-between h-[320px] border-y border-gray-200">
           {amountData.map((amount, index) => {
-            const amountHeight = (amount / maxAmount) * chartHeight;
-            const countHeight = (countData[index] / maxCount) * chartHeight;
+            const amountHeight = (amount / adjustedMaxAmount) * chartHeight;
+            const countHeight =
+              (countData[index] / adjustedMaxCount) * chartHeight;
 
             return (
               <div
@@ -75,16 +110,14 @@ const TransactionChart = () => {
 
         {/* 오른쪽 Y축 (건수) */}
         <div className="flex flex-col justify-between items-start pl-2 text-xs text-green-500 h-[320px]">
-          {Array.from({ length: yTicks + 1 }).map((_, i) => {
-            const value = (yTicks - i) * countStep;
-            return (
-              <div key={i} className="h-[32px] leading-none">
-                {value.toLocaleString()}
-              </div>
-            );
-          })}
+          {Array.from({ length: yTicks + 1 }).map((_, i) => (
+            <div key={i} className="h-[32px] leading-none">
+              {((yTicks - i) * countStep).toLocaleString()}
+            </div>
+          ))}
         </div>
       </div>
+
       {/* 범례 */}
       <div className="flex justify-center gap-6 mt-4 text-xs text-gray-500">
         <div className="flex items-center">

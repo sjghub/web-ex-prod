@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MonthSelectBox, YearSelectBox } from "@/components/ui/selectbox";
 import { VirtualKeypad } from "@/components/virtual-keypad";
+import { fetchAddCard } from "@/lib/api/fetchAddCard";
 
 export default function CardRegisterPage() {
   const router = useRouter();
@@ -20,10 +21,10 @@ export default function CardRegisterPage() {
   });
 
   const [formData, setFormData] = useState({
-    expiryMonth: "",
-    expiryYear: "",
+    month: "",
+    year: "",
     cvc: "",
-    password: "",
+    pinPrefix: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -109,13 +110,13 @@ export default function CardRegisterPage() {
 
     const cleaned = value.replace(/\D/g, "");
     const limited =
-      name === "expiryMonth"
+      name === "month"
         ? cleaned.slice(0, 2)
-        : name === "expiryYear"
+        : name === "year"
           ? cleaned.slice(0, 2)
           : name === "cvc"
             ? cleaned.slice(0, 3)
-            : name === "password"
+            : name === "pinPrefix"
               ? cleaned.slice(0, 2)
               : value;
 
@@ -133,34 +134,35 @@ export default function CardRegisterPage() {
     if (!/^\d{16}$/.test(total)) {
       newErrors.cardNumber = "카드 번호를 모두 입력해주세요.";
     }
-    if (
-      !formData.expiryMonth ||
-      +formData.expiryMonth < 1 ||
-      +formData.expiryMonth > 12
-    ) {
-      newErrors.expiryMonth = "유효한 월을 입력해주세요.";
+    if (!formData.month || +formData.month < 1 || +formData.month > 12) {
+      newErrors.month = "유효한 월을 입력해주세요.";
     }
     const currentYear = new Date().getFullYear() % 100;
-    if (!formData.expiryYear || +formData.expiryYear < currentYear) {
-      newErrors.expiryYear = "유효한 년도를 입력해주세요.";
+    if (!formData.year || +formData.year < currentYear) {
+      newErrors.year = "유효한 년도를 입력해주세요.";
     }
     if (!/^\d{3,4}$/.test(formData.cvc)) {
       newErrors.cvc = "유효한 CVC를 입력해주세요.";
     }
-    if (!/^\d{2}$/.test(formData.password)) {
-      newErrors.password = "비밀번호 앞 2자리를 입력해주세요.";
+    if (!/^\d{2}$/.test(formData.pinPrefix)) {
+      newErrors.pinPrefix = "비밀번호 앞 2자리를 입력해주세요.";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
       const fullCardNumber = `${cardParts.part1}${cardParts.part2}${cardParts.part3}${cardParts.part4}`;
       console.log("Submitted:", { cardNumber: fullCardNumber, ...formData });
-      router.push("/card/set-pay-pincode");
+      try {
+        await fetchAddCard({ cardNumber: fullCardNumber, ...formData });
+      } catch (e) {
+        console.error("카드 등록이 실패했습니다", e);
+      }
+      router.push("/mycard");
     }
   };
 
@@ -234,17 +236,15 @@ export default function CardRegisterPage() {
                     만료 월 <span className="text-red-500">*</span>
                   </Label>
                   <MonthSelectBox
-                    value={formData.expiryMonth}
+                    value={formData.month}
                     onChange={(val) => {
-                      setFormData((prev) => ({ ...prev, expiryMonth: val }));
-                      setErrors((prev) => ({ ...prev, expiryMonth: "" }));
+                      setFormData((prev) => ({ ...prev, month: val }));
+                      setErrors((prev) => ({ ...prev, month: "" }));
                       setShowKeypad(false);
                     }}
                   />
-                  {errors.expiryMonth && (
-                    <p className="text-xs text-red-500 pl-1">
-                      {errors.expiryMonth}
-                    </p>
+                  {errors.month && (
+                    <p className="text-xs text-red-500 pl-1">{errors.month}</p>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -252,16 +252,14 @@ export default function CardRegisterPage() {
                     만료 년 <span className="text-red-500">*</span>
                   </Label>
                   <YearSelectBox
-                    value={formData.expiryYear}
+                    value={formData.year}
                     onChange={(val) => {
-                      setFormData((prev) => ({ ...prev, expiryYear: val }));
-                      setErrors((prev) => ({ ...prev, expiryYear: "" }));
+                      setFormData((prev) => ({ ...prev, year: val }));
+                      setErrors((prev) => ({ ...prev, year: "" }));
                     }}
                   />
-                  {errors.expiryYear && (
-                    <p className="text-xs text-red-500 pl-1">
-                      {errors.expiryYear}
-                    </p>
+                  {errors.year && (
+                    <p className="text-xs text-red-500 pl-1">{errors.year}</p>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -285,14 +283,16 @@ export default function CardRegisterPage() {
                   카드 비밀번호 앞 2자리 <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  name="password"
-                  type="password"
+                  name="pinPrefix"
+                  type="pinPrefix"
                   placeholder="**"
-                  value={formData.password}
+                  value={formData.pinPrefix}
                   onChange={handleOtherInput}
                 />
-                {errors.password && (
-                  <p className="text-xs text-red-500 pl-1">{errors.password}</p>
+                {errors.pinPrefix && (
+                  <p className="text-xs text-red-500 pl-1">
+                    {errors.pinPrefix}
+                  </p>
                 )}
               </div>
 
@@ -300,7 +300,7 @@ export default function CardRegisterPage() {
                 type="submit"
                 className="w-full bg-black hover:bg-gray-800 text-white mt-6"
               >
-                다음
+                등록
               </Button>
             </form>
           </CardContent>
