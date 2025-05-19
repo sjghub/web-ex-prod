@@ -90,7 +90,7 @@ export default function VerifyIdentityPage({
   const handleDialogConfirm = () => {
     setErrorMessage("");
     if (!shouldRedirect) return;
-    router.push(type === "find-password" ? REDIRECT_PW : REDIRECT_DUP);
+    router.push(type === "pwInquiry" ? REDIRECT_PW : REDIRECT_DUP);
   };
 
   const requestCertification = () => {
@@ -130,7 +130,7 @@ export default function VerifyIdentityPage({
 
           const user = data.response;
 
-          if (type === "find-password") {
+          if (type === "pwInquiry") {
             const storedKey = sessionStorage.getItem("personalAuthKey");
             if (!storedKey || storedKey !== user.personalAuthKey) {
               handleError(

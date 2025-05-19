@@ -1,17 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useCardScroll } from "./page-script";
+
 import { fetchWithAuth } from "@/lib/api-fetch";
 import { HeaderNavBar } from "@/components/header-nav-bar";
 import Footer from "@/components/footer-bar";
 
 export default function DashboardPage() {
+  const [userBenefits, setUserBenefits] = useState<BenefitResponse | null>(
+    null,
+  );
   const router = useRouter();
   /**
    * 네비게이션 바에서 현재 dashboard 페이지일 경우, dashboard 페이지로 다시 렌더링 해줘야 하는 이유?
@@ -23,11 +27,26 @@ export default function DashboardPage() {
   // Initialize card scroll functionality
   useCardScroll();
 
-  // 사용자 정보 (예시)
-  const user = {
-    name: "홍길동",
-    totalDiscount: "12,345",
-    previousDiscount: "1,000",
+  useEffect(() => {
+    const getUserBenefits = async () => {
+      try {
+        const res = await fetchWithAuth("/user/benefits");
+        if (!res.ok) throw new Error("Failed to fetch user benefits");
+
+        const json = await res.json();
+        setUserBenefits(json.response);
+      } catch (err) {
+        console.error("Error fetching user benefits:", err);
+      }
+    };
+
+    getUserBenefits();
+  }, []);
+
+  type BenefitResponse = {
+    name: string;
+    lastMonthSum: number;
+    currentMonthSum: number;
   };
 
   // 혜택별 최고의 카드 (예시)
@@ -171,18 +190,28 @@ export default function DashboardPage() {
           {/* 이번 달 총 할인 금액 */}
           <Card className="border-4 border-black">
             <CardContent className="h-full px-6 flex flex-col justify-between">
-              <h2 className="text-2xl font-bold">
-                <span className="text-3xl">{user.name}</span>님 이번 달 총 할인
-                금액
-              </h2>
-              <p className="text-8xl font-bold">{user.totalDiscount}원</p>
-              <p className="text-gray-600">
-                지난달 대비{" "}
-                <span className="text-xl font-bold">
-                  {user.previousDiscount}원
-                </span>{" "}
-                더 절약했어요!
-              </p>
+              {userBenefits ? (
+                <>
+                  <h2 className="text-2xl font-bold">
+                    <span className="text-3xl">{userBenefits.name}</span>님 이번
+                    달 총 할인 금액
+                  </h2>
+                  <p className="text-8xl font-bold">
+                    {userBenefits.currentMonthSum.toLocaleString()}원
+                  </p>
+                  <p className="text-gray-600">
+                    지난달 총 할인 금액{" "}
+                    <span className="text-xl font-bold">
+                      {userBenefits.lastMonthSum.toLocaleString()}원
+                    </span>{" "}
+                    입니다!
+                  </p>
+                </>
+              ) : (
+                <p className="text-xl text-gray-500">
+                  혜택 정보를 불러오는 중...
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>

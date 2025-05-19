@@ -145,7 +145,7 @@ export default function LoginPage() {
               <Separator />
               <div className="flex justify-center space-x-4 text-sm text-gray-500">
                 <Link
-                  href="/verify?type=find-id"
+                  href="/verify?type=idInquiry"
                   className="hover:text-black hover:underline"
                 >
                   아이디 찾기

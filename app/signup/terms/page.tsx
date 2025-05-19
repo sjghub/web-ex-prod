@@ -16,14 +16,12 @@ export default function SignupTermsPage() {
     marketing: false,
   });
 
-  // State for tracking which sections are open
   const [openSections, setOpenSections] = useState({
     service: false,
     privacy: false,
     marketing: false,
   });
 
-  // Toggle section open/close
   const toggleSection = (section: "service" | "privacy" | "marketing") => {
     setOpenSections((prev) => ({
       ...prev,
@@ -31,10 +29,10 @@ export default function SignupTermsPage() {
     }));
   };
 
-  // Check if all required agreements are accepted
+  // 필수 약관 동의 여부 확인
   const isNextEnabled = agreements.service && agreements.privacy;
 
-  // Handle "agree to all" checkbox
+  // 전체 동의
   const handleAgreeAll = (checked: boolean) => {
     setAgreements({
       all: checked,
@@ -44,7 +42,7 @@ export default function SignupTermsPage() {
     });
   };
 
-  // Handle individual checkbox changes
+  // 개별 약관 동의
   const handleAgreementChange = (
     key: "service" | "privacy" | "marketing",
     checked: boolean,
@@ -54,17 +52,20 @@ export default function SignupTermsPage() {
       [key]: checked,
     };
 
-    // Update "all" checkbox based on individual selections
+    // 전체 동의 체크박스 상태 업데이트
     newAgreements.all =
       newAgreements.service && newAgreements.privacy && newAgreements.marketing;
 
     setAgreements(newAgreements);
   };
 
-  // Handle next button click
   const handleNext = () => {
     if (isNextEnabled) {
-      // Navigate to the next step (identity verification)
+      // 약관 동의 내역을 localStorage에 저장
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("agreeTerms", "true");
+      }
+      // 다음 페이지로 이동
       router.push("/verify?type=signup");
     }
   };

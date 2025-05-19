@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { fetchWithoutAuth } from "@/lib/api-fetch";
 
-const REDIRECT_SUCCESS = "/verify?type=find-password";
+const REDIRECT_SUCCESS = "/verify?type=pwInquiry";
 const REDIRECT_FAIL = "/pwInquiry";
 const DEFAULT_ERROR_MESSAGE = "비밀번호 찾기 요청에 실패했습니다.";
 
@@ -80,7 +80,7 @@ export default function PasswordFindForm() {
         return;
       }
 
-      sessionStorage.setItem("findPasswordName", formData.name);
+      sessionStorage.setItem("pwInquiryName", "true");
       sessionStorage.setItem("findPasswordUsername", formData.username);
       sessionStorage.setItem("personalAuthKey", data.response.personalAuthKey);
 

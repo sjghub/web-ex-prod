@@ -74,6 +74,7 @@ export default function IdLookupResultPage() {
       }
 
       setFoundId(data.response.username);
+      sessionStorage.clear();
     } catch (err) {
       console.error(err);
       setErrorMessage(DEFAULT_ERROR_MESSAGE);
