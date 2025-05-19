@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
@@ -37,103 +37,77 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { fetchWithAuth } from "@/lib/api-fetch";
 
-interface CardItem {
+interface CardBenefit {
+  content: string;
+}
+
+interface CardResponse {
   id: number;
-  name: string;
-  image: string;
-  number: string;
-  benefits: string[];
-  isDefault?: boolean;
+  cardName: string;
+  cardNumber: string;
+  isDefaultCard: boolean;
+  cardBenefits: CardBenefit[];
+  imageUrl?: string;
 }
 
 export default function MyCardPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCard, setSelectedCard] = useState<CardItem | null>(null);
+  const [selectedCard, setSelectedCard] = useState<CardResponse | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [sortOption, setSortOption] = useState("default");
 
-  // 내 카드 목록 (예시)
-  const [myCards, setMyCards] = useState<CardItem[]>([
-    {
-      id: 1,
-      name: "현대카드 M Black",
-      image: "/hyundaiblack.png",
-      number: "5521-9876-3412-0001",
-      benefits: [
-        "스타벅스 10% 청구 할인",
-        "해외 가맹점 1.5% 캐시백",
-        "특급호텔 무료 발렛",
-      ],
-      isDefault: true,
-    },
-    {
-      id: 2,
-      name: "카드의정석 EVERY DISCOUNT",
-      image: "/everydiscount.png",
-      number: "4582-1234-5678-0002",
-      benefits: [
-        "대중교통 10% 할인",
-        "이동통신 요금 10% 할인",
-        "편의점 5% 할인",
-      ],
-    },
-    {
-      id: 3,
-      name: "삼성카드 taptap 0",
-      image: "/taptap0.png",
-      number: "4012-3456-7890-0003",
-      benefits: ["넷플릭스 10% 할인", "스타벅스 30% 할인", "배달앱 10% 할인"],
-    },
-    {
-      id: 4,
-      name: "카드의정석 오하CHECK",
-      image: "/ohacheck.png",
-      number: "3792-0000-1111-0004",
-      benefits: [
-        "영화 3,000원 할인",
-        "버스/지하철 10% 할인",
-        "배달의민족 5% 적립",
-      ],
-    },
-    {
-      id: 5,
-      name: "KB국민 My WE:SH 카드",
-      image: "/mywish.png",
-      number: "6254-4444-2222-0005",
-      benefits: [
-        "온라인 쇼핑 5% 할인",
-        "헬스장/필라테스 10% 할인",
-        "디지털 콘텐츠 구독 7% 할인",
-      ],
-    },
-  ]);
+  // 내 카드 목록 (API 연동)
+  const [myCards, setMyCards] = useState<CardResponse[]>([]);
+
+  useEffect(() => {
+    fetchWithAuth("/card/my", {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.response)) {
+          setMyCards(data.response);
+        }
+      });
+  }, []);
 
   // 카드 검색 필터링
   const filteredCards = myCards.filter((card) =>
-    card.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    card.cardName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // 카드 정렬
   const sortedCards = [...filteredCards].sort((a, b) => {
     if (sortOption === "name") {
-      return a.name.localeCompare(b.name);
+      return a.cardName.localeCompare(b.cardName);
     } else if (sortOption === "default") {
-      return a.isDefault ? -1 : b.isDefault ? 1 : 0;
+      return a.isDefaultCard ? -1 : b.isDefaultCard ? 1 : 0;
     }
     return 0;
   });
 
   // 대표 카드 설정
-  const handleSetDefaultCard = (card: CardItem) => {
-    setMyCards(
-      myCards.map((c) => ({
-        ...c,
-        isDefault: c.id === card.id,
-      })),
-    );
+  const handleSetDefaultCard = async (card: CardResponse) => {
+    const res = await fetchWithAuth("/card/default", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId: card.id }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      setMyCards(
+        myCards.map((c) => ({
+          ...c,
+          isDefaultCard: c.id === card.id,
+        })),
+      );
+    } else {
+      alert(data.response?.message);
+    }
   };
 
   // 카드 삭제
@@ -146,7 +120,7 @@ export default function MyCardPage() {
   };
 
   // 카드 상세 정보 보기
-  const handleViewCardDetail = (card: CardItem) => {
+  const handleViewCardDetail = (card: CardResponse) => {
     setSelectedCard(card);
     setShowDetailDialog(true);
   };
@@ -212,12 +186,12 @@ export default function MyCardPage() {
                 <Card key={card.id} className="overflow-hidden p-0 pb-6">
                   <div className="relative aspect-[1.58/1] overflow-hidden">
                     <Image
-                      src={card.image || "/placeholder.svg"}
-                      alt={card.name}
+                      src={card.imageUrl || "/placeholder.png"}
+                      alt={card.cardName}
                       fill
                       className="object-fill origin-center transform -rotate-90 scale-y-[1.58] scale-x-[0.63]"
                     />
-                    {card.isDefault && (
+                    {card.isDefaultCard && (
                       <div className="absolute top-2 right-2 bg-black text-white text-xs px-2 py-1 rounded-full">
                         대표카드
                       </div>
@@ -226,9 +200,9 @@ export default function MyCardPage() {
                   <CardContent className="px-4">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="font-bold">{card.name}</h3>
+                        <h3 className="font-bold">{card.cardName}</h3>
                         <p className="text-sm text-gray-500">
-                          **** **** **** {card.number.slice(-4)}
+                          **** **** **** {card.cardNumber.slice(-4)}
                         </p>
                       </div>
                       <DropdownMenu modal={false}>
@@ -250,7 +224,7 @@ export default function MyCardPage() {
                             <CreditCard className="mr-2 h-4 w-4" />
                             상세 정보
                           </DropdownMenuItem>
-                          {!card.isDefault && (
+                          {!card.isDefaultCard && (
                             <DropdownMenuItem
                               onClick={() => handleSetDefaultCard(card)}
                               className="hover:bg-gray-100 cursor-pointer"
@@ -273,15 +247,19 @@ export default function MyCardPage() {
                       </DropdownMenu>
                     </div>
                     <div className="space-y-1">
-                      {card.benefits.slice(0, 3).map((benefit, index) => (
+                      {card.cardBenefits.slice(0, 3).map((benefit, index) => (
                         <p key={index} className="text-xs text-gray-600">
-                          • {benefit}
+                          • {benefit.content}
                         </p>
                       ))}
-                      {card.benefits.length > 3 && (
-                        <p className="text-xs text-gray-400">
-                          + {card.benefits.length - 3}개 더보기
-                        </p>
+                      {card.cardBenefits.length > 3 && (
+                        <button
+                          type="button"
+                          className="text-xs text-gray-400 underline cursor-pointer p-0 bg-transparent border-0"
+                          onClick={() => handleViewCardDetail(card)}
+                        >
+                          더보기
+                        </button>
                       )}
                     </div>
                   </CardContent>
@@ -311,7 +289,7 @@ export default function MyCardPage() {
           <DialogHeader>
             <DialogTitle>카드 삭제</DialogTitle>
             <DialogDescription>
-              정말로 {selectedCard?.name} 카드를 삭제하시겠습니까? 이 작업은
+              정말로 {selectedCard?.cardName} 카드를 삭제하시겠습니까? 이 작업은
               되돌릴 수 없습니다.
             </DialogDescription>
           </DialogHeader>
@@ -340,28 +318,28 @@ export default function MyCardPage() {
               <div className="flex justify-center m-0 p-0">
                 <div className="relative w-50 aspect-[1/1.58] -rotate-90 origin-center">
                   <Image
-                    src={selectedCard.image || "/placeholder.svg"}
-                    alt={selectedCard.name}
+                    src={selectedCard.imageUrl || "/placeholder.png"}
+                    alt={selectedCard.cardName}
                     fill
                     className="object-cover rounded-lg"
                   />
                 </div>
               </div>
               <div>
-                <h3 className="font-bold text-lg">{selectedCard.name}</h3>
+                <h3 className="font-bold text-lg">{selectedCard.cardName}</h3>
                 <p className="text-sm text-gray-500">
-                  카드번호: **** **** **** {selectedCard.number.slice(-4)}
+                  카드번호: **** **** **** {selectedCard.cardNumber.slice(-4)}
                 </p>
               </div>
               <div>
                 <h4 className="font-medium mb-2">카드 혜택</h4>
                 <ul className="space-y-2">
-                  {selectedCard.benefits.map((benefit, index) => (
+                  {selectedCard.cardBenefits.map((benefit, index) => (
                     <li key={index} className="flex items-start">
                       <span className="text-xs mr-2">
                         <Check />
                       </span>
-                      <span className="text-sm mt-0.5">{benefit}</span>
+                      <span className="text-sm mt-0.5">{benefit.content}</span>
                     </li>
                   ))}
                 </ul>
@@ -374,7 +352,7 @@ export default function MyCardPage() {
                 >
                   닫기
                 </Button>
-                {!selectedCard.isDefault && (
+                {!selectedCard.isDefaultCard && (
                   <Button
                     variant="outline"
                     className="hover:bg-gray-100 cursor-pointer"
