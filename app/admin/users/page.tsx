@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/select";
 import { fetchWithAuth } from "@/lib/api-fetch";
 
-// 상수 정의
 const USERS_PER_PAGE = 10;
 const STATUS_COLORS = {
   ACTIVE: "bg-green-100 text-green-800",
@@ -43,7 +42,6 @@ const STATUS_LABELS = {
   TEMPORARY: "임시",
 } as const;
 
-// 타입 정의
 type UserStatus = keyof typeof STATUS_COLORS;
 
 interface User {
@@ -61,11 +59,20 @@ interface UserStats {
   newUsers: number;
 }
 
-// API 호출 함수
-const fetchUsers = async (): Promise<User[]> => {
-  const response = await fetchWithAuth("/admin/users");
+interface PagedResponse {
+  content: User[];
+  totalPages: number;
+  totalElements: number;
+}
+
+const fetchUsers = async (page: number): Promise<PagedResponse> => {
+  const response = await fetchWithAuth(
+    `/admin/users?page=${page}&size=${USERS_PER_PAGE}`,
+  );
   const data = await response.json();
-  return data.success ? data.response : [];
+  return data.success
+    ? data.response
+    : { content: [], totalPages: 1, totalElements: 0 };
 };
 
 const fetchUserStats = async (): Promise<UserStats> => {
@@ -73,14 +80,16 @@ const fetchUserStats = async (): Promise<UserStats> => {
   const data = await response.json();
   return data.success
     ? data.response
-    : { totalUsers: 0, activeUsers: 0, inactiveUsers: 0, newUsers: 0 };
+    : {
+        totalUsers: 0,
+        activeUsers: 0,
+        inactiveUsers: 0,
+        newUsers: 0,
+      };
 };
 
-const formatDate = (dateString: string): string => {
-  return dateString.split("T")[0];
-};
+const formatDate = (dateString: string): string => dateString.split("T")[0];
 
-// 메인 컴포넌트
 export default function AdminUsersPage() {
   const [selectedFilter, setSelectedFilter] = useState("전체");
   const [searchQuery, setSearchQuery] = useState("");
@@ -90,6 +99,7 @@ export default function AdminUsersPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [users, setUsers] = useState<User[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [stats, setStats] = useState<UserStats>({
     totalUsers: 0,
     activeUsers: 0,
@@ -97,21 +107,19 @@ export default function AdminUsersPage() {
     newUsers: 0,
   });
 
-  // 데이터 로드
   useEffect(() => {
     const loadData = async () => {
-      const [usersData, statsData] = await Promise.all([
-        fetchUsers(),
+      const [pageData, statsData] = await Promise.all([
+        fetchUsers(currentPage),
         fetchUserStats(),
       ]);
-      setUsers(usersData);
+      setUsers(pageData.content);
+      setTotalPages(pageData.totalPages);
       setStats(statsData);
     };
-
     loadData();
-  }, []);
+  }, [currentPage]);
 
-  // 필터링 및 정렬
   const filteredUsers = users.filter((user) => {
     if (selectedFilter === "활성" && user.status !== "ACTIVE") return false;
     if (selectedFilter === "비활성" && user.status !== "INACTIVE") return false;
@@ -125,7 +133,6 @@ export default function AdminUsersPage() {
         user.userId.toString().includes(query)
       );
     }
-
     return true;
   });
 
@@ -142,14 +149,8 @@ export default function AdminUsersPage() {
     }
   });
 
-  // 페이지네이션
-  const totalPages = Math.ceil(sortedUsers.length / USERS_PER_PAGE);
-  const paginatedUsers = sortedUsers.slice(
-    (currentPage - 1) * USERS_PER_PAGE,
-    currentPage * USERS_PER_PAGE,
-  );
+  const paginatedUsers = sortedUsers;
 
-  // 이벤트 핸들러
   const handleViewUserDetail = (user: User) => {
     setSelectedUser(user);
     setShowUserDetailDialog(true);
@@ -159,7 +160,6 @@ export default function AdminUsersPage() {
     const statusCycle: UserStatus[] = ["ACTIVE", "INACTIVE", "TEMPORARY"];
     const currentIndex = statusCycle.indexOf(user.status);
     const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
-
     setUsers((prev) =>
       prev.map((u) =>
         u.userId === user.userId ? { ...u, status: nextStatus } : u,
