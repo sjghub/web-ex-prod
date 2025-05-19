@@ -133,6 +133,7 @@ export default function UserInfoPage() {
       }
 
       setShowDialog(true);
+      sessionStorage.clear();
       setTimeout(() => router.push("/login"), 2000);
     } catch (err) {
       console.error(err);

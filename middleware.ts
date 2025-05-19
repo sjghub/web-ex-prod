@@ -16,14 +16,7 @@ const AUTH_REQUIRED_PATHS = [
 const ADMIN_REQUIRED_PATHS = ["/admin"];
 
 // 공개 경로 설정 (인증이 필요하지 않은 경로)
-const PUBLIC_PATHS = [
-  "/",
-  "/login",
-  "/signup/terms",
-  "/signup/verify",
-  "/signup/complete",
-  "/verify",
-];
+const PUBLIC_PATHS = ["/", "/login", "/signup/terms"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

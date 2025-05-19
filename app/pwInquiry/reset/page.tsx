@@ -92,6 +92,7 @@ export default function ChangePasswordPage() {
       }
 
       setErrorMessage("비밀번호가 성공적으로 변경되었습니다.");
+      sessionStorage.clear();
       setTimeout(() => {
         router.push(REDIRECT_AFTER_SUCCESS);
       }, 2000);
