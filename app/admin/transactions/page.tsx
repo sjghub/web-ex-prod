@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { MoreHorizontal, Search } from "lucide-react";
-import { fetchWithAuth } from "@/lib/api-fetch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,6 +24,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { fetchMerchantTransactions } from "@/lib/api/fetchMerchantTransactions";
+import {
+  fetchMerchantStats,
+  MerchantStats,
+} from "@/lib/api/fetchMerchantStats";
 
 // 거래 내역 타입 정의
 interface Transaction {
@@ -48,46 +52,40 @@ export default function AdminTransactionsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-
-  type RawPayment = {
-    paymentId: number;
-    merchantName: string;
-    cardType: string;
-    category: string;
-    createdAt: string;
-    transactionAmount: number;
-    status: boolean;
-  };
+  const [totalPages, setTotalPages] = useState(1);
+  const [merchantStats, setMerchantStats] = useState<MerchantStats | null>(
+    null,
+  );
 
   useEffect(() => {
-    const fetchTransactions = async () => {
+    const loadStats = async () => {
       try {
-        const res = await fetchWithAuth("/admin/merchants/payments", {
-          method: "GET",
-        });
-        const result = await res.json(); // 전체 응답 객체
-        const raw: RawPayment[] = result.response; // 실제 배열만 꺼내기
+        const stats = await fetchMerchantStats();
+        setMerchantStats(stats);
+      } catch (error) {
+        console.error("통계 정보 불러오기 실패:", error);
+      }
+    };
 
-        const parsed: Transaction[] = raw.map((t) => ({
-          id: `TRX-${t.paymentId.toString().padStart(6, "0")}`,
-          merchantName: t.merchantName,
-          category: t.category,
-          amount: t.transactionAmount,
-          paymentMethod: t.cardType,
-          dateTime: new Date(t.createdAt)
-            .toLocaleString("sv-SE")
-            .replace("T", " "),
-          status: t.status ? "승인" : "취소",
-        }));
+    loadStats();
+  }, []);
 
-        setTransactions(parsed);
+  useEffect(() => {
+    const loadTransactions = async () => {
+      try {
+        const result = await fetchMerchantTransactions(
+          currentPage,
+          itemsPerPage,
+        );
+        setTransactions(result.content);
+        setTotalPages(result.totalPages);
       } catch (error) {
         console.error("거래 내역 불러오기 실패:", error);
       }
     };
 
-    fetchTransactions();
-  }, []);
+    loadTransactions();
+  }, [currentPage]);
 
   // 필터링된 거래 내역 목록
   const filteredTransactions = transactions.filter((transaction) => {
@@ -135,15 +133,6 @@ export default function AdminTransactionsPage() {
     return amount.toLocaleString() + "원";
   };
 
-  // 총 페이지 수 계산
-  const totalPages = Math.ceil(sortedTransactions.length / itemsPerPage);
-
-  // 현재 페이지 데이터 슬라이싱
-  const paginatedTransactions = sortedTransactions.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
-
   return (
     <div>
       {/* 메인 콘텐츠 */}
@@ -164,10 +153,15 @@ export default function AdminTransactionsPage() {
                       총 거래 건수
                     </span>
                     <span className="text-3xl font-bold">
-                      {transactions.length.toLocaleString()}건
+                      {merchantStats?.totalTransactionCount.toLocaleString() ??
+                        "-"}
+                      건
                     </span>
                     <span className="text-sm text-gray-500 mt-2">
-                      전일 대비 +12%
+                      전일 대비{" "}
+                      {merchantStats
+                        ? `${merchantStats.transactionCountChangeRate}%`
+                        : "-"}
                     </span>
                   </div>
                 </CardContent>
@@ -180,12 +174,15 @@ export default function AdminTransactionsPage() {
                       총 거래 금액
                     </span>
                     <span className="text-3xl font-bold">
-                      {formatAmount(
-                        transactions.reduce((sum, t) => sum + t.amount, 0),
-                      )}
+                      {merchantStats
+                        ? formatAmount(merchantStats.totalTransactionAmount)
+                        : "-"}
                     </span>
                     <span className="text-sm text-gray-500 mt-2">
-                      전일 대비 +8.5%
+                      전일 대비{" "}
+                      {merchantStats
+                        ? `${merchantStats.transactionAmountChangeRate}%`
+                        : "-"}
                     </span>
                   </div>
                 </CardContent>
@@ -198,13 +195,15 @@ export default function AdminTransactionsPage() {
                       평균 거래 금액
                     </span>
                     <span className="text-3xl font-bold">
-                      {formatAmount(
-                        transactions.reduce((sum, t) => sum + t.amount, 0) /
-                          transactions.length,
-                      )}
+                      {merchantStats
+                        ? formatAmount(merchantStats.averageTransactionAmount)
+                        : "-"}
                     </span>
                     <span className="text-sm text-gray-500 mt-2">
-                      전일 대비 -2.3%
+                      전일 대비{" "}
+                      {merchantStats
+                        ? `${merchantStats.averageAmountChangeRate}%`
+                        : "-"}
                     </span>
                   </div>
                 </CardContent>
@@ -217,16 +216,12 @@ export default function AdminTransactionsPage() {
                       활성 거래 비율
                     </span>
                     <span className="text-3xl font-bold">
-                      {Math.round(
-                        (transactions.filter((t) => t.status === "승인")
-                          .length /
-                          transactions.length) *
-                          100,
-                      )}
-                      %
+                      {merchantStats
+                        ? `${merchantStats.activeTransactionRate}%`
+                        : "-"}
                     </span>
                     <span className="text-sm text-gray-500 mt-2">
-                      전일 대비 동일
+                      {/* 전일 대비 동일 */}
                     </span>
                   </div>
                 </CardContent>
@@ -331,7 +326,7 @@ export default function AdminTransactionsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedTransactions.map((transaction) => (
+                    {sortedTransactions.map((transaction) => (
                       <tr
                         key={transaction.id}
                         className="border-b last:border-0 hover:bg-gray-50"
@@ -433,7 +428,7 @@ export default function AdminTransactionsPage() {
                   variant="ghost"
                   size="sm"
                   onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
                   }
                   disabled={currentPage === totalPages}
                 >
