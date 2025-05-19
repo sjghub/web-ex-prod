@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MoreHorizontal, Search } from "lucide-react";
+import { fetchWithAuth } from "@/lib/api-fetch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -46,73 +47,47 @@ export default function AdminTransactionsPage() {
     useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-  // 거래 내역 데이터 (예시)
-  const transactions: Transaction[] = [
-    {
-      id: "TRX-100000",
-      merchantName: "무신사",
-      category: "의류",
-      amount: 58000,
-      paymentMethod: "신용카드",
-      dateTime: "2025-04-28 오후 16:10",
-      status: "승인",
-    },
-    {
-      id: "TRX-100001",
-      merchantName: "LG전자",
-      category: "가전",
-      amount: 580000,
-      paymentMethod: "신용카드",
-      dateTime: "2025-04-27 오후 13:00",
-      status: "승인",
-    },
-    {
-      id: "TRX-100002",
-      merchantName: "쿠팡",
-      category: "생활",
-      amount: 5800,
-      paymentMethod: "신용카드",
-      dateTime: "2025-04-26 오후 12:00",
-      status: "승인",
-    },
-    {
-      id: "TRX-100003",
-      merchantName: "배달의민족",
-      category: "생활",
-      amount: 28000,
-      paymentMethod: "신용카드",
-      dateTime: "2025-04-25 오후 20:00",
-      status: "승인",
-    },
-    {
-      id: "TRX-100004",
-      merchantName: "스타벅스",
-      category: "카페",
-      amount: 8000,
-      paymentMethod: "신용카드",
-      dateTime: "2025-04-24 오전 10:00",
-      status: "승인",
-    },
-    {
-      id: "TRX-100005",
-      merchantName: "인터파크",
-      category: "문화",
-      amount: 158000,
-      paymentMethod: "신용카드",
-      dateTime: "2025-04-20 오후 16:00",
-      status: "승인",
-    },
-    {
-      id: "TRX-100006",
-      merchantName: "무신사",
-      category: "의류",
-      amount: 58000,
-      paymentMethod: "신용카드",
-      dateTime: "2025-04-01 오후 17:00",
-      status: "승인",
-    },
-  ];
+  type RawPayment = {
+    paymentId: number;
+    merchantName: string;
+    cardType: string;
+    category: string;
+    createdAt: string;
+    transactionAmount: number;
+    status: boolean;
+  };
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const res = await fetchWithAuth("/admin/merchants/payments", {
+          method: "GET",
+        });
+        const result = await res.json(); // 전체 응답 객체
+        const raw: RawPayment[] = result.response; // 실제 배열만 꺼내기
+
+        const parsed: Transaction[] = raw.map((t) => ({
+          id: `TRX-${t.paymentId.toString().padStart(6, "0")}`,
+          merchantName: t.merchantName,
+          category: t.category,
+          amount: t.transactionAmount,
+          paymentMethod: t.cardType,
+          dateTime: new Date(t.createdAt)
+            .toLocaleString("sv-SE")
+            .replace("T", " "),
+          status: t.status ? "승인" : "취소",
+        }));
+
+        setTransactions(parsed);
+      } catch (error) {
+        console.error("거래 내역 불러오기 실패:", error);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
 
   // 필터링된 거래 내역 목록
   const filteredTransactions = transactions.filter((transaction) => {
