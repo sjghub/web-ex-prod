@@ -156,60 +156,33 @@ export default function AdminDashboard() {
     }
   };
 
+  // 1. useState 정의
+  const [topMerchants, setTopMerchants] = useState<
+    {
+      merchantId: number;
+      merchantName: string;
+      transactionCount: number;
+      totalAmount: number;
+    }[]
+  >([]);
+
+  // 2. API 호출 함수 추가
+  const fetchTopMerchants = async () => {
+    try {
+      const response = await fetchWithAuth("/admin/merchants/top-stats");
+      if (!response.ok) throw new Error("상위 가맹점 조회 실패");
+      const data = await response.json();
+      setTopMerchants(data.response);
+    } catch (error) {
+      console.error("❌ 상위 가맹점 조회 에러:", error);
+    }
+  };
+
+  // 3. useEffect에 추가
   useEffect(() => {
     fetchMerchantStats();
+    fetchTopMerchants(); // ✅ 추가된 부분
   }, []);
-  // 가맹점 데이터
-  const merchants = [
-    {
-      id: 1,
-      name: "스타벅스",
-      type: "카페",
-      transactions: 8456,
-      amount: "15,678 만원",
-      status: "활성",
-    },
-    {
-      id: 2,
-      name: "CGV",
-      type: "영화",
-      transactions: 6234,
-      amount: "12,456 만원",
-      status: "활성",
-    },
-    {
-      id: 3,
-      name: "배달의민족",
-      type: "배달",
-      transactions: 5678,
-      amount: "9,876 만원",
-      status: "활성",
-    },
-    {
-      id: 4,
-      name: "쿠팡",
-      type: "쇼핑",
-      transactions: 4567,
-      amount: "8,765 만원",
-      status: "활성",
-    },
-    {
-      id: 5,
-      name: "올리브영",
-      type: "쇼핑",
-      transactions: 3456,
-      amount: "6,543 만원",
-      status: "활성",
-    },
-    {
-      id: 6,
-      name: "GS25",
-      type: "편의점",
-      transactions: 3210,
-      amount: "4,321 만원",
-      status: "활성",
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -320,16 +293,20 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {merchants.map((merchant) => (
+                    {topMerchants.map((merchant) => (
                       <tr
-                        key={merchant.id}
+                        key={merchant.merchantId}
                         className="border-b last:border-0 hover:bg-gray-50"
                       >
-                        <td className="py-3 text-left">{merchant.name}</td>
-                        <td className="py-3 text-right">
-                          {merchant.transactions.toLocaleString()}
+                        <td className="py-3 text-left">
+                          {merchant.merchantName}
                         </td>
-                        <td className="py-3 text-right">{merchant.amount}</td>
+                        <td className="py-3 text-right">
+                          {merchant.transactionCount.toLocaleString()}
+                        </td>
+                        <td className="py-3 text-right">
+                          {merchant.totalAmount.toLocaleString()}원
+                        </td>
                       </tr>
                     ))}
                   </tbody>
