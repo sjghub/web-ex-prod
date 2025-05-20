@@ -135,8 +135,8 @@ export const TransactionChart = () => {
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
-    merchantCount: 0,
-    transactionCount: 0,
+    totalMerchantCount: 0,
+    totalTransactionCount: 0,
     totalTransactionAmount: 0,
     averageTransactionAmount: 0,
     activeMerchantCount: 0,
@@ -198,7 +198,7 @@ export default function AdminDashboard() {
               <div className="flex flex-col">
                 <span className="text-base text-gray-500 mb-2">총 가맹점</span>
                 <span className="text-3xl font-bold">
-                  {stats.merchantCount.toLocaleString()}
+                  {stats.totalMerchantCount.toLocaleString()}
                 </span>
                 <span className="text-sm text-gray-500 mt-2">
                   활성 가맹점: {stats.activeMerchantCount.toLocaleString()}
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
                   총 거래 건수
                 </span>
                 <span className="text-3xl font-bold">
-                  {stats.totalTransactionAmount.toLocaleString()}
+                  {stats.totalTransactionCount.toLocaleString()}
                 </span>
                 <span className="text-sm text-gray-500 mt-2">
                   최근 24시간: +
