@@ -21,14 +21,16 @@ import {
 } from "@/components/ui/dialog";
 import { fetchWithAuth } from "@/lib/api-fetch";
 
-const DEFAULT_PROFILE_IMAGE = "/profile-image.png";
+const DEFAULT_PROFILE_IMAGE = "/white_bg.png";
 
 export default function MyPage() {
   const router = useRouter();
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
-
+  const MAX_FILE_SIZE_MB = 3;
+  const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -63,14 +65,15 @@ export default function MyPage() {
         if (!response.ok)
           throw new Error(data.message || "프로필 정보 불러오기 실패");
 
-        const { name, email, birth, phoneNumber, address } = data.response;
+        const { name, email, birth, phoneNumber, address, imageUrl } =
+          data.response;
         setUser({
           name,
           email,
           birthDate: birth,
           phone: phoneNumber,
           address: address || "",
-          profileImage: DEFAULT_PROFILE_IMAGE,
+          profileImage: imageUrl || DEFAULT_PROFILE_IMAGE,
         });
         setFormData({ email: email || "", address: address || "" });
       } catch (err) {
@@ -112,7 +115,38 @@ export default function MyPage() {
   const handleNotificationChange = (key: keyof typeof notifications) => {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
   };
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // 임시처방
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`이미지는 ${MAX_FILE_SIZE_MB}MB 이하만 업로드할 수 있습니다.`);
+      return;
+    }
+    const formData = new FormData();
+    formData.append("image", file);
 
+    try {
+      setIsUploading(true);
+      const response = await fetchWithAuth(
+        "/user/profile/image",
+        {
+          method: "PATCH",
+          body: formData,
+        },
+        "multipart",
+      );
+
+      if (!response.ok) throw new Error("이미지 업로드 실패");
+
+      const data = await response.json();
+      setUser((prev) => ({ ...prev, profileImage: data.response.imageUrl }));
+    } catch (error) {
+      console.error("프로필 이미지 업로드 에러:", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
   return (
     <div className="min-h-screen">
       <HeaderNavBar />
@@ -133,17 +167,54 @@ export default function MyPage() {
                   <div className="flex items-center gap-4 mb-6">
                     <div className="relative">
                       <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200">
+                        {/* 이미지 */}
                         <Image
                           src={user.profileImage}
                           alt="프로필 이미지"
                           width={96}
                           height={96}
-                          className="object-cover"
+                          className="object-cover w-full h-full"
+                        />
+
+                        {/* 업로드 중 오버레이 */}
+                        {isUploading && (
+                          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center z-10">
+                            <div className="text-white text-sm animate-pulse">
+                              업로드 중...
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Hover 시 오버레이 */}
+                        {!isUploading && (
+                          <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Edit2 className="text-white w-5 h-5" />
+                          </div>
+                        )}
+
+                        {/* 파일 업로드 input */}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          ref={fileInputRef}
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                          onChange={handleImageChange}
                         />
                       </div>
-                      <button className="absolute bottom-0 right-0 bg-black text-white rounded-full p-1.5 shadow-md">
-                        <Edit2 className="h-3.5 w-3.5" />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="absolute bottom-0 right-0 bg-black text-white rounded-full p-1.5 shadow-md"
+                      >
+                        <Edit2 className="h-3.5 w-3.5 cursor-pointer" />
                       </button>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        className="hidden"
+                        onChange={handleImageChange}
+                      />
                     </div>
                     <div className="flex flex-col justify-center">
                       <p className="text-lg font-semibold">{user.name}</p>

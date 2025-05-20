@@ -5,23 +5,25 @@ const API_URL = "http://localhost:8080/api";
 interface RequestOptions extends RequestInit {
   retryCount?: number;
 }
-
+type HeaderStrategy = "json" | "multipart" | "none";
 export const fetchWithAuth = async (
   endpoint: string,
   options: RequestOptions = {},
+  headerType: HeaderStrategy = "json", // 기본 json
 ): Promise<Response> => {
   const { retryCount = 0, ...fetchOptions } = options;
   const accessToken = document.cookie
     .split("; ")
     .find((row) => row.startsWith("accessToken="))
     ?.split("=")[1];
-
-  const headers = {
-    "Content-Type": "application/json",
+  const headers: Record<string, string> = {
     ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-    ...options.headers,
+    ...((options.headers || {}) as Record<string, string>),
   };
 
+  if (headerType === "json") {
+    headers["Content-Type"] = "application/json";
+  }
   try {
     const response = await fetch(`${API_URL}${endpoint}`, {
       ...fetchOptions,
