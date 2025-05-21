@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { CreditCard, Home, Settings, Store, Users } from "lucide-react";
 
 // 사이드바 메뉴 아이템 타입 정의
@@ -11,15 +11,10 @@ export interface SidebarItem {
   path: string;
 }
 
-interface SidebarProps {
-  activeTab: string;
-  onTabChange?: (tabId: string) => void;
-}
-
-export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
+export default function Sidebar() {
   const router = useRouter();
+  const pathname = usePathname();
 
-  // 사이드바 메뉴 아이템
   const sidebarItems: SidebarItem[] = [
     {
       id: "dashboard",
@@ -53,11 +48,15 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
     },
   ];
 
-  // 사이드바 메뉴 클릭 핸들러
+  // 가장 긴 경로부터 매칭하도록 정렬 → 정확한 탭 활성화
+  const sortedItems = [...sidebarItems].sort(
+    (a, b) => b.path.length - a.path.length,
+  );
+  const activeTabId = sortedItems.find(
+    (item) => pathname === item.path || pathname.startsWith(item.path + "/"),
+  )?.id;
+
   const handleSidebarItemClick = (item: SidebarItem) => {
-    if (onTabChange) {
-      onTabChange(item.id);
-    }
     router.push(item.path);
   };
 
@@ -73,7 +72,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             <li key={item.id}>
               <button
                 className={`w-full flex items-center px-4 py-3 text-left ${
-                  activeTab === item.id
+                  activeTabId === item.id
                     ? "bg-gray-100 text-black font-medium"
                     : "text-gray-600 hover:bg-gray-50"
                 }`}
