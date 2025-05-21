@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { fetchMerchants, Merchant } from "@/lib/api/fetchMerchants";
-import { fetchMerchantStatistics } from "@/lib/api/fetchMerchantStatistics";
+import { fetchMerchantStats } from "@/lib/api/fetchMerchantStats";
 
 export default function AdminMerchantsPage() {
   const router = useRouter();
@@ -42,17 +42,17 @@ export default function AdminMerchantsPage() {
     loadMerchants();
   }, [currentPage]);
   useEffect(() => {
-    const loadMerchantsStatistics = async () => {
+    const loadMerchantsStats = async () => {
       try {
-        const result = await fetchMerchantStatistics();
-        setMerchantCount(result.merchantCount);
+        const result = await fetchMerchantStats();
+        setMerchantCount(result.totalMerchantCount);
         setActiveMerchantCount(result.activeMerchantCount);
-        setTransactionCount(result.transactionCount);
+        setTransactionCount(result.totalTransactionCount);
       } catch (e) {
         console.error("가맹점 데이터를 불러오는데 실패했습니다", e);
       }
     };
-    loadMerchantsStatistics();
+    loadMerchantsStats();
   }, []);
 
   const filteredMerchants = merchants.filter((merchant) => {

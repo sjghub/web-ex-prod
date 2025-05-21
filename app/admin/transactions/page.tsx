@@ -26,9 +26,9 @@ import {
 } from "@/components/ui/select";
 import { fetchMerchantTransactions } from "@/lib/api/fetchMerchantTransactions";
 import {
-  fetchMerchantStats,
-  MerchantStats,
-} from "@/lib/api/fetchMerchantStats";
+  fetchMerchantPaymentStats,
+  MerchantPaymentStats,
+} from "@/lib/api/fetchMerchantPaymentStats";
 
 // 거래 내역 타입 정의
 interface Transaction {
@@ -53,14 +53,13 @@ export default function AdminTransactionsPage() {
   const itemsPerPage = 5;
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [totalPages, setTotalPages] = useState(1);
-  const [merchantStats, setMerchantStats] = useState<MerchantStats | null>(
-    null,
-  );
+  const [merchantStats, setMerchantStats] =
+    useState<MerchantPaymentStats | null>(null);
 
   useEffect(() => {
     const loadStats = async () => {
       try {
-        const stats = await fetchMerchantStats();
+        const stats = await fetchMerchantPaymentStats();
         setMerchantStats(stats);
       } catch (error) {
         console.error("통계 정보 불러오기 실패:", error);

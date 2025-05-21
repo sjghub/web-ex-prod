@@ -1,18 +1,19 @@
-import { fetchWithAuth } from "../api-fetch";
+import { fetchWithAuth } from "@/lib/api-fetch";
 
-export interface MerchantStats {
+interface MerchantStats {
+  totalMerchantCount: number;
   totalTransactionCount: number;
-  transactionCountChangeRate: number;
   totalTransactionAmount: number;
-  transactionAmountChangeRate: number;
   averageTransactionAmount: number;
-  averageAmountChangeRate: number;
-  activeTransactionRate: number;
+  activeMerchantCount: number;
+  recent24hTransactionIncrease: number;
+  transactionAmountChangePercent: number;
 }
-
 export const fetchMerchantStats = async (): Promise<MerchantStats> => {
-  const res = await fetchWithAuth("/admin/merchants/payments/stats");
-  const data = await res.json();
-  if (!data.success) throw new Error("통계 데이터 요청 실패");
+  const response = await fetchWithAuth(`/admin/merchants/stats`);
+  const data = await response.json();
+  if (!data.success) {
+    // 에러처리해야됌
+  }
   return data.response;
 };

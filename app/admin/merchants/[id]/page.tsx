@@ -16,6 +16,10 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchWithAuth } from "@/lib/api-fetch";
+import {
+  fetchSingleMerchantTransactions,
+  Transaction,
+} from "@/lib/api/fetchSingleMerchantTransactions";
 
 interface MerchantResponse {
   merchantName: string;
@@ -26,27 +30,17 @@ interface MerchantResponse {
   businessPhone: string;
 }
 
-interface Transaction {
-  id: string;
-  amount: string;
-  paymentMethod: string;
-  dateTime: string;
-  status: "완료" | "취소" | "보류";
-}
-
 interface MerchantDetail {
   id: number;
   name: string;
   category: string;
-  status: "활성" | "비활성";
+  status: boolean;
   totalTransactions: number;
   totalAmount: string;
   averageAmount: string;
   commissionRate: string;
   recent24hTransactionCount: number;
   percentChange: number;
-
-  recentTransactions: Transaction[];
 
   merchantName: string;
   businessNumber: string;
@@ -62,6 +56,7 @@ interface MerchantStatsResponse {
   commissionRate: string;
   recent24hTransactionCount: number;
   percentChange: number;
+  status: boolean;
 }
 
 export default function MerchantDetailPage() {
@@ -72,6 +67,10 @@ export default function MerchantDetailPage() {
   const [isActive, setIsActive] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [stats, setStats] = useState<MerchantStatsResponse | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactionPage, setTransactionPage] = useState(1);
+  const [transactionTotalPages, setTransactionTotalPages] = useState(1);
+  const itemsPerPage = 5;
 
   const fetchMerchantDetail = async (id: string): Promise<MerchantResponse> => {
     const response = await fetchWithAuth(`/admin/merchants/${id}`);
@@ -86,6 +85,24 @@ export default function MerchantDetailPage() {
     const data = await response.json();
     return data.response;
   };
+
+  useEffect(() => {
+    const loadTransactions = async () => {
+      try {
+        const data = await fetchSingleMerchantTransactions(
+          id,
+          transactionPage,
+          itemsPerPage,
+        );
+        setTransactions(data.content);
+        setTransactionTotalPages(data.totalPages);
+      } catch (error) {
+        console.error("거래 내역 로딩 실패:", error);
+      }
+    };
+
+    loadTransactions();
+  }, [id, transactionPage]);
 
   useEffect(() => {
     const loadMerchant = async () => {
@@ -104,7 +121,7 @@ export default function MerchantDetailPage() {
           managerName: merchantData.managerName,
           managerPhone: merchantData.managerPhone,
           businessPhone: merchantData.businessPhone,
-          status: "활성",
+          status: statsData.status,
 
           totalTransactions: statsData.transactionCount,
           totalAmount: `${statsData.totalTransactionAmount.toLocaleString()}원`,
@@ -112,35 +129,11 @@ export default function MerchantDetailPage() {
           commissionRate: statsData.commissionRate,
           recent24hTransactionCount: statsData.recent24hTransactionCount,
           percentChange: statsData.percentChange,
-          recentTransactions: [
-            {
-              id: "TRX-100000",
-              amount: "15,678 만원",
-              paymentMethod: "현대카드 ****123",
-              dateTime: "2025-04-28 오전 01:04",
-              status: "완료",
-            },
-            {
-              id: "TRX-100001",
-              amount: "12,345 만원",
-              paymentMethod: "삼성카드 ****456",
-              dateTime: "2025-04-28 오전 02:30",
-              status: "취소",
-            },
-            {
-              id: "TRX-100002",
-              amount: "7,890 만원",
-              paymentMethod: "카카오카드 ****789",
-              dateTime: "2025-04-28 오전 03:15",
-              status: "보류",
-            },
-          ],
-          // recentTransactions: [], // 실제 거래 목록 API로 대체 가능
         };
 
         setMerchant(newMerchant);
         setStats(statsData);
-        setIsActive(newMerchant.status === "활성");
+        setIsActive(statsData.status === true);
       } catch (err) {
         console.error(err);
       }
@@ -149,8 +142,25 @@ export default function MerchantDetailPage() {
     loadMerchant();
   }, [id]);
 
-  const handleStatusChange = (checked: boolean) => {
+  const handleStatusChange = async (checked: boolean) => {
     setIsActive(checked);
+
+    try {
+      const response = await fetchWithAuth(`/admin/merchants/${id}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: checked }),
+      });
+
+      if (!response.ok) {
+        throw new Error("상태 변경 실패");
+      }
+    } catch (error) {
+      console.error("상태 변경 에러:", error);
+      setIsActive(!checked); // 실패 시 롤백
+    }
   };
 
   const handleDeleteMerchant = () => {
@@ -292,7 +302,7 @@ export default function MerchantDetailPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {merchant.recentTransactions.map((transaction) => (
+                    {transactions.map((transaction) => (
                       <tr
                         key={transaction.id}
                         className="border-b last:border-0 hover:bg-gray-50"
@@ -308,9 +318,7 @@ export default function MerchantDetailPage() {
                             className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
                               transaction.status === "완료"
                                 ? "bg-green-100 text-green-800"
-                                : transaction.status === "취소"
-                                  ? "bg-red-100 text-red-800"
-                                  : "bg-amber-100 text-amber-800"
+                                : "bg-red-100 text-red-800"
                             }`}
                           >
                             {transaction.status}
@@ -322,6 +330,47 @@ export default function MerchantDetailPage() {
                 </table>
               </div>
             </CardContent>
+            {/* 페이지네이션 */}
+            <div className="p-4 flex items-center justify-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setTransactionPage((p) => Math.max(1, p - 1))}
+                disabled={transactionPage === 1}
+              >
+                이전
+              </Button>
+
+              {Array.from(
+                { length: transactionTotalPages },
+                (_, i) => i + 1,
+              ).map((page) => (
+                <Button
+                  key={page}
+                  variant="ghost"
+                  size="sm"
+                  className={
+                    page === transactionPage ? "bg-black text-white" : ""
+                  }
+                  onClick={() => setTransactionPage(page)}
+                >
+                  {page}
+                </Button>
+              ))}
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  setTransactionPage((p) =>
+                    Math.min(transactionTotalPages, p + 1),
+                  )
+                }
+                disabled={transactionPage === transactionTotalPages}
+              >
+                다음
+              </Button>
+            </div>
           </Card>
         </TabsContent>
 
