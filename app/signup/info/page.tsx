@@ -1,8 +1,7 @@
 "use client";
 
 import type React from "react";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,22 +16,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { fetchWithoutAuth } from "@/lib/api-fetch";
+
+const VERIFIED_KEY = "verifiedUser";
+const DEFAULT_ERROR_MSG = "회원가입 중 오류가 발생했습니다.";
 
 export default function UserInfoPage() {
   const router = useRouter();
 
-  // 인증된 사용자 정보 (예시용)
-  const verifiedUser = {
-    name: "홍길동",
-    birthdate: "1999.01.01",
-    phone: "010-1234-5678",
-  };
-
   const [formData, setFormData] = useState({
-    name: verifiedUser.name,
-    birthdate: verifiedUser.birthdate,
-    phone: verifiedUser.phone,
-    userId: "",
+    name: "",
+    birthday: "",
+    phone: "",
+    personalAuthKey: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -41,62 +38,106 @@ export default function UserInfoPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errorMessage, setErrorMessage] = useState("");
   const [showDialog, setShowDialog] = useState(false);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem(VERIFIED_KEY);
+    if (!stored) {
+      setErrorMessage("본인인증을 먼저 진행해주세요.");
+      router.replace("/verify");
+      return;
+    }
+
+    try {
+      const verified = JSON.parse(stored);
+      const formattedBirthdate = verified.birthday.replace(/-/g, ".");
+      const formattedPhone = verified.phone.replace(
+        /^(\d{3})(\d{3,4})(\d{4})$/,
+        "$1-$2-$3",
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        name: verified.name,
+        birthday: formattedBirthdate,
+        phone: formattedPhone,
+        personalAuthKey: verified.personalAuthKey,
+      }));
+    } catch (err) {
+      console.error("본인인증 세션 파싱 실패:", err);
+      setErrorMessage("본인인증 정보가 올바르지 않습니다.");
+      router.replace("/verify");
+    }
+  }, [router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
     if (errors[name]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
+      const newErrors = { ...errors };
+      delete newErrors[name];
+      setErrors(newErrors);
     }
   };
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.userId.trim()) {
-      newErrors.userId = "아이디를 입력해주세요.";
+  const handleErrorResponse = async (res: Response) => {
+    const data = await res.json();
+    if (res.status === 409) {
+      setErrorMessage(data.message || "이미 사용 중인 아이디입니다.");
+      return;
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "이메일을 입력해주세요.";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "올바른 이메일 형식이 아닙니다.";
+    if (res.status === 422 && data.response?.errors) {
+      const fieldErrors: Record<string, string> = {};
+      data.response.errors.forEach(
+        (err: { field: string; message: string }) => {
+          fieldErrors[err.field] = err.message;
+        },
+      );
+      setErrors(fieldErrors);
+      return;
     }
 
-    if (!formData.password) {
-      newErrors.password = "비밀번호를 입력해주세요.";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "비밀번호는 8자 이상이어야 합니다.";
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "비밀번호 확인을 입력해주세요.";
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    throw new Error();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
+    setErrorMessage("");
 
-    if (validateForm()) {
-      console.log("Form submitted:", formData);
+    if (formData.password !== formData.confirmPassword) {
+      setErrors({ confirmPassword: "비밀번호가 일치하지 않습니다." });
+      return;
+    }
+
+    try {
+      const response = await fetchWithoutAuth("/auth/signup", {
+        method: "POST",
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          birthdate: formData.birthday,
+          phone: formData.phone,
+          personalAuthKey: formData.personalAuthKey,
+        }),
+      });
+
+      if (!response.ok) {
+        await handleErrorResponse(response);
+        return;
+      }
+
       setShowDialog(true);
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
+      sessionStorage.clear();
+      setTimeout(() => router.push("/login"), 2000);
+    } catch (err) {
+      console.error(err);
+      setErrorMessage(DEFAULT_ERROR_MSG);
     }
   };
 
@@ -112,13 +153,12 @@ export default function UserInfoPage() {
 
         <Card className="border-gray-100 shadow-sm">
           <CardContent className="py-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSignup} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">이름</Label>
                 <Input
                   id="name"
                   name="name"
-                  placeholder="홍길동"
                   value={formData.name}
                   readOnly
                   className="bg-gray-50 text-gray-400 cursor-not-allowed !ring-0"
@@ -130,8 +170,7 @@ export default function UserInfoPage() {
                 <Input
                   id="birthdate"
                   name="birthdate"
-                  placeholder="1999.01.01"
-                  value={formData.birthdate}
+                  value={formData.birthday}
                   readOnly
                   className="bg-gray-50 text-gray-400 cursor-not-allowed !ring-0"
                 />
@@ -142,7 +181,6 @@ export default function UserInfoPage() {
                 <Input
                   id="phone"
                   name="phone"
-                  placeholder="010-1234-5678"
                   value={formData.phone}
                   readOnly
                   className="bg-gray-50 text-gray-400 cursor-not-allowed !ring-0"
@@ -150,18 +188,18 @@ export default function UserInfoPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="userId">
+                <Label htmlFor="username">
                   아이디 <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  id="userId"
-                  name="userId"
+                  id="username"
+                  name="username" // userId → username
                   placeholder="아이디를 입력하세요"
-                  value={formData.userId}
+                  value={formData.username}
                   onChange={handleChange}
                 />
-                {errors.userId && (
-                  <p className="text-sm text-red-500">{errors.userId}</p>
+                {errors.username && (
+                  <p className="text-sm text-red-500">{errors.username}</p>
                 )}
               </div>
 
@@ -191,7 +229,7 @@ export default function UserInfoPage() {
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="비밀번호를 입력하세요"
+                    placeholder="영문 대소문자, 숫자, 특수문자를 포함한 8자 이상"
                     value={formData.password}
                     onChange={handleChange}
                   />
@@ -246,13 +284,25 @@ export default function UserInfoPage() {
             </form>
           </CardContent>
         </Card>
+
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogContent className="bg-white" showCloseButton={false}>
             <DialogHeader>
               <DialogTitle>회원가입 완료</DialogTitle>
               <DialogDescription>회원가입이 완료되었습니다.</DialogDescription>
             </DialogHeader>
-            <DialogFooter></DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={!!errorMessage} onOpenChange={() => setErrorMessage("")}>
+          <DialogContent className="bg-white">
+            <DialogHeader>
+              <DialogTitle>알림</DialogTitle>
+              <DialogDescription>{errorMessage}</DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button onClick={() => setErrorMessage("")}>확인</Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>

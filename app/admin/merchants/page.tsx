@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,92 +13,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-// 가맹점 타입 정의
-interface Merchant {
-  id: number;
-  name: string;
-  category: string;
-  transactions: number;
-  amount: string;
-  status: "활성" | "비활성";
-}
+import { fetchMerchants, Merchant } from "@/lib/api/fetchMerchants";
+import { fetchMerchantStats } from "@/lib/api/fetchMerchantStats";
 
 export default function AdminMerchantsPage() {
   const router = useRouter();
   const [statusFilter, setStatusFilter] = useState("모든 상태");
   const [sortOrder, setSortOrder] = useState("최신순");
   const [searchQuery, setSearchQuery] = useState("");
+  const [merchants, setMerchants] = useState<Merchant[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const [merchantCount, setMerchantCount] = useState(0);
+  const [activeMerchantCount, setActiveMerchantCount] = useState(0);
+  const [transactionCount, setTransactionCount] = useState(0);
   const itemsPerPage = 5;
 
-  // 가맹점 데이터 (예시)
-  const merchants: Merchant[] = [
-    {
-      id: 1,
-      name: "스타벅스",
-      category: "카페",
-      transactions: 8456,
-      amount: "15,678 만원",
-      status: "활성",
-    },
-    {
-      id: 2,
-      name: "CGV",
-      category: "영화",
-      transactions: 6234,
-      amount: "12,456 만원",
-      status: "활성",
-    },
-    {
-      id: 3,
-      name: "배달의민족",
-      category: "배달",
-      transactions: 5678,
-      amount: "9,876 만원",
-      status: "활성",
-    },
-    {
-      id: 4,
-      name: "쿠팡",
-      category: "쇼핑",
-      transactions: 4567,
-      amount: "8,765 만원",
-      status: "활성",
-    },
-    {
-      id: 5,
-      name: "올리브영",
-      category: "쇼핑",
-      transactions: 3456,
-      amount: "6,543 만원",
-      status: "비활성",
-    },
-    {
-      id: 6,
-      name: "GS25",
-      category: "편의점",
-      transactions: 3210,
-      amount: "4,321 만원",
-      status: "활성",
-    },
-    {
-      id: 7,
-      name: "이디야커피",
-      category: "카페",
-      transactions: 2987,
-      amount: "3,654 만원",
-      status: "활성",
-    },
-  ];
+  useEffect(() => {
+    const loadMerchants = async () => {
+      try {
+        const result = await fetchMerchants(currentPage, itemsPerPage);
+        setMerchants(result.content);
+        setTotalPages(result.totalPages);
+      } catch (e) {
+        console.error("가맹점 데이터를 불러오는데 실패했습니다", e);
+      }
+    };
+    loadMerchants();
+  }, [currentPage]);
+  useEffect(() => {
+    const loadMerchantsStats = async () => {
+      try {
+        const result = await fetchMerchantStats();
+        setMerchantCount(result.totalMerchantCount);
+        setActiveMerchantCount(result.activeMerchantCount);
+        setTransactionCount(result.totalTransactionCount);
+      } catch (e) {
+        console.error("가맹점 데이터를 불러오는데 실패했습니다", e);
+      }
+    };
+    loadMerchantsStats();
+  }, []);
 
-  // 필터링된 가맹점 목록
   const filteredMerchants = merchants.filter((merchant) => {
-    // 상태 필터링
     if (statusFilter === "활성" && merchant.status !== "활성") return false;
     if (statusFilter === "비활성" && merchant.status !== "비활성") return false;
 
-    // 검색어 필터링
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       return (
@@ -110,7 +70,6 @@ export default function AdminMerchantsPage() {
     return true;
   });
 
-  // 정렬된 가맹점 목록
   const sortedMerchants = [...filteredMerchants].sort((a, b) => {
     switch (sortOrder) {
       case "이름순":
@@ -118,24 +77,17 @@ export default function AdminMerchantsPage() {
       case "거래건수순":
         return b.transactions - a.transactions;
       case "금액순":
-        return (
-          Number.parseInt(b.amount.replace(/[^0-9]/g, "")) -
-          Number.parseInt(a.amount.replace(/[^0-9]/g, ""))
-        );
+        return b.amount - a.amount;
       default:
         return a.id - b.id;
     }
   });
 
-  // 가맹점 상세 정보 보기
+  const paginatedMerchants = sortedMerchants;
+
   const handleViewMerchantDetail = (merchant: Merchant) => {
     router.push(`/admin/merchants/${merchant.id}`);
   };
-
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const endIdx = startIdx + itemsPerPage;
-  const paginatedMerchants = sortedMerchants.slice(startIdx, endIdx);
-  const totalPages = Math.ceil(sortedMerchants.length / itemsPerPage);
 
   return (
     <div>
@@ -157,7 +109,7 @@ export default function AdminMerchantsPage() {
                       총 가맹점
                     </span>
                     <span className="text-3xl font-bold">
-                      {merchants.length.toLocaleString()}개
+                      {merchantCount.toLocaleString()}개
                     </span>
                     <span className="text-sm text-gray-500 mt-2">
                       전월 대비 +5%
@@ -172,19 +124,11 @@ export default function AdminMerchantsPage() {
                       활성 가맹점
                     </span>
                     <span className="text-3xl font-bold">
-                      {merchants
-                        .filter((m) => m.status === "활성")
-                        .length.toLocaleString()}
-                      개
+                      {activeMerchantCount.toLocaleString()}개
                     </span>
                     <span className="text-sm text-gray-500 mt-2">
                       전체의{" "}
-                      {Math.round(
-                        (merchants.filter((m) => m.status === "활성").length /
-                          merchants.length) *
-                          100,
-                      )}
-                      %
+                      {Math.round((activeMerchantCount / merchantCount) * 100)}%
                     </span>
                   </div>
                 </CardContent>
@@ -197,8 +141,7 @@ export default function AdminMerchantsPage() {
                     </span>
                     <span className="text-3xl font-bold">
                       {Math.round(
-                        merchants.reduce((sum, m) => sum + m.transactions, 0) /
-                          merchants.length,
+                        transactionCount / merchantCount,
                       ).toLocaleString()}
                       건
                     </span>
@@ -319,9 +262,9 @@ export default function AdminMerchantsPage() {
                         <td className="px-6 py-4">{merchant.name}</td>
                         <td className="px-6 py-4">{merchant.category}</td>
                         <td className="px-6 py-4">
-                          {merchant.transactions.toLocaleString()}
+                          {merchant.transactions.toLocaleString()}건
                         </td>
-                        <td className="px-6 py-4">{merchant.amount}</td>
+                        <td className="px-6 py-4">{merchant.amount}원</td>
                         <td className="px-6 py-4 w-[120px] text-center">
                           <span
                             className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${

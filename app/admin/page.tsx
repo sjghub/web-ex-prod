@@ -1,49 +1,86 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { fetchWithAuth } from "@/lib/api-fetch";
 
 // 차트 컴포넌트
-const TransactionChart = () => {
-  const amountData = [58000, 62000, 78000, 76000, 56000, 78000, 64000];
-  const countData = [3200, 3000, 3600, 1800, 1200, 3200, 1600];
-  const labels = [
-    "4월 20일",
-    "4월 21일",
-    "4월 22일",
-    "4월 23일",
-    "4월 24일",
-    "4월 25일",
-    "4월 26일",
-  ];
+
+interface Trend {
+  date: string;
+  transactionAmount: number;
+  transactionCount: number;
+}
+
+export const TransactionChart = () => {
+  const [trendData, setTrendData] = useState<Trend[]>([]);
+
+  useEffect(() => {
+    const fetchTrends = async () => {
+      try {
+        const response = await fetchWithAuth("/admin/merchants/trends");
+        const data = await response.json();
+        console.log(data);
+        console.log(data.response);
+
+        setTrendData(data.response);
+      } catch (error) {
+        console.error("❌ 거래 추이 데이터 로딩 실패:", error);
+      }
+    };
+    fetchTrends();
+  }, []);
+
+  const labels = trendData.map((item) =>
+    new Date(item.date).toLocaleDateString("ko-KR", {
+      month: "numeric",
+      day: "numeric",
+    }),
+  );
+
+  if (trendData.length === 0) {
+    return (
+      <div className="text-gray-400 text-sm">
+        거래 추이 데이터를 불러오는 중입니다...
+      </div>
+    );
+  }
+
+  const amountData = trendData.map((item) => item.transactionAmount);
+  const countData = trendData.map((item) => item.transactionCount);
 
   const chartHeight = 260;
-  const yTicks = 10;
+  // 1. 최대값 계산
+  const maxAmount = Math.max(...amountData, 100000); // 최소 10만 보장
+  const maxCount = Math.max(...countData, 100); // 최소 100 보장
 
-  const amountStep = 10000;
-  const countStep = 1000;
-  const maxAmount = amountStep * yTicks;
-  const maxCount = countStep * yTicks;
+  // 2. 스텝 자동 설정 (반올림해서 보기 좋게)
+  const yTicks = 10;
+  const amountStep = Math.ceil(maxAmount / yTicks / 1000) * 1000; // 천 단위
+  const countStep = Math.ceil(maxCount / yTicks / 10) * 10; // 10 단위
+
+  // 3. 축 최대값 재계산
+  const adjustedMaxAmount = amountStep * yTicks;
+  const adjustedMaxCount = countStep * yTicks;
 
   return (
     <div className="w-full flex flex-col items-center">
       <div className="flex w-full px-4">
         {/* 왼쪽 Y축 (금액) */}
         <div className="flex flex-col justify-between items-end pr-2 text-xs text-blue-500 h-[320px]">
-          {Array.from({ length: yTicks + 1 }).map((_, i) => {
-            const value = (yTicks - i) * amountStep;
-            return (
-              <div key={i} className="h-[32px] leading-none">
-                {value.toLocaleString()}
-              </div>
-            );
-          })}
+          {Array.from({ length: yTicks + 1 }).map((_, i) => (
+            <div key={i} className="h-[32px] leading-none">
+              {((yTicks - i) * amountStep).toLocaleString()}
+            </div>
+          ))}
         </div>
 
-        {/* 차트 */}
+        {/* 차트 영역 */}
         <div className="relative flex-1 flex items-end justify-between h-[320px] border-y border-gray-200">
           {amountData.map((amount, index) => {
-            const amountHeight = (amount / maxAmount) * chartHeight;
-            const countHeight = (countData[index] / maxCount) * chartHeight;
+            const amountHeight = (amount / adjustedMaxAmount) * chartHeight;
+            const countHeight =
+              (countData[index] / adjustedMaxCount) * chartHeight;
 
             return (
               <div
@@ -73,16 +110,14 @@ const TransactionChart = () => {
 
         {/* 오른쪽 Y축 (건수) */}
         <div className="flex flex-col justify-between items-start pl-2 text-xs text-green-500 h-[320px]">
-          {Array.from({ length: yTicks + 1 }).map((_, i) => {
-            const value = (yTicks - i) * countStep;
-            return (
-              <div key={i} className="h-[32px] leading-none">
-                {value.toLocaleString()}
-              </div>
-            );
-          })}
+          {Array.from({ length: yTicks + 1 }).map((_, i) => (
+            <div key={i} className="h-[32px] leading-none">
+              {((yTicks - i) * countStep).toLocaleString()}
+            </div>
+          ))}
         </div>
       </div>
+
       {/* 범례 */}
       <div className="flex justify-center gap-6 mt-4 text-xs text-gray-500">
         <div className="flex items-center">
@@ -99,57 +134,55 @@ const TransactionChart = () => {
 };
 
 export default function AdminDashboard() {
-  // 가맹점 데이터
-  const merchants = [
+  const [stats, setStats] = useState({
+    totalMerchantCount: 0,
+    totalTransactionCount: 0,
+    totalTransactionAmount: 0,
+    averageTransactionAmount: 0,
+    activeMerchantCount: 0,
+    recent24hTransactionIncrease: 0,
+    transactionAmountChangePercent: 0,
+  });
+
+  const fetchMerchantStats = async () => {
+    try {
+      const response = await fetchWithAuth("/admin/merchants/stats");
+      if (!response.ok) throw new Error("가맹점 통계 조회 실패");
+
+      const data = await response.json();
+      setStats(data.response);
+    } catch (error) {
+      console.error("❌ 가맹점 통계 에러:", error);
+    }
+  };
+
+  // 1. useState 정의
+  const [topMerchants, setTopMerchants] = useState<
     {
-      id: 1,
-      name: "스타벅스",
-      type: "카페",
-      transactions: 8456,
-      amount: "15,678 만원",
-      status: "활성",
-    },
-    {
-      id: 2,
-      name: "CGV",
-      type: "영화",
-      transactions: 6234,
-      amount: "12,456 만원",
-      status: "활성",
-    },
-    {
-      id: 3,
-      name: "배달의민족",
-      type: "배달",
-      transactions: 5678,
-      amount: "9,876 만원",
-      status: "활성",
-    },
-    {
-      id: 4,
-      name: "쿠팡",
-      type: "쇼핑",
-      transactions: 4567,
-      amount: "8,765 만원",
-      status: "활성",
-    },
-    {
-      id: 5,
-      name: "올리브영",
-      type: "쇼핑",
-      transactions: 3456,
-      amount: "6,543 만원",
-      status: "활성",
-    },
-    {
-      id: 6,
-      name: "GS25",
-      type: "편의점",
-      transactions: 3210,
-      amount: "4,321 만원",
-      status: "활성",
-    },
-  ];
+      merchantId: number;
+      merchantName: string;
+      transactionCount: number;
+      totalAmount: number;
+    }[]
+  >([]);
+
+  // 2. API 호출 함수 추가
+  const fetchTopMerchants = async () => {
+    try {
+      const response = await fetchWithAuth("/admin/merchants/top-stats");
+      if (!response.ok) throw new Error("상위 가맹점 조회 실패");
+      const data = await response.json();
+      setTopMerchants(data.response);
+    } catch (error) {
+      console.error("❌ 상위 가맹점 조회 에러:", error);
+    }
+  };
+
+  // 3. useEffect에 추가
+  useEffect(() => {
+    fetchMerchantStats();
+    fetchTopMerchants(); // ✅ 추가된 부분
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -164,9 +197,11 @@ export default function AdminDashboard() {
             <CardContent className="px-6">
               <div className="flex flex-col">
                 <span className="text-base text-gray-500 mb-2">총 가맹점</span>
-                <span className="text-3xl font-bold">1,248</span>
+                <span className="text-3xl font-bold">
+                  {stats.totalMerchantCount.toLocaleString()}
+                </span>
                 <span className="text-sm text-gray-500 mt-2">
-                  활성 가맹점: 1,156
+                  활성 가맹점: {stats.activeMerchantCount.toLocaleString()}
                 </span>
               </div>
             </CardContent>
@@ -178,9 +213,12 @@ export default function AdminDashboard() {
                 <span className="text-base text-gray-500 mb-2">
                   총 거래 건수
                 </span>
-                <span className="text-3xl font-bold">28,456</span>
+                <span className="text-3xl font-bold">
+                  {stats.totalTransactionCount.toLocaleString()}
+                </span>
                 <span className="text-sm text-gray-500 mt-2">
-                  최근 24시간: +342
+                  최근 24시간: +
+                  {stats.recent24hTransactionIncrease.toLocaleString()}
                 </span>
               </div>
             </CardContent>
@@ -192,9 +230,14 @@ export default function AdminDashboard() {
                 <span className="text-base text-gray-500 mb-2">
                   총 거래 금액
                 </span>
-                <span className="text-3xl font-bold">45,892만원</span>
+                <span className="text-3xl font-bold">
+                  {stats.totalTransactionAmount.toLocaleString()}원
+                </span>
                 <span className="text-sm text-green-500 mt-2">
-                  전월 대비: +8.5%
+                  전월 대비:{" "}
+                  {stats.transactionAmountChangePercent >= 0
+                    ? `+${stats.transactionAmountChangePercent.toFixed(1)}%`
+                    : `${stats.transactionAmountChangePercent.toFixed(1)}%`}
                 </span>
               </div>
             </CardContent>
@@ -206,7 +249,9 @@ export default function AdminDashboard() {
                 <span className="text-base text-gray-500 mb-2">
                   평균 거래 금액
                 </span>
-                <span className="text-3xl font-bold">16,127원</span>
+                <span className="text-3xl font-bold">
+                  {stats.averageTransactionAmount.toLocaleString()}원
+                </span>
                 <span className="text-sm text-gray-500 mt-2">
                   거래당 평균 금액
                 </span>
@@ -248,16 +293,20 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {merchants.map((merchant) => (
+                    {topMerchants.map((merchant) => (
                       <tr
-                        key={merchant.id}
+                        key={merchant.merchantId}
                         className="border-b last:border-0 hover:bg-gray-50"
                       >
-                        <td className="py-3 text-left">{merchant.name}</td>
-                        <td className="py-3 text-right">
-                          {merchant.transactions.toLocaleString()}
+                        <td className="py-3 text-left">
+                          {merchant.merchantName}
                         </td>
-                        <td className="py-3 text-right">{merchant.amount}</td>
+                        <td className="py-3 text-right">
+                          {merchant.transactionCount.toLocaleString()}
+                        </td>
+                        <td className="py-3 text-right">
+                          {merchant.totalAmount.toLocaleString()}원
+                        </td>
                       </tr>
                     ))}
                   </tbody>

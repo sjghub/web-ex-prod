@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Edit2, Pencil, Save } from "lucide-react";
@@ -19,31 +19,35 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { fetchWithAuth } from "@/lib/api-fetch";
+
+const DEFAULT_PROFILE_IMAGE = "/white_bg.png";
 
 export default function MyPage() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
+  const MAX_FILE_SIZE_MB = 3;
+  const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    birthDate: "",
+    phone: "",
+    address: "",
+    profileImage: DEFAULT_PROFILE_IMAGE,
+  });
 
-  const user = {
-    name: "홍길동",
-    email: "gildong@naver.com",
-    birthDate: "1999.01.01",
-    phone: "010-1234-5678",
-    address: "서울특별시 마포구 월드컵북로 434 상암 IT타워",
-    profileImage: "/profile-image.png",
-  };
+  const [formData, setFormData] = useState({
+    email: "",
+    address: "",
+  });
 
   const [emailEditable, setEmailEditable] = useState(false);
   const [addressEditable, setAddressEditable] = useState(false);
-  const [formData, setFormData] = useState({
-    email: user.email,
-    address: user.address,
-  });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
+  const [showDialog, setShowDialog] = useState(false);
 
   const [notifications, setNotifications] = useState({
     email: true,
@@ -52,15 +56,97 @@ export default function MyPage() {
     security: true,
   });
 
-  const [showDialog, setShowDialog] = useState(false);
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetchWithAuth("/user/profile");
+        const data = await response.json();
 
-  const handleNotificationChange = (key: keyof typeof notifications) => {
-    setNotifications({
-      ...notifications,
-      [key]: !notifications[key],
-    });
+        if (!response.ok)
+          throw new Error(data.message || "프로필 정보 불러오기 실패");
+
+        const { name, email, birth, phoneNumber, address, imageUrl } =
+          data.response;
+        setUser({
+          name,
+          email,
+          birthDate: birth,
+          phone: phoneNumber,
+          address: address || "",
+          profileImage: imageUrl || DEFAULT_PROFILE_IMAGE,
+        });
+        setFormData({ email: email || "", address: address || "" });
+      } catch (err) {
+        console.error("유저 정보 불러오기 실패:", err);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
+  const handleProfileUpdate = async (field: "email" | "address") => {
+    const value = formData[field];
+    const fieldNameKor = field === "email" ? "이메일" : "주소";
+
+    try {
+      const response = await fetchWithAuth(`/user/profile/${field}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [field]: value }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || `${fieldNameKor} 저장 실패`);
+      }
+
+      setUser((prev) => ({ ...prev, [field]: value }));
+      setShowDialog(true);
+      setTimeout(() => setShowDialog(false), 1000);
+    } catch (err) {
+      console.error(`${fieldNameKor} 저장 에러:`, err);
+    }
+  };
+
+  const handleNotificationChange = (key: keyof typeof notifications) => {
+    setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // 임시처방
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`이미지는 ${MAX_FILE_SIZE_MB}MB 이하만 업로드할 수 있습니다.`);
+      return;
+    }
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      setIsUploading(true);
+      const response = await fetchWithAuth(
+        "/user/profile/image",
+        {
+          method: "PATCH",
+          body: formData,
+        },
+        "multipart",
+      );
+
+      if (!response.ok) throw new Error("이미지 업로드 실패");
+
+      const data = await response.json();
+      setUser((prev) => ({ ...prev, profileImage: data.response.imageUrl }));
+    } catch (error) {
+      console.error("프로필 이미지 업로드 에러:", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
   return (
     <div className="min-h-screen">
       <HeaderNavBar />
@@ -81,17 +167,54 @@ export default function MyPage() {
                   <div className="flex items-center gap-4 mb-6">
                     <div className="relative">
                       <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200">
+                        {/* 이미지 */}
                         <Image
                           src={user.profileImage}
                           alt="프로필 이미지"
                           width={96}
                           height={96}
-                          className="object-cover"
+                          className="object-cover w-full h-full"
+                        />
+
+                        {/* 업로드 중 오버레이 */}
+                        {isUploading && (
+                          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center z-10">
+                            <div className="text-white text-sm animate-pulse">
+                              업로드 중...
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Hover 시 오버레이 */}
+                        {!isUploading && (
+                          <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Edit2 className="text-white w-5 h-5" />
+                          </div>
+                        )}
+
+                        {/* 파일 업로드 input */}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          ref={fileInputRef}
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                          onChange={handleImageChange}
                         />
                       </div>
-                      <button className="absolute bottom-0 right-0 bg-black text-white rounded-full p-1.5 shadow-md">
-                        <Edit2 className="h-3.5 w-3.5" />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="absolute bottom-0 right-0 bg-black text-white rounded-full p-1.5 shadow-md"
+                      >
+                        <Edit2 className="h-3.5 w-3.5 cursor-pointer" />
                       </button>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        className="hidden"
+                        onChange={handleImageChange}
+                      />
                     </div>
                     <div className="flex flex-col justify-center">
                       <p className="text-lg font-semibold">{user.name}</p>
@@ -146,11 +269,7 @@ export default function MyPage() {
                           className="h-5 w-5"
                           onClick={() => {
                             if (emailEditable) {
-                              console.log("이메일 저장:", formData.email);
-                              setShowDialog(true);
-                              setTimeout(() => {
-                                setShowDialog(false);
-                              }, 1000);
+                              handleProfileUpdate("email");
                             } else {
                               setTimeout(
                                 () => emailInputRef.current?.focus(),
@@ -186,11 +305,7 @@ export default function MyPage() {
                           className="h-5 w-5"
                           onClick={() => {
                             if (addressEditable) {
-                              console.log("주소 저장:", formData.address);
-                              setShowDialog(true);
-                              setTimeout(() => {
-                                setShowDialog(false);
-                              }, 1000);
+                              handleProfileUpdate("address");
                             } else {
                               setTimeout(
                                 () => addressInputRef.current?.focus(),
