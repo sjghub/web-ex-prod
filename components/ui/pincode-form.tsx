@@ -10,8 +10,8 @@ interface PincodeFormProps {
   onBack: () => void;
   onComplete: (pincode: string) => void;
   maxLength?: number;
-  validateCardCondition?: boolean;
-  validateHasPincode?: boolean;
+  // validateCardCondition?: boolean;
+  // validateHasPincode?: boolean;
 }
 
 const PincodeForm = forwardRef<{ resetPassword: () => void }, PincodeFormProps>(
@@ -21,8 +21,8 @@ const PincodeForm = forwardRef<{ resetPassword: () => void }, PincodeFormProps>(
       description,
       onComplete,
       maxLength = 6,
-      validateCardCondition = false,
-      validateHasPincode = false,
+      // validateCardCondition = false,
+      // validateHasPincode = false,
     },
     ref,
   ) => {
