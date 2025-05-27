@@ -9,6 +9,14 @@ import { Label } from "@/components/ui/label";
 import { MonthSelectBox, YearSelectBox } from "@/components/ui/selectbox";
 import { VirtualKeypad } from "@/components/virtual-keypad";
 import { fetchAddCard } from "@/lib/api/fetchAddCard";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function CardRegisterPage() {
   const router = useRouter();
@@ -29,6 +37,8 @@ export default function CardRegisterPage() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showKeypad, setShowKeypad] = useState(false);
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const keypadRef = useRef<HTMLDivElement>(null);
 
   const inputRefs = [
@@ -158,12 +168,27 @@ export default function CardRegisterPage() {
       const fullCardNumber = `${cardParts.part1}${cardParts.part2}${cardParts.part3}${cardParts.part4}`;
       console.log("Submitted:", { cardNumber: fullCardNumber, ...formData });
       try {
-        await fetchAddCard({ cardNumber: fullCardNumber, ...formData });
+        const response = await fetchAddCard({
+          cardNumber: fullCardNumber,
+          ...formData,
+        });
+        if (!response.success) {
+          setErrorMessage(response.message || "카드 등록에 실패했습니다.");
+          setShowErrorDialog(true);
+          return;
+        }
+        router.push("/mycard");
       } catch (e) {
-        console.error("카드 등록이 실패했습니다", e);
+        console.error("카드 등록 중 오류 발생:", e);
+        setErrorMessage("카드 등록에 실패했습니다.");
+        setShowErrorDialog(true);
       }
-      router.push("/mycard");
     }
+  };
+
+  const handleErrorDialogClose = () => {
+    setShowErrorDialog(false);
+    router.push("/dashboard");
   };
 
   return (
@@ -306,6 +331,19 @@ export default function CardRegisterPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* 에러 다이얼로그 */}
+      <Dialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>오류 발생</DialogTitle>
+            <DialogDescription>{errorMessage}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={handleErrorDialogClose}>확인</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
