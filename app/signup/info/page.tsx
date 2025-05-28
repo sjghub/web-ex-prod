@@ -19,6 +19,7 @@ import {
 import { fetchWithoutAuth } from "@/lib/api-fetch";
 
 const VERIFIED_KEY = "verifiedUser";
+const SIGNUP_INFO_KEY = "signupInfo";
 const DEFAULT_ERROR_MSG = "회원가입 중 오류가 발생했습니다.";
 
 export default function UserInfoPage() {
@@ -103,7 +104,7 @@ export default function UserInfoPage() {
     throw new Error();
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleNext = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
     setErrorMessage("");
@@ -113,32 +114,19 @@ export default function UserInfoPage() {
       return;
     }
 
-    try {
-      const response = await fetchWithoutAuth("/auth/signup", {
-        method: "POST",
-        body: JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
-          birthdate: formData.birthday,
-          phone: formData.phone,
-          personalAuthKey: formData.personalAuthKey,
-        }),
-      });
+    // 회원가입 정보를 세션 스토리지에 저장
+    const signupInfo = {
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      name: formData.name,
+      birthdate: formData.birthday,
+      phone: formData.phone,
+      personalAuthKey: formData.personalAuthKey,
+    };
 
-      if (!response.ok) {
-        await handleErrorResponse(response);
-        return;
-      }
-
-      setShowDialog(true);
-      sessionStorage.clear();
-      setTimeout(() => router.push("/login"), 2000);
-    } catch (err) {
-      console.error(err);
-      setErrorMessage(DEFAULT_ERROR_MSG);
-    }
+    sessionStorage.setItem(SIGNUP_INFO_KEY, JSON.stringify(signupInfo));
+    router.push("/pincode");
   };
 
   return (
@@ -153,7 +141,7 @@ export default function UserInfoPage() {
 
         <Card className="border-gray-100 shadow-sm">
           <CardContent className="py-4">
-            <form onSubmit={handleSignup} className="space-y-4">
+            <form onSubmit={handleNext} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">이름</Label>
                 <Input
@@ -279,7 +267,7 @@ export default function UserInfoPage() {
               </div>
 
               <Button type="submit" className="w-full mt-6 bg-black text-white">
-                회원가입
+                다음
               </Button>
             </form>
           </CardContent>
