@@ -65,6 +65,7 @@ export default function PincodePage() {
         onBack={() => router.push("/signup/info")}
         onComplete={handleSignup}
       />
+      {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
     </div>
   );
 }
