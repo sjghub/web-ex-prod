@@ -260,7 +260,11 @@ export default function DashboardPage() {
                         {/* 앞면 */}
                         <div className="absolute inset-0 backface-hidden">
                           <Image
-                            src={card.imageUrl || "/placeholder.png"}
+                            src={
+                              card.imageUrl?.startsWith("http")
+                                ? card.imageUrl
+                                : "/placeholder.png"
+                            }
                             alt={card.cardName}
                             fill
                             className="rounded-lg shadow-sm object-cover"
@@ -275,7 +279,11 @@ export default function DashboardPage() {
                         {/* 뒷면 */}
                         <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-lg overflow-hidden">
                           <Image
-                            src={card.imageUrl || "/placeholder.png"}
+                            src={
+                              card.imageUrl?.startsWith("http")
+                                ? card.imageUrl
+                                : "/placeholder.png"
+                            }
                             alt={card.cardName}
                             fill
                             className="object-cover"
