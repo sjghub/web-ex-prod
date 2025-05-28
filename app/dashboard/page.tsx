@@ -103,12 +103,11 @@ export default function DashboardPage() {
   const [transactions, setTransactions] = useState<PaymentHistoryResponse[]>(
     [],
   );
-  const itemsPerPage = 4;
 
   useEffect(() => {
     const loadTransactions = async () => {
       try {
-        const result = await fetchRecentTransactions(1, itemsPerPage);
+        const result = await fetchRecentTransactions(1, 100);
         setTransactions(result.content);
       } catch (error) {
         console.error("거래 내역을 불러오는데 실패했습니다:", error);
@@ -209,7 +208,7 @@ export default function DashboardPage() {
         {/* 내 카드 + 최근 결제 내역 (가로 배치) */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
           {/* 내 카드 */}
-          <div className="lg:col-span-3 h-full flex flex-col">
+          <div className="lg:col-span-3 h-[400px] flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">내 카드</h2>
               <Button
@@ -221,7 +220,7 @@ export default function DashboardPage() {
                 전체 보기
               </Button>
             </div>
-            <div className="relative h-full flex-1 flex flex-col">
+            <div className="relative flex-1 flex flex-col">
               {/* Scroll buttons */}
               <button
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 transition-colors duration-200 scroll-button-left"
@@ -313,7 +312,7 @@ export default function DashboardPage() {
           </div>
 
           {/* 최근 결제 내역 */}
-          <div className="lg:col-span-2 flex flex-col">
+          <div className="lg:col-span-2 h-[400px] flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">최근 결제 내역</h2>
               <Button
@@ -325,9 +324,9 @@ export default function DashboardPage() {
                 전체 보기
               </Button>
             </div>
-            <Card className="h-full flex-1 flex flex-col overflow-hidden">
+            <Card className="h-full py-1 flex-1 flex flex-col overflow-hidden">
               <CardContent className="p-0 flex-1 flex flex-col h-full">
-                <div className="divide-y flex-1 flex flex-col h-full overflow-y-auto">
+                <div className="divide-y flex-1 flex flex-col h-full overflow-y-auto hide-scrollbar">
                   {transactions.map((transaction) => (
                     <div
                       key={transaction.id}
