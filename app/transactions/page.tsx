@@ -32,16 +32,6 @@ import {
   PaymentHistoryResponse,
 } from "@/lib/api/fetchRecentTransactions";
 
-interface Transaction {
-  id: number;
-  store: string;
-  amount: string;
-  date: string;
-  cardName: string;
-  category: string;
-  benefit?: string;
-}
-
 export default function TransactionsPage() {
   // const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
@@ -103,24 +93,24 @@ export default function TransactionsPage() {
     return matchesSearch && matchesCard && matchesDate;
   });
 
-  const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-    if (sortOption === "recent") {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    } else if (sortOption === "oldest") {
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    } else if (sortOption === "amount-high") {
-      return (
-        Number.parseInt(b.transactionAmount.toString.replace(/,/g, "")) -
-        Number.parseInt(a.transactionAmount.toString.replace(/,/g, ""))
-      );
-    } else if (sortOption === "amount-low") {
-      return (
-        Number.parseInt(a.transactionAmount.toString.replace(/,/g, "")) -
-        Number.parseInt(b.transactionAmount.toString.replace(/,/g, ""))
-      );
-    }
-    return 0;
-  });
+  // const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+  //   if (sortOption === "recent") {
+  //     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  //   } else if (sortOption === "oldest") {
+  //     return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+  //   } else if (sortOption === "amount-high") {
+  //     return (
+  //       Number.parseInt(b.transactionAmount.toString.replace(/,/g, "")) -
+  //       Number.parseInt(a.transactionAmount.toString.replace(/,/g, ""))
+  //     );
+  //   } else if (sortOption === "amount-low") {
+  //     return (
+  //       Number.parseInt(a.transactionAmount.toString.replace(/,/g, "")) -
+  //       Number.parseInt(b.transactionAmount.toString.replace(/,/g, ""))
+  //     );
+  //   }
+  //   return 0;
+  // });
 
   const handleViewTransactionDetail = (transaction: PaymentHistoryResponse) => {
     setSelectedTransaction(transaction);

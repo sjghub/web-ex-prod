@@ -51,18 +51,6 @@ export const fetchRecentTransactions = async (
     };
   }
 
-  const content: Transaction[] = data.response.content.map(
-    (payment: PaymentHistoryResponse) => ({
-      id: payment.id,
-      merchantName: payment.shopName,
-      amount: payment.transactionAmount,
-      paymentMethod: payment.cardName,
-      dateTime: new Date(payment.createdAt)
-        .toLocaleString("sv-SE")
-        .replace("T", " "),
-    }),
-  );
-
   return {
     content: data.response.content,
     totalPages: data.response.totalPages,
