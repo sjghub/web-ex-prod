@@ -91,10 +91,7 @@ export default function Home() {
                 : "opacity-0 translate-y-10"
             }`}
           >
-            <h1
-              className="text-6xl md:text-7xl lg:text-8xl font-medium text-center text-white mb-6"
-              style={{ fontFamily: "SBAggroB" }}
-            >
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-medium text-center text-white mb-6">
               <span className="text-gray-300">쓸수록 이득, </span>
               페이
               <span className="inline-block ml-2 -rotate-20">득</span>
@@ -205,62 +202,6 @@ export default function Home() {
         </section>
 
         {/* 주요 기능 섹션 */}
-        <section className="container mx-auto px-4 py-16 md:py-24 bg-white animate-on-scroll">
-          <div className="text-center mb-12">
-            <h2
-              className="text-3xl md:text-4xl font-bold mb-4"
-              style={{ fontFamily: "SBAggroB" }}
-            >
-              페이득의 주요 기능
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              카드 혜택을 최대한 활용할 수 있는 다양한 기능을 제공합니다
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
-                <CreditCard className="h-8 w-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-center mb-3">
-                스마트 카드 관리
-              </h3>
-              <p className="text-gray-600 text-center">
-                여러 카드를 한 곳에서 관리하고 각 카드의 혜택을 한눈에 확인할 수
-                있습니다.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
-                <Gift className="h-8 w-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-bold text-center mb-3">
-                혜택 자동 계산
-              </h3>
-              <p className="text-gray-600 text-center">
-                결제 시 자동으로 최고의 혜택을 주는 카드를 추천하고 적용된
-                혜택을 계산해 드립니다.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
-              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
-                <Shield className="h-8 w-8 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-bold text-center mb-3">
-                안전한 결제 시스템
-              </h3>
-              <p className="text-gray-600 text-center">
-                최신 보안 기술로 카드 정보를 안전하게 보호하며 간편한 결제
-                경험을 제공합니다.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* 사용자 후기 섹션 */}
         <section className="bg-gray-50 py-16 md:py-24 animate-on-scroll">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
@@ -268,82 +209,51 @@ export default function Home() {
                 className="text-3xl md:text-4xl font-bold mb-4"
                 style={{ fontFamily: "SBAggroB" }}
               >
-                사용자 후기
+                페이득의 주요 기능
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                페이득을 사용하고 있는 사용자들의 실제 후기를 확인해보세요
+                카드 혜택을 최대한 활용할 수 있는 다양한 기능을 제공합니다
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <div className="flex items-center mb-4">
-                  <div>
-                    <h4 className="font-bold">김**</h4>
-                    <p className="text-sm text-gray-500">30대 직장인</p>
-                  </div>
+              <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+                <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  <CreditCard className="h-8 w-8 text-blue-600" />
                 </div>
-                <p className="text-gray-600">
-                  "여러 카드를 사용하면서 어떤 카드가 어디서 혜택이 좋은지 항상
-                  헷갈렸는데, 페이득 덕분에 자동으로 최적의 카드를 사용할 수
-                  있게 되었어요. 매달 카드 혜택이 2만원 이상 늘었습니다!"
+                <h3 className="text-xl font-bold text-center mb-3">
+                  스마트 카드 관리
+                </h3>
+                <p className="text-gray-600 text-center">
+                  여러 카드를 한 곳에서 관리하고 각 카드의 혜택을 한눈에 확인할
+                  수 있습니다.
                 </p>
-                <div className="flex mt-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-5 h-5 text-yellow-400"
-                      fill="currentColor"
-                    />
-                  ))}
-                </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <div className="flex items-center mb-4">
-                  <div>
-                    <h4 className="font-bold">이**</h4>
-                    <p className="text-sm text-gray-500">20대 대학생</p>
-                  </div>
+              <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  <Gift className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-gray-600">
-                  "대학생이라 돈 관리가 중요한데, 페이득을 사용하면서 카드
-                  혜택을 놓치지 않게 되었어요. 특히 카페나 편의점 할인이
-                  자동으로 적용되어서 한 달에 만원 정도 더 절약하게 됐습니다."
+                <h3 className="text-xl font-bold text-center mb-3">
+                  혜택 자동 계산
+                </h3>
+                <p className="text-gray-600 text-center">
+                  결제 시 자동으로 최고의 혜택을 주는 카드를 추천하고 적용된
+                  혜택을 계산해 드립니다.
                 </p>
-                <div className="flex mt-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-5 h-5 text-yellow-400"
-                      fill="currentColor"
-                    />
-                  ))}
-                </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <div className="flex items-center mb-4">
-                  <div>
-                    <h4 className="font-bold">박**</h4>
-                    <p className="text-sm text-gray-500">40대 자영업자</p>
-                  </div>
+              <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+                <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  <Shield className="h-8 w-8 text-purple-600" />
                 </div>
-                <p className="text-gray-600">
-                  "자영업을 하다 보니 여러 카드로 결제를 많이 받는데, 페이득을
-                  통해 내 카드 혜택도 잘 챙기게 되었어요. 특히 결제 내역 관리
-                  기능이 정말 편리합니다. 세금 신고할 때도 도움이 많이 됩니다."
+                <h3 className="text-xl font-bold text-center mb-3">
+                  안전한 결제 시스템
+                </h3>
+                <p className="text-gray-600 text-center">
+                  최신 보안 기술로 카드 정보를 안전하게 보호하며 간편한 결제
+                  경험을 제공합니다.
                 </p>
-                <div className="flex mt-3">
-                  {[...Array(4)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-5 h-5 text-yellow-400"
-                      fill="currentColor"
-                    />
-                  ))}
-                  <Star className="w-5 h-5 text-gray-300" fill="currentColor" />
-                </div>
               </div>
             </div>
           </div>
