@@ -11,7 +11,7 @@ export default function VerifyPage() {
 
   useEffect(() => {
     // 올바른 type이 아니면 접근 불가
-    const validTypes = ["signup", "idInquiry", "pwInquiry"];
+    const validTypes = ["signup", "idInquiry", "pwInquiry", "payPincode"];
     if (!type || !validTypes.includes(type)) {
       router.replace("/");
       return;
@@ -39,6 +39,8 @@ export default function VerifyPage() {
         return "/idInquiry";
       case "pwInquiry":
         return "/pwInquiry/reset";
+      case "payPincode":
+        return "/mypage/change-pay-pincode";
       default:
         return "/";
     }
