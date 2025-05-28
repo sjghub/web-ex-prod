@@ -9,6 +9,11 @@ export default function ChangePincodePage() {
   const router = useRouter();
   const pincodeFormRef = useRef<{ resetPassword: () => void }>(null);
 
+  const handleForgotPassword = () => {
+    // 본인인증 페이지로 이동하면서 type을 payPincode로 설정
+    router.push("/verify?type=payPincode");
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <PincodeForm
@@ -16,6 +21,7 @@ export default function ChangePincodePage() {
         title="간편 결제 비밀번호 확인"
         description="현재 간편 결제 비밀번호를 입력해주세요."
         onBack={() => router.push("/mypage")}
+        onForgotPassword={handleForgotPassword}
         onComplete={async (paymentPinCode) => {
           try {
             const response = await fetchWithAuth(

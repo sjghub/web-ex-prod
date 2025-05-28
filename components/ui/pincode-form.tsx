@@ -1,5 +1,4 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
-// import { useRouter } from "next/navigation";
 import { CreditCard, RefreshCw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,24 +8,16 @@ interface PincodeFormProps {
   description: string;
   onBack: () => void;
   onComplete: (pincode: string) => void;
+  onForgotPassword?: () => void;
   maxLength?: number;
-  // validateCardCondition?: boolean;
-  // validateHasPincode?: boolean;
+  validateHasPincode?: boolean;
 }
 
 const PincodeForm = forwardRef<{ resetPassword: () => void }, PincodeFormProps>(
   (
-    {
-      title,
-      description,
-      onComplete,
-      maxLength = 6,
-      // validateCardCondition = false,
-      // validateHasPincode = false,
-    },
+    { title, description, onComplete, onForgotPassword, maxLength = 6 },
     ref,
   ) => {
-    // const router = useRouter();
     const [password, setPassword] = useState<string>("");
     const [shuffledKeys, setShuffledKeys] = useState<number[]>([]);
 
@@ -39,37 +30,7 @@ const PincodeForm = forwardRef<{ resetPassword: () => void }, PincodeFormProps>(
 
     useEffect(() => {
       shuffleKeypad();
-      // if (validateCardCondition) {
-      //   checkRepresentCard();
-      // }
-      // if (validateHasPincode) {
-      //   checkHasPayPassword();
-      // }
     }, []);
-
-    // const checkRepresentCard = async () => {
-    //   try {
-    //     const res = await fetch("/api/cards");
-    //     const data = await res.json();
-    //     const hasRepresent = data.some(
-    //       (card: { isRepresent: boolean }) => card.isRepresent,
-    //     );
-    //     if (!hasRepresent) router.replace("/card/register");
-    //   } catch (e) {
-    //     console.error("대표카드 확인 실패", e);
-    //   }
-    // };
-
-    // const checkHasPayPassword = async () => {
-    //   try {
-    //     const res = await fetch("/api/cards/pincode");
-    //     const data = await res.json();
-    //     const hasCard = Array.isArray(data) && data.length > 0;
-    //     if (!hasCard) router.replace("/card/register");
-    //   } catch (e) {
-    //     console.error("비밀번호 존재 확인 실패", e);
-    //   }
-    // };
 
     const shuffleKeypad = () => {
       const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
@@ -95,7 +56,7 @@ const PincodeForm = forwardRef<{ resetPassword: () => void }, PincodeFormProps>(
     return (
       <div className="w-full max-w-md">
         <Card className="shadow-sm border-gray-100">
-          <CardContent className="pt-6 pb-8">
+          <CardContent className="pt-6 pb-4">
             <div className="flex justify-center mb-6">
               <div className="bg-blue-100 rounded-full p-4">
                 <CreditCard className="h-8 w-8 text-blue-500" />
@@ -159,6 +120,15 @@ const PincodeForm = forwardRef<{ resetPassword: () => void }, PincodeFormProps>(
             <p className="text-xs text-gray-400 text-center mt-4">
               * 생년월일, 전화번호 등 추측하기 쉬운 번호는 사용하지 마세요.
             </p>
+
+            {onForgotPassword && (
+              <Button
+                onClick={onForgotPassword}
+                className="w-full text-sm text-gray-500 hover:text-gray-700 mt-4 underline"
+              >
+                비밀번호를 잊어버리셨나요?
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>
