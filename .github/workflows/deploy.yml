@@ -5,7 +5,7 @@ on:
     branches:
       - dev
       
-
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -42,18 +42,14 @@ jobs:
     needs: build
 
     steps:
-      - name: Write PEM key from base64
-        run: echo "${{ secrets.EC2_SSH_KEY_B64 }}" | base64 -d > key.pem
-
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key_path: key.pem         # ✅ 이걸 사용
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/paydeuk_server_web
             docker stop paydeuk_server_web || true
             docker rm paydeuk_server_web || true
             docker run -d --name paydeuk_server_web -p 3000:3000 ${{ secrets.DOCKER_HUB_USERNAME }}/paydeuk_server_web
-
