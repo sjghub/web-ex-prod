@@ -64,34 +64,34 @@ export default function TransactionsPage() {
     { id: "mywish", name: "KB국민 My WE:SH 카드" },
   ];
 
-  const filteredTransactions = transactions.filter((transaction) => {
-    const matchesSearch =
-      transaction.shopName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      transaction.cardName.toLowerCase().includes(searchQuery.toLowerCase());
+  // const filteredTransactions = transactions.filter((transaction) => {
+  //   const matchesSearch =
+  //     transaction.shopName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     transaction.cardName.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesCard =
-      cardFilter === "all" || transaction.cardName.includes(cardFilter);
+  //   const matchesCard =
+  //     cardFilter === "all" || transaction.cardName.includes(cardFilter);
 
-    let matchesDate = true;
-    const transactionDate = new Date(transaction.createdAt);
-    const now = new Date();
+  //   let matchesDate = true;
+  //   const transactionDate = new Date(transaction.createdAt);
+  //   const now = new Date();
 
-    if (dateRange === "1week") {
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(now.getDate() - 7);
-      matchesDate = transactionDate >= oneWeekAgo;
-    } else if (dateRange === "1month") {
-      const oneMonthAgo = new Date();
-      oneMonthAgo.setMonth(now.getMonth() - 1);
-      matchesDate = transactionDate >= oneMonthAgo;
-    } else if (dateRange === "3months") {
-      const threeMonthsAgo = new Date();
-      threeMonthsAgo.setMonth(now.getMonth() - 3);
-      matchesDate = transactionDate >= threeMonthsAgo;
-    }
+  //   if (dateRange === "1week") {
+  //     const oneWeekAgo = new Date();
+  //     oneWeekAgo.setDate(now.getDate() - 7);
+  //     matchesDate = transactionDate >= oneWeekAgo;
+  //   } else if (dateRange === "1month") {
+  //     const oneMonthAgo = new Date();
+  //     oneMonthAgo.setMonth(now.getMonth() - 1);
+  //     matchesDate = transactionDate >= oneMonthAgo;
+  //   } else if (dateRange === "3months") {
+  //     const threeMonthsAgo = new Date();
+  //     threeMonthsAgo.setMonth(now.getMonth() - 3);
+  //     matchesDate = transactionDate >= threeMonthsAgo;
+  //   }
 
-    return matchesSearch && matchesCard && matchesDate;
-  });
+  //   return matchesSearch && matchesCard && matchesDate;
+  // });
 
   // const sortedTransactions = [...filteredTransactions].sort((a, b) => {
   //   if (sortOption === "recent") {
