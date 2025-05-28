@@ -3,7 +3,7 @@ name: paydeuk-web CI/CD Pipeline
 on:
   push:
     branches:
-      - dev
+      - feat#110-build-error
 
 jobs:
   build:
