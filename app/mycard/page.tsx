@@ -53,6 +53,27 @@ interface CardResponse {
   imageUrl?: string;
 }
 
+// 스켈레톤 카드 컴포넌트
+const CardSkeleton = () => (
+  <Card className="overflow-hidden p-0 pb-6 animate-pulse">
+    <div className="relative aspect-[1.58/1] bg-gray-200" />
+    <CardContent className="px-4">
+      <div className="flex justify-between items-start mb-4">
+        <div className="space-y-2">
+          <div className="h-4 bg-gray-200 rounded w-24" />
+          <div className="h-3 bg-gray-200 rounded w-32" />
+        </div>
+        <div className="h-8 w-8 bg-gray-200 rounded" />
+      </div>
+      <div className="space-y-2">
+        <div className="h-3 bg-gray-200 rounded w-full" />
+        <div className="h-3 bg-gray-200 rounded w-3/4" />
+        <div className="h-3 bg-gray-200 rounded w-1/2" />
+      </div>
+    </CardContent>
+  </Card>
+);
+
 export default function MyCardPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
@@ -61,11 +82,13 @@ export default function MyCardPage() {
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [sortOption, setSortOption] = useState("default");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 내 카드 목록 (API 연동)
   const [myCards, setMyCards] = useState<CardResponse[]>([]);
 
   useEffect(() => {
+    setIsLoading(true);
     fetchWithAuth("/card/my", {
       method: "GET",
     })
@@ -74,6 +97,9 @@ export default function MyCardPage() {
         if (data.success && Array.isArray(data.response)) {
           setMyCards(data.response);
         }
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, []);
 
@@ -197,7 +223,13 @@ export default function MyCardPage() {
           </div>
 
           {/* 카드 목록 */}
-          {sortedCards.length > 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(3)].map((_, index) => (
+                <CardSkeleton key={index} />
+              ))}
+            </div>
+          ) : sortedCards.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedCards.map((card) => (
                 <Card key={card.id} className="overflow-hidden p-0 pb-6">
