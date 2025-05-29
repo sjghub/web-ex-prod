@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { fetchWithAuth } from "@/lib/api-fetch";
+import Footer from "@/components/footer-bar";
 
 const DEFAULT_PROFILE_IMAGE = "/profile-placeholder.png";
 
@@ -153,7 +154,7 @@ export default function MyPage() {
     <div className="min-h-screen">
       <HeaderNavBar />
 
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 mb-16">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl font-bold mb-2">내 정보</h1>
           <p className="text-gray-500 mb-6">
@@ -519,6 +520,10 @@ export default function MyPage() {
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <Footer />
+
       {/* 프로필 수정 확인 다이얼로그 */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="bg-white" showCloseButton={false}>

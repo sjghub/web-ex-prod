@@ -38,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { fetchWithAuth } from "@/lib/api-fetch";
+import Footer from "@/components/footer-bar";
 
 interface CardBenefit {
   content: string;
@@ -147,7 +148,7 @@ export default function MyCardPage() {
       <HeaderNavBar />
 
       {/* 메인 콘텐츠 */}
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 mb-24">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-2xl font-bold mb-2">내 카드</h1>
           <p className="text-gray-500 mb-6">
@@ -299,6 +300,10 @@ export default function MyCardPage() {
           )}
         </div>
       </main>
+
+      {/* Footer */}
+      <Footer />
+
       {/* 카드 삭제 확인 다이얼로그 */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent className="bg-white">

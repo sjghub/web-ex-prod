@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeaderNavBar } from "@/components/header-nav-bar";
 import { Utensils, CreditCard, ShoppingBag, Film, Bus } from "lucide-react";
+import Footer from "@/components/footer-bar";
 
 // 카드 타입 정의
 interface CardBenefit {
@@ -205,7 +206,7 @@ export default function CardBenefitsPage() {
       <HeaderNavBar />
 
       {/* 메인 콘텐츠 */}
-      <main className="container mx-auto px-4 py-6 space-y-6">
+      <main className="container mx-auto px-4 py-6 space-y-6 mb-24">
         <div>
           <h1 className="text-2xl font-bold mb-2">혜택별 카드 추천</h1>
           <p className="text-gray-600 mb-6">
@@ -300,6 +301,9 @@ export default function CardBenefitsPage() {
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
