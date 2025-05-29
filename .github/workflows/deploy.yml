@@ -5,8 +5,6 @@ on:
     branches:
       - dev
 
-     
-  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,7 +12,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # 최신 커밋 전체 히스토리 보장
 
+      - name: Debug - check commit and page.tsx content
+        run: |
+          git log -1
+          echo "--- page.tsx ---"
+          cat app/page.tsx || echo "파일 없음"
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -24,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build project
         run: npm run build
 
       - name: DockerHub Login
@@ -35,7 +40,7 @@ jobs:
 
       - name: Docker Build & Push
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/paydeuk_server_web .
+          docker build --no-cache -t ${{ secrets.DOCKER_HUB_USERNAME }}/paydeuk_server_web .
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/paydeuk_server_web
 
   deploy:
@@ -50,7 +55,8 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            echo "[EC2] Pulling latest image and restarting container..."
+            docker rm -f paydeuk_server_web || true
+            docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/paydeuk_server_web || true
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/paydeuk_server_web
-            docker stop paydeuk_server_web || true
-            docker rm paydeuk_server_web || true
             docker run -d --name paydeuk_server_web -p 3000:3000 ${{ secrets.DOCKER_HUB_USERNAME }}/paydeuk_server_web
