@@ -168,7 +168,7 @@ export default function DashboardPage() {
           <Card>
             <CardContent className="px-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-3xl font-bold">혜택별 최고의 카드</h2>
+                <h2 className="text-3xl font-bold">혜택별 카드 추천</h2>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -452,58 +452,68 @@ export default function DashboardPage() {
             <Card className="h-full py-1 flex-1 flex flex-col overflow-hidden">
               <CardContent className="p-0 flex-1 flex flex-col h-full">
                 <div className="divide-y flex-1 flex flex-col h-full overflow-y-auto hide-scrollbar">
-                  {isTransactionsLoading
-                    ? // 스켈레톤 UI
-                      Array.from({ length: 5 }).map((_, index) => (
-                        <div
-                          key={`skeleton-transaction-${index}`}
-                          className="p-3"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="space-y-2">
-                              <Skeleton className="h-5 w-32 bg-gray-200 animate-pulse" />
-                              <Skeleton className="h-4 w-24 bg-gray-200 animate-pulse" />
-                            </div>
-                            <div className="space-y-2 text-right">
-                              <Skeleton className="h-6 w-24 bg-gray-200 animate-pulse" />
-                              <Skeleton className="h-4 w-20 bg-gray-200 animate-pulse" />
-                            </div>
+                  {isTransactionsLoading ? (
+                    // 스켈레톤 UI
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <div
+                        key={`skeleton-transaction-${index}`}
+                        className="p-3"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-2">
+                            <Skeleton className="h-5 w-32 bg-gray-200 animate-pulse" />
+                            <Skeleton className="h-4 w-24 bg-gray-200 animate-pulse" />
+                          </div>
+                          <div className="space-y-2 text-right">
+                            <Skeleton className="h-6 w-24 bg-gray-200 animate-pulse" />
+                            <Skeleton className="h-4 w-20 bg-gray-200 animate-pulse" />
                           </div>
                         </div>
-                      ))
-                    : transactions.map((transaction) => (
-                        <div
-                          key={transaction.id}
-                          className="flex items-center justify-between p-3 flex-shrink-0"
-                        >
-                          <div>
-                            <p className="font-bold text-base">
-                              {transaction.shopName}
-                            </p>
-                            <p className="text-gray-500 text-xs mt-1">
-                              {new Date(transaction.createdAt).toLocaleString(
-                                "ko-KR",
-                                {
-                                  year: "numeric",
-                                  month: "2-digit",
-                                  day: "2-digit",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  hour12: false,
-                                },
-                              )}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-bold text-lg">
-                              {transaction.transactionAmount.toLocaleString()}원
-                            </p>
-                            <p className="text-gray-400 text-xs mt-1">
-                              {transaction.cardName}
-                            </p>
-                          </div>
+                      </div>
+                    ))
+                  ) : transactions.length === 0 ? (
+                    <div className="flex-1 flex flex-col items-center justify-center text-gray-500">
+                      <div className="text-center space-y-2">
+                        <p className="text-lg font-medium">
+                          결제 내역이 없습니다
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    transactions.map((transaction) => (
+                      <div
+                        key={transaction.id}
+                        className="flex items-center justify-between p-3 flex-shrink-0"
+                      >
+                        <div>
+                          <p className="font-bold text-base">
+                            {transaction.shopName}
+                          </p>
+                          <p className="text-gray-500 text-xs mt-1">
+                            {new Date(transaction.createdAt).toLocaleString(
+                              "ko-KR",
+                              {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              },
+                            )}
+                          </p>
                         </div>
-                      ))}
+                        <div className="text-right">
+                          <p className="font-bold text-lg">
+                            {transaction.transactionAmount.toLocaleString()}원
+                          </p>
+                          <p className="text-gray-400 text-xs mt-1">
+                            {transaction.cardName}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
