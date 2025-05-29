@@ -49,7 +49,7 @@ export default function CardBenefitsPage() {
     if (category && categoryMapping[category]) {
       setActiveCategory(categoryMapping[category]);
     }
-  }, [searchParams]);
+  }, [searchParams, categoryMapping]);
 
   // 카테고리 변경 시 URL 업데이트
   const handleCategoryChange = (category: string) => {
