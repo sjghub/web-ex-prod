@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -24,13 +24,16 @@ export default function CardBenefitsPage() {
   const searchParams = useSearchParams();
 
   // URL 파라미터의 카테고리를 실제 카테고리 이름으로 매핑
-  const categoryMapping: { [key: string]: string } = {
-    subscription: "정기결제",
-    food_beverage: "식/음료",
-    cultural: "문화",
-    shopping: "쇼핑",
-    transportation: "교통",
-  };
+  const categoryMapping = useMemo<Record<string, string>>(
+    () => ({
+      subscription: "정기결제",
+      food_beverage: "식/음료",
+      cultural: "문화",
+      shopping: "쇼핑",
+      transportation: "교통",
+    }),
+    [],
+  );
 
   // 초기 카테고리 설정
   const getInitialCategory = () => {
