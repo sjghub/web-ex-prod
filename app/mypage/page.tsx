@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { fetchWithAuth } from "@/lib/api-fetch";
 
-const DEFAULT_PROFILE_IMAGE = "/white_bg.png";
+const DEFAULT_PROFILE_IMAGE = "/profile-placeholder.png";
 
 export default function MyPage() {
   const router = useRouter();
@@ -115,6 +115,7 @@ export default function MyPage() {
   const handleNotificationChange = (key: keyof typeof notifications) => {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
   };
+
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -147,6 +148,7 @@ export default function MyPage() {
       setIsUploading(false);
     }
   };
+
   return (
     <div className="min-h-screen">
       <HeaderNavBar />
@@ -169,7 +171,7 @@ export default function MyPage() {
                       <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200">
                         {/* 이미지 */}
                         <Image
-                          src={user.profileImage}
+                          src={user.profileImage || DEFAULT_PROFILE_IMAGE}
                           alt="프로필 이미지"
                           width={96}
                           height={96}
@@ -178,10 +180,14 @@ export default function MyPage() {
 
                         {/* 업로드 중 오버레이 */}
                         {isUploading && (
-                          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center z-10">
-                            <div className="text-white text-sm animate-pulse">
-                              업로드 중...
-                            </div>
+                          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center z-10 rounded-full overflow-hidden">
+                            <Image
+                              src={DEFAULT_PROFILE_IMAGE}
+                              alt="로딩 중"
+                              width={96}
+                              height={96}
+                              className="object-cover animate-pulse"
+                            />
                           </div>
                         )}
 
