@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ interface CardBenefit {
   company: string;
 }
 
-export default function CardBenefitsPage() {
+function CardBenefitsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -305,5 +305,13 @@ export default function CardBenefitsPage() {
       {/* Footer */}
       <Footer />
     </div>
+  );
+}
+
+export default function CardBenefitsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CardBenefitsContent />
+    </Suspense>
   );
 }
