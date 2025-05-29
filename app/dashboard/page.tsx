@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCardScroll } from "./page-script";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { fetchWithAuth } from "@/lib/api-fetch";
 import { HeaderNavBar } from "@/components/header-nav-bar";
@@ -20,15 +21,10 @@ export default function DashboardPage() {
   const [userBenefits, setUserBenefits] = useState<BenefitResponse | null>(
     null,
   );
+  const [isCardsLoading, setIsCardsLoading] = useState(true);
+  const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
   const router = useRouter();
-  /**
-   * 네비게이션 바에서 현재 dashboard 페이지일 경우, dashboard 페이지로 다시 렌더링 해줘야 하는 이유?
-   * 현재 ESLint 규칙에 의해 activeTab이 사용되지 않아, 코드를 살펴본 뒤 setActiveTab이 사용되는 부분을 주석처리 해두었습니다.
-   * 추후 논의 필요
-   */
-  // const [activeTab, setActiveTab] = useState("home")
 
-  // Initialize card scroll functionality
   useCardScroll();
 
   useEffect(() => {
@@ -87,12 +83,16 @@ export default function DashboardPage() {
   const [myCards, setMyCards] = useState<CardResponse[]>([]);
 
   useEffect(() => {
+    setIsCardsLoading(true);
     fetchWithAuth("/card/my", { method: "GET" })
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.response)) {
           setMyCards(data.response);
         }
+      })
+      .finally(() => {
+        setIsCardsLoading(false);
       });
   }, []);
 
@@ -107,10 +107,13 @@ export default function DashboardPage() {
   useEffect(() => {
     const loadTransactions = async () => {
       try {
+        setIsTransactionsLoading(true);
         const result = await fetchRecentTransactions(1, 100);
         setTransactions(result.content);
       } catch (error) {
         console.error("거래 내역을 불러오는데 실패했습니다:", error);
+      } finally {
+        setIsTransactionsLoading(false);
       }
     };
 
@@ -197,9 +200,17 @@ export default function DashboardPage() {
                   </p>
                 </>
               ) : (
-                <p className="text-xl text-gray-500">
-                  혜택 정보를 불러오는 중...
-                </p>
+                <div className="flex flex-col justify-between h-full">
+                  <div className="space-y-2">
+                    <Skeleton className="h-8 w-[280px] bg-gray-200 animate-pulse" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-24 w-[320px] bg-gray-200 animate-pulse" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-6 w-[240px] bg-gray-200 animate-pulse" />
+                  </div>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -208,7 +219,7 @@ export default function DashboardPage() {
         {/* 내 카드 + 최근 결제 내역 (가로 배치) */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
           {/* 내 카드 */}
-          <div className="lg:col-span-3 h-[400px] flex flex-col">
+          <div className="lg:col-span-3 h-[300px] flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">내 카드</h2>
               <Button
@@ -237,75 +248,89 @@ export default function DashboardPage() {
               </button>
 
               {/* Scrollable container */}
-              <div className="cards-scroll-container overflow-x-auto pb-4 hide-scrollbar h-full flex-1">
+              <div className="cards-scroll-container overflow-x-auto hide-scrollbar h-full flex-1">
                 <div className="inline-flex gap-4 px-8">
-                  {sortedCards.map((card) => (
-                    <div
-                      key={card.id}
-                      className="flex-none w-[150px] md:w-[180px] aspect-[1/1.58] perspective"
-                    >
-                      <div className="relative w-full h-full transition-transform duration-500 transform-style-preserve-3d hover:rotate-y-180">
-                        {/* 앞면 */}
-                        <div className="absolute inset-0 backface-hidden">
-                          <Image
-                            src={
-                              card.imageUrl?.startsWith("http")
-                                ? card.imageUrl
-                                : "/placeholder.png"
-                            }
-                            alt={card.cardName}
-                            fill
-                            className="rounded-lg shadow-sm object-cover"
-                          />
-                          {card.isDefaultCard && (
-                            <div className="absolute top-2 right-2 bg-black text-white text-xs px-2 py-1 rounded-full">
-                              대표
+                  {isCardsLoading ? (
+                    // 스켈레톤 UI
+                    Array.from({ length: 4 }).map((_, index) => (
+                      <div
+                        key={`skeleton-${index}`}
+                        className="flex-none w-[150px] md:w-[180px] aspect-[1/1.58]"
+                      >
+                        <Skeleton className="w-full h-full rounded-lg bg-gray-200 animate-pulse" />
+                      </div>
+                    ))
+                  ) : (
+                    <>
+                      {sortedCards.map((card) => (
+                        <div
+                          key={card.id}
+                          className="flex-none w-[150px] md:w-[180px] aspect-[1/1.58] perspective"
+                        >
+                          <div className="relative w-full h-full transition-transform duration-500 transform-style-preserve-3d hover:rotate-y-180">
+                            {/* 앞면 */}
+                            <div className="absolute inset-0 backface-hidden">
+                              <Image
+                                src={
+                                  card.imageUrl?.startsWith("http")
+                                    ? card.imageUrl
+                                    : "/placeholder.png"
+                                }
+                                alt={card.cardName}
+                                fill
+                                className="rounded-lg shadow-sm object-cover"
+                              />
+                              {card.isDefaultCard && (
+                                <div className="absolute top-2 right-2 bg-black text-white text-xs px-2 py-1 rounded-full">
+                                  대표
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
 
-                        {/* 뒷면 */}
-                        <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-lg overflow-hidden">
-                          <Image
-                            src={
-                              card.imageUrl?.startsWith("http")
-                                ? card.imageUrl
-                                : "/placeholder.png"
-                            }
-                            alt={card.cardName}
-                            fill
-                            className="object-cover"
-                          />
-                          <div className="absolute inset-0 bg-white/60 backdrop-blur-md px-4 py-3 flex flex-col justify-between text-left text-gray-800">
-                            <div>
-                              <h3 className="text-base font-semibold mb-1">
-                                {card.cardName}
-                              </h3>
-                              <p className="text-sm">
-                                **** **** **** {card.cardNumber.slice(-4)}
-                              </p>
+                            {/* 뒷면 */}
+                            <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-lg overflow-hidden">
+                              <Image
+                                src={
+                                  card.imageUrl?.startsWith("http")
+                                    ? card.imageUrl
+                                    : "/placeholder.png"
+                                }
+                                alt={card.cardName}
+                                fill
+                                className="object-cover"
+                              />
+                              <div className="absolute inset-0 bg-white/60 backdrop-blur-md px-4 py-3 flex flex-col justify-between text-left text-gray-800">
+                                <div>
+                                  <h3 className="text-base font-semibold mb-1">
+                                    {card.cardName}
+                                  </h3>
+                                  <p className="text-sm">
+                                    **** **** **** {card.cardNumber.slice(-4)}
+                                  </p>
+                                </div>
+                                <ul className="text-xs space-y-1">
+                                  {card.cardBenefits.map((benefit, index) => (
+                                    <li key={index}>• {benefit.content}</li>
+                                  ))}
+                                </ul>
+                              </div>
                             </div>
-                            <ul className="text-xs space-y-1">
-                              {card.cardBenefits.map((benefit, index) => (
-                                <li key={index}>• {benefit.content}</li>
-                              ))}
-                            </ul>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      ))}
 
-                  {/* 카드 등록 */}
-                  <div
-                    className="relative flex-none w-[150px] md:w-[180px] aspect-[1/1.58] border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer"
-                    onClick={() => router.push("/card/register")}
-                  >
-                    <div className="flex flex-col items-center text-gray-500">
-                      <Plus className="h-6 w-6 mb-1" />
-                      <span className="text-sm">카드 등록하기</span>
-                    </div>
-                  </div>
+                      {/* 카드 등록 */}
+                      <div
+                        className="relative flex-none w-[150px] md:w-[180px] aspect-[1/1.58] border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer"
+                        onClick={() => router.push("/card/register")}
+                      >
+                        <div className="flex flex-col items-center text-gray-500">
+                          <Plus className="h-6 w-6 mb-1" />
+                          <span className="text-sm">카드 등록하기</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -327,39 +352,58 @@ export default function DashboardPage() {
             <Card className="h-full py-1 flex-1 flex flex-col overflow-hidden">
               <CardContent className="p-0 flex-1 flex flex-col h-full">
                 <div className="divide-y flex-1 flex flex-col h-full overflow-y-auto hide-scrollbar">
-                  {transactions.map((transaction) => (
-                    <div
-                      key={transaction.id}
-                      className="flex items-center justify-between p-3 flex-shrink-0"
-                    >
-                      <div>
-                        <p className="font-bold text-base">
-                          {transaction.shopName}
-                        </p>
-                        <p className="text-gray-500 text-xs mt-1">
-                          {new Date(transaction.createdAt).toLocaleString(
-                            "ko-KR",
-                            {
-                              year: "numeric",
-                              month: "2-digit",
-                              day: "2-digit",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            },
-                          )}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-lg">
-                          {transaction.transactionAmount.toLocaleString()}원
-                        </p>
-                        <p className="text-gray-400 text-xs mt-1">
-                          {transaction.cardName}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                  {isTransactionsLoading
+                    ? // 스켈레톤 UI
+                      Array.from({ length: 5 }).map((_, index) => (
+                        <div
+                          key={`skeleton-transaction-${index}`}
+                          className="p-3"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="space-y-2">
+                              <Skeleton className="h-5 w-32 bg-gray-200 animate-pulse" />
+                              <Skeleton className="h-4 w-24 bg-gray-200 animate-pulse" />
+                            </div>
+                            <div className="space-y-2 text-right">
+                              <Skeleton className="h-6 w-24 bg-gray-200 animate-pulse" />
+                              <Skeleton className="h-4 w-20 bg-gray-200 animate-pulse" />
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    : transactions.map((transaction) => (
+                        <div
+                          key={transaction.id}
+                          className="flex items-center justify-between p-3 flex-shrink-0"
+                        >
+                          <div>
+                            <p className="font-bold text-base">
+                              {transaction.shopName}
+                            </p>
+                            <p className="text-gray-500 text-xs mt-1">
+                              {new Date(transaction.createdAt).toLocaleString(
+                                "ko-KR",
+                                {
+                                  year: "numeric",
+                                  month: "2-digit",
+                                  day: "2-digit",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: false,
+                                },
+                              )}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-lg">
+                              {transaction.transactionAmount.toLocaleString()}원
+                            </p>
+                            <p className="text-gray-400 text-xs mt-1">
+                              {transaction.cardName}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                 </div>
               </CardContent>
             </Card>
