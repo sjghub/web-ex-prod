@@ -23,6 +23,7 @@ export default function DashboardPage() {
   );
   const [isCardsLoading, setIsCardsLoading] = useState(true);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const router = useRouter();
 
   useCardScroll();
@@ -54,19 +55,54 @@ export default function DashboardPage() {
     {
       id: 1,
       name: "넷플릭스",
-      logo: "/netflix_icon.png",
+      logo: "/netflix-logo.jpg",
+      category: "subscription",
     },
     {
       id: 2,
-      name: "스타벅스",
-      logo: "/starbucks_icon.png",
+      name: "배달의민족",
+      logo: "/baemin-logo.png",
+      category: "food_beverage",
     },
     {
       id: 3,
       name: "CGV",
-      logo: "/cgv_icon.png",
+      logo: "/cgv-logo.png",
+      category: "cultural",
+    },
+    {
+      id: 4,
+      name: "쿠팡",
+      logo: "/coupang-logo.png",
+      category: "shopping",
+    },
+    {
+      id: 5,
+      name: "스타벅스",
+      logo: "/starbucks-logo.png",
+      category: "food_beverage",
+    },
+    {
+      id: 6,
+      name: "코레일",
+      logo: "/korail-logo.png",
+      category: "transportation",
     },
   ];
+
+  const handlePrevCard = () => {
+    setCurrentCardIndex(
+      (prev) => (prev - 1 + bestCards.length) % bestCards.length,
+    );
+  };
+
+  const handleNextCard = () => {
+    setCurrentCardIndex((prev) => (prev + 1) % bestCards.length);
+  };
+
+  const handleCardClick = (category: string) => {
+    router.push(`/card-recommendation?category=${category}`);
+  };
 
   // 내 카드 목록
   interface CardBenefit {
@@ -149,28 +185,92 @@ export default function DashboardPage() {
                     variant="ghost"
                     size="icon"
                     className="absolute left-0 z-10"
+                    onClick={handlePrevCard}
                   >
                     <ChevronLeft className="h-6 w-6" />
                   </Button>
 
-                  {bestCards.map((card) => (
-                    <div key={card.id} className="flex flex-col items-center">
-                      <div className="w-auto h-auto rounded-full overflow-hidden flex items-center justify-center">
-                        <Image
-                          src={card.logo || "/placeholder.svg"}
-                          alt={card.name}
-                          width={120}
-                          height={120}
-                          className="object-contain"
-                        />
-                      </div>
+                  <div className="flex items-center justify-center gap-8">
+                    {/* 이전 카드 */}
+                    <div
+                      className="w-auto h-auto rounded-full overflow-hidden flex items-center justify-center transition-transform duration-300 opacity-50 scale-75 cursor-pointer hover:opacity-70"
+                      onClick={() =>
+                        handleCardClick(
+                          bestCards[
+                            (currentCardIndex - 1 + bestCards.length) %
+                              bestCards.length
+                          ].category,
+                        )
+                      }
+                    >
+                      <Image
+                        src={
+                          bestCards[
+                            (currentCardIndex - 1 + bestCards.length) %
+                              bestCards.length
+                          ].logo || "/placeholder.svg"
+                        }
+                        alt={
+                          bestCards[
+                            (currentCardIndex - 1 + bestCards.length) %
+                              bestCards.length
+                          ].name
+                        }
+                        width={120}
+                        height={120}
+                        className="object-contain"
+                      />
                     </div>
-                  ))}
+
+                    {/* 현재 카드 */}
+                    <div
+                      className="w-auto h-auto rounded-full overflow-hidden flex items-center justify-center transition-transform duration-300 cursor-pointer hover:scale-105"
+                      onClick={() =>
+                        handleCardClick(bestCards[currentCardIndex].category)
+                      }
+                    >
+                      <Image
+                        src={
+                          bestCards[currentCardIndex].logo || "/placeholder.svg"
+                        }
+                        alt={bestCards[currentCardIndex].name}
+                        width={120}
+                        height={120}
+                        className="object-contain"
+                      />
+                    </div>
+
+                    {/* 다음 카드 */}
+                    <div
+                      className="w-auto h-auto rounded-full overflow-hidden flex items-center justify-center transition-transform duration-300 opacity-50 scale-75 cursor-pointer hover:opacity-70"
+                      onClick={() =>
+                        handleCardClick(
+                          bestCards[(currentCardIndex + 1) % bestCards.length]
+                            .category,
+                        )
+                      }
+                    >
+                      <Image
+                        src={
+                          bestCards[(currentCardIndex + 1) % bestCards.length]
+                            .logo || "/placeholder.svg"
+                        }
+                        alt={
+                          bestCards[(currentCardIndex + 1) % bestCards.length]
+                            .name
+                        }
+                        width={120}
+                        height={120}
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
 
                   <Button
                     variant="ghost"
                     size="icon"
                     className="absolute right-0 z-10"
+                    onClick={handleNextCard}
                   >
                     <ChevronRight className="h-6 w-6" />
                   </Button>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,7 +21,54 @@ interface CardBenefit {
 
 export default function CardBenefitsPage() {
   const router = useRouter();
-  const [activeCategory, setActiveCategory] = useState("식/음료");
+  const searchParams = useSearchParams();
+
+  // URL 파라미터의 카테고리를 실제 카테고리 이름으로 매핑
+  const categoryMapping: { [key: string]: string } = {
+    subscription: "정기결제",
+    food_beverage: "식/음료",
+    cultural: "문화",
+    shopping: "쇼핑",
+    transportation: "교통",
+  };
+
+  // 초기 카테고리 설정
+  const getInitialCategory = () => {
+    const category = searchParams.get("category");
+    if (category && categoryMapping[category]) {
+      return categoryMapping[category];
+    }
+    return "식/음료";
+  };
+
+  const [activeCategory, setActiveCategory] = useState(getInitialCategory());
+
+  // URL 파라미터 처리
+  useEffect(() => {
+    const category = searchParams.get("category");
+    if (category && categoryMapping[category]) {
+      setActiveCategory(categoryMapping[category]);
+    }
+  }, [searchParams]);
+
+  // 카테고리 변경 시 URL 업데이트
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category);
+
+    // 카테고리 이름을 URL 파라미터로 변환
+    const categoryToParam: { [key: string]: string } = {
+      정기결제: "subscription",
+      "식/음료": "food_beverage",
+      문화: "cultural",
+      쇼핑: "shopping",
+      교통: "transportation",
+    };
+
+    const param = categoryToParam[category];
+    if (param) {
+      router.push(`/card-recommendation?category=${param}`, { scroll: false });
+    }
+  };
 
   // 혜택별 카드 데이터
   const cardBenefits: CardBenefit[] = [
@@ -157,15 +204,15 @@ export default function CardBenefitsPage() {
       {/* 메인 콘텐츠 */}
       <main className="container mx-auto px-4 py-6 space-y-6">
         <div>
-          <h1 className="text-3xl font-bold mb-2">혜택별 카드 추천</h1>
+          <h1 className="text-2xl font-bold mb-2">혜택별 카드 추천</h1>
           <p className="text-gray-600 mb-6">
             원하는 혜택 카테고리를 선택하여 최적을 카드를 찾아보세요
           </p>
 
           {/* 카테고리 탭 */}
           <Tabs
-            defaultValue="식/음료"
-            onValueChange={setActiveCategory}
+            value={activeCategory}
+            onValueChange={handleCategoryChange}
             className="w-full mb-4 bg-white"
           >
             <TabsList className="grid grid-cols-5 w-full h-full p-0">
