@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { useState, useEffect, useMemo, Suspense, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,6 @@ import { Utensils, CreditCard, ShoppingBag, Film, Bus } from "lucide-react";
 import Footer from "@/components/footer-bar";
 import { fetchWithAuth } from "@/lib/api-fetch";
 import Loading from "@/components/loading";
-import Logo from "@/components/logo";
 
 // API 응답 타입 정의
 interface BenefitCondition {
@@ -75,52 +74,55 @@ function CardBenefitsContent() {
   );
 
   // 초기 카테고리 설정
-  const getInitialCategory = () => {
+  const getInitialCategory = useCallback(() => {
     const category = searchParams.get("category");
     if (category && categoryMapping[category]) {
       return categoryMapping[category].display;
     }
     return "식/음료";
-  };
+  }, [searchParams, categoryMapping]);
 
   const [activeCategory, setActiveCategory] = useState(getInitialCategory());
 
   // API에서 카드 데이터 가져오기
-  const fetchCardBenefits = async (category: string) => {
-    try {
-      setIsLoading(true);
-      // 카테고리 표시 이름으로 API 카테고리 찾기
-      const apiCategory = Object.values(categoryMapping).find(
-        (mapping) => mapping.display === category,
-      )?.api;
+  const fetchCardBenefits = useCallback(
+    async (category: string) => {
+      try {
+        setIsLoading(true);
+        // 카테고리 표시 이름으로 API 카테고리 찾기
+        const apiCategory = Object.values(categoryMapping).find(
+          (mapping) => mapping.display === category,
+        )?.api;
 
-      if (!apiCategory) {
-        console.error("유효하지 않은 카테고리입니다:", category);
-        return;
+        if (!apiCategory) {
+          console.error("유효하지 않은 카테고리입니다:", category);
+          return;
+        }
+
+        const response = await fetchWithAuth(
+          `/card/recommendation/${apiCategory}`,
+        );
+        const data: CardRecommendationResponse = await response.json();
+
+        if (data.success) {
+          const transformedCards: CardBenefit[] = data.response.map((card) => ({
+            id: card.cardId,
+            name: card.cardName,
+            image: card.imageUrl,
+            category: category,
+            benefits: card.benefits.map((benefit) => benefit.description),
+            company: card.cardCompany,
+          }));
+          setCardBenefits(transformedCards);
+        }
+      } catch (error) {
+        console.error("카드 데이터를 가져오는데 실패했습니다:", error);
+      } finally {
+        setIsLoading(false);
       }
-
-      const response = await fetchWithAuth(
-        `/card/recommendation/${apiCategory}`,
-      );
-      const data: CardRecommendationResponse = await response.json();
-
-      if (data.success) {
-        const transformedCards: CardBenefit[] = data.response.map((card) => ({
-          id: card.cardId,
-          name: card.cardName,
-          image: card.imageUrl,
-          category: category,
-          benefits: card.benefits.map((benefit) => benefit.description),
-          company: card.cardCompany,
-        }));
-        setCardBenefits(transformedCards);
-      }
-    } catch (error) {
-      console.error("카드 데이터를 가져오는데 실패했습니다:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [categoryMapping],
+  );
 
   // URL 파라미터 처리
   useEffect(() => {
@@ -132,7 +134,7 @@ function CardBenefitsContent() {
     } else {
       fetchCardBenefits(getInitialCategory());
     }
-  }, [searchParams]);
+  }, [searchParams, categoryMapping, fetchCardBenefits, getInitialCategory]);
 
   // 카테고리 변경 시 URL 업데이트
   const handleCategoryChange = (category: string) => {
@@ -141,7 +143,7 @@ function CardBenefitsContent() {
 
     // 카테고리 표시 이름을 URL 파라미터로 변환
     const categoryToParam = Object.entries(categoryMapping).find(
-      ([_, mapping]) => mapping.display === category,
+      ([, mapping]) => mapping.display === category,
     )?.[0];
 
     if (categoryToParam) {

@@ -2,7 +2,7 @@
 
 import { use, useState, useEffect } from "react";
 import Image from "next/image";
-import { Check, ShoppingBag, Utensils, Bus } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HeaderNavBar } from "@/components/header-nav-bar";
 import { fetchWithAuth } from "@/lib/api-fetch";
@@ -168,7 +168,7 @@ export default function CardDetailPage({
               </div>
 
               {/* 혜택 목록 */}
-              {card.benefits.map((benefit, index) => (
+              {card.benefits.map((benefit) => (
                 <div
                   key={benefit.id}
                   className="bg-blue-50 rounded-lg p-4 mb-6"
