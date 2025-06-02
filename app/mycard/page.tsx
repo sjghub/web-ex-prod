@@ -169,12 +169,12 @@ export default function MyCardPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       {/* 상단 네비게이션 바 */}
       <HeaderNavBar />
 
       {/* 메인 콘텐츠 */}
-      <main className="container mx-auto px-4 py-6 mb-24">
+      <main className="container mx-auto px-4 py-6 mb-24 flex-grow">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-2xl font-bold mb-2">내 카드</h1>
           <p className="text-gray-500 mb-6">
@@ -324,10 +324,6 @@ export default function MyCardPage() {
               <p className="text-gray-500 mb-4">
                 카드를 등록하고 혜택을 받아보세요.
               </p>
-              <Button onClick={() => router.push("/card/register")}>
-                <Plus className="mr-2 h-4 w-4" />
-                카드 등록하기
-              </Button>
             </div>
           )}
         </div>
