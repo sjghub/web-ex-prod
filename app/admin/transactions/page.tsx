@@ -24,22 +24,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fetchMerchantTransactions } from "@/lib/api/fetchMerchantTransactions";
+import {
+  fetchMerchantTransactions,
+  Transaction,
+} from "@/lib/api/fetchMerchantTransactions";
 import {
   fetchMerchantPaymentStats,
   MerchantPaymentStats,
 } from "@/lib/api/fetchMerchantPaymentStats";
-
-// 거래 내역 타입 정의
-interface Transaction {
-  id: string;
-  merchantName: string;
-  category: string;
-  amount: number;
-  paymentMethod: string;
-  dateTime: string;
-  status: "승인" | "취소";
-}
+import { useDebounce } from "@/lib/debounce";
 
 export default function AdminTransactionsPage() {
   const [statusFilter, setStatusFilter] = useState("모든 상태");
@@ -55,6 +48,7 @@ export default function AdminTransactionsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [merchantStats, setMerchantStats] =
     useState<MerchantPaymentStats | null>(null);
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   useEffect(() => {
     const loadStats = async () => {
@@ -75,6 +69,9 @@ export default function AdminTransactionsPage() {
         const result = await fetchMerchantTransactions(
           currentPage,
           itemsPerPage,
+          statusFilter,
+          sortOrder,
+          debouncedSearchQuery,
         );
         setTransactions(result.content);
         setTotalPages(result.totalPages);
@@ -84,42 +81,7 @@ export default function AdminTransactionsPage() {
     };
 
     loadTransactions();
-  }, [currentPage]);
-
-  // 필터링된 거래 내역 목록
-  const filteredTransactions = transactions.filter((transaction) => {
-    // 상태 필터링
-    if (statusFilter !== "모든 상태" && transaction.status !== statusFilter)
-      return false;
-
-    // 검색어 필터링
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      return (
-        transaction.merchantName.toLowerCase().includes(query) ||
-        transaction.id.toLowerCase().includes(query) ||
-        transaction.category.toLowerCase().includes(query)
-      );
-    }
-
-    return true;
-  });
-
-  // 정렬된 거래 내역 목록
-  const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-    switch (sortOrder) {
-      case "최신순":
-        return new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime();
-      case "오래된순":
-        return new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime();
-      case "금액높은순":
-        return b.amount - a.amount;
-      case "금액낮은순":
-        return a.amount - b.amount;
-      default:
-        return 0;
-    }
-  });
+  }, [currentPage, statusFilter, sortOrder, debouncedSearchQuery]);
 
   // 거래 상세 정보 보기
   const handleViewTransactionDetail = (transaction: Transaction) => {
@@ -238,13 +200,19 @@ export default function AdminTransactionsPage() {
                       placeholder="거래 검색..."
                       className="pl-10 w-64"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setCurrentPage(1);
+                      }}
                     />
                   </div>
                   <div className="flex gap-2">
                     <Select
                       value={statusFilter}
-                      onValueChange={setStatusFilter}
+                      onValueChange={(v) => {
+                        setStatusFilter(v);
+                        setCurrentPage(1);
+                      }}
                     >
                       <SelectTrigger className="w-[140px] cursor-pointer hover:bg-gray-100">
                         <SelectValue placeholder="상태 필터" />
@@ -257,7 +225,7 @@ export default function AdminTransactionsPage() {
                           모든 상태
                         </SelectItem>
                         <SelectItem
-                          value="활성"
+                          value="승인"
                           className="hover:bg-gray-100 cursor-pointer"
                         >
                           승인
@@ -271,7 +239,13 @@ export default function AdminTransactionsPage() {
                       </SelectContent>
                     </Select>
 
-                    <Select value={sortOrder} onValueChange={setSortOrder}>
+                    <Select
+                      value={sortOrder}
+                      onValueChange={(v) => {
+                        setSortOrder(v);
+                        setCurrentPage(1);
+                      }}
+                    >
                       <SelectTrigger className="w-[140px] cursor-pointer hover:bg-gray-100">
                         <SelectValue placeholder="정렬 방식" />
                       </SelectTrigger>
@@ -325,7 +299,7 @@ export default function AdminTransactionsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedTransactions.map((transaction) => (
+                    {transactions.map((transaction) => (
                       <tr
                         key={transaction.id}
                         className="border-b last:border-0 hover:bg-gray-50"
@@ -381,9 +355,6 @@ export default function AdminTransactionsPage() {
                               </DropdownMenuItem>
                               <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer">
                                 영수증 보기
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer">
-                                상태 변경
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
