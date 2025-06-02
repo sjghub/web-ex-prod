@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CreditCard, Filter, Search } from "lucide-react";
+import { CreditCard, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -40,7 +40,6 @@ export default function TransactionsPage() {
   const [dateRange, setDateRange] = useState<DateRangeType>("all");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
-  const [cardFilter, setCardFilter] = useState<string>("all");
   type SortOptionType = "recent" | "oldest" | "amount-high" | "amount-low";
   const [sortOption, setSortOption] = useState<SortOptionType>("recent");
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,14 +49,6 @@ export default function TransactionsPage() {
   );
 
   const itemsPerPage = 10;
-
-  // 카드 목록 (필터용)
-  const cards = [
-    { id: "all", name: "전체 카드" },
-    ...Array.from(new Set(transactions.map((t) => t.cardName))).map(
-      (cardName) => ({ id: cardName, name: cardName }),
-    ),
-  ];
 
   const handleViewTransactionDetail = (transaction: PaymentHistoryResponse) => {
     setSelectedTransaction(transaction);
@@ -192,7 +183,6 @@ export default function TransactionsPage() {
                         size="sm"
                         onClick={() => {
                           setDateRange("all");
-                          setCardFilter("all");
                           setStartDate("");
                           setEndDate("");
                           setCurrentPage(1);
