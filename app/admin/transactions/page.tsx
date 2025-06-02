@@ -281,19 +281,27 @@ export default function AdminTransactionsPage() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full table-fixed">
                   <thead>
                     <tr className="text-left text-gray-500 border-b">
-                      <th className="px-6 py-3 font-medium">거래 ID</th>
-                      <th className="px-6 py-3 font-medium">가맹점명</th>
-                      <th className="px-6 py-3 font-medium">카테고리</th>
-                      <th className="px-6 py-3 font-medium">금액</th>
-                      <th className="px-6 py-3 font-medium">결제수단</th>
-                      <th className="px-6 py-3 font-medium">날짜/시간</th>
-                      <th className="px-6 py-3 font-medium text-center">
+                      <th className="px-6 py-3 font-medium w-[15%]">거래 ID</th>
+                      <th className="px-6 py-3 font-medium w-[12%]">
+                        가맹점명
+                      </th>
+                      <th className="px-6 py-3 font-medium w-[15%]">
+                        카테고리
+                      </th>
+                      <th className="px-6 py-3 font-medium w-[12%]">금액</th>
+                      <th className="px-6 py-3 font-medium w-[12%]">
+                        결제수단
+                      </th>
+                      <th className="px-6 py-3 font-medium w-[18%]">
+                        날짜/시간
+                      </th>
+                      <th className="px-6 py-3 font-medium text-center w-[10%]">
                         상태
                       </th>
-                      <th className="px-6 py-3 font-medium text-center">
+                      <th className="px-6 py-3 font-medium text-center w-[8%]">
                         작업
                       </th>
                     </tr>
