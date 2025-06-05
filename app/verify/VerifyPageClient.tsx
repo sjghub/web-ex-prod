@@ -10,7 +10,7 @@ export default function VerifyPageClient() {
   const type = searchParams.get("type");
 
   useEffect(() => {
-    const validTypes = ["signup", "idInquiry", "pwInquiry"];
+    const validTypes = ["signup", "idInquiry", "pwInquiry", "payPincode"];
     if (!type || !validTypes.includes(type)) {
       router.replace("/");
       return;
@@ -36,6 +36,8 @@ export default function VerifyPageClient() {
         return "/idInquiry";
       case "pwInquiry":
         return "/pwInquiry/reset";
+      case "payPincode":
+        return "/mypage/change-pay-pincode";
       default:
         return "/";
     }

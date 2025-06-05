@@ -24,6 +24,7 @@ export default function DashboardPage() {
   const [isCardsLoading, setIsCardsLoading] = useState(true);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(true);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [flippedCardIds, setFlippedCardIds] = useState<Set<number>>(new Set());
   const router = useRouter();
 
   useCardScroll();
@@ -102,6 +103,23 @@ export default function DashboardPage() {
 
   const handleCardClick = (category: string) => {
     router.push(`/card-recommendation?category=${category}`);
+  };
+
+  const handleMouseEnter = (id: number) => {
+    setFlippedCardIds((prev) => {
+      if (prev.has(id)) return prev;
+      const newSet = new Set(prev);
+      newSet.add(id);
+      return newSet;
+    });
+  };
+
+  const handleMouseLeave = (id: number) => {
+    setFlippedCardIds((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(id);
+      return newSet;
+    });
   };
 
   // 내 카드 목록
@@ -332,7 +350,6 @@ export default function DashboardPage() {
               </Button>
             </div>
             <div className="relative flex-1 flex flex-col">
-              {/* Scroll buttons */}
               <button
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 transition-colors duration-200 scroll-button-left"
                 aria-label="이전 카드 보기"
@@ -347,11 +364,9 @@ export default function DashboardPage() {
                 <ChevronRight className="h-6 w-6" />
               </button>
 
-              {/* Scrollable container */}
               <div className="cards-scroll-container overflow-x-auto hide-scrollbar h-full flex-1">
                 <div className="inline-flex gap-4 px-8">
                   {isCardsLoading ? (
-                    // 스켈레톤 UI
                     Array.from({ length: 4 }).map((_, index) => (
                       <div
                         key={`skeleton-${index}`}
@@ -366,8 +381,14 @@ export default function DashboardPage() {
                         <div
                           key={card.id}
                           className="flex-none w-[150px] md:w-[180px] aspect-[1/1.58] perspective"
+                          onMouseEnter={() => handleMouseEnter(card.id)}
+                          onMouseLeave={() => handleMouseLeave(card.id)}
                         >
-                          <div className="relative w-full h-full transition-transform duration-500 transform-style-preserve-3d hover:rotate-y-180">
+                          <div
+                            className={`relative w-full h-full transition-transform duration-500 transform-style-preserve-3d ${
+                              flippedCardIds.has(card.id) ? "rotate-y-180" : ""
+                            }`}
+                          >
                             {/* 앞면 */}
                             <div className="absolute inset-0 backface-hidden">
                               <Image

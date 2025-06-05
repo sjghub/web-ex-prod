@@ -97,6 +97,26 @@ export default function CardDetailPage({
     }
   };
 
+  // 카드사별 URL 매핑
+  const getCompanyUrl = (company: string) => {
+    switch (company.toUpperCase()) {
+      case "WOORI":
+        return "https://www.wooricard.com";
+      case "SAMSUNG":
+        return "https://www.samsungcard.com";
+      case "HYUNDAI":
+        return "https://www.hyundaicard.com";
+      case "KOOKMIN":
+        return "https://card.kbcard.com";
+      case "SHINHAN":
+        return "https://www.shinhancard.com";
+      case "LOTTE":
+        return "https://www.lottecard.co.kr";
+      default:
+        return "#";
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -149,7 +169,12 @@ export default function CardDetailPage({
               </p>
 
               {/* 카드 신청 버튼 */}
-              <Button className="w-full bg-black hover:bg-gray-800 py-4 text-lg text-white">
+              <Button
+                className="w-full bg-black hover:bg-gray-800 py-4 text-lg text-white"
+                onClick={() =>
+                  window.open(getCompanyUrl(card.cardCompany), "_blank")
+                }
+              >
                 카드 신청
               </Button>
             </div>

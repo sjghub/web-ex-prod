@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "./logo";
 import { fetchWithAuth } from "@/lib/api-fetch";
@@ -80,14 +79,6 @@ export function HeaderNavBar() {
 
         {/* 오른쪽 알림/로그아웃 */}
         <div className="absolute right-0 flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer relative hover:bg-gray-100"
-          >
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full" />
-          </Button>
           <Button
             variant="ghost"
             className="cursor-pointer hover:bg-gray-100"

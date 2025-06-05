@@ -19,7 +19,7 @@ import { fetchWithoutAuth } from "@/lib/api-fetch";
 const STORAGE_KEY = "verifiedUser";
 const DEFAULT_ERROR_MSG = "본인인증 처리 중 오류가 발생했습니다.";
 const REDIRECT_PW = "/pwInquiry";
-const REDIRECT_DUP = "/";
+const REDIRECT_DUP = "/login";
 
 interface IamportResponse {
   success: boolean;

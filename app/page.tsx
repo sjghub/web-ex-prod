@@ -221,8 +221,13 @@ export default function Home() {
                 스마트 카드 관리
               </h3>
               <p className="text-gray-600 text-center">
-                여러 카드를 한 곳에서 관리하고 각 카드의 혜택을 한눈에 확인할 수
-                있습니다.
+                <span className="whitespace-nowrap">
+                  여러 카드를 한 곳에서 관리하고
+                </span>
+                <br />
+                <span className="whitespace-nowrap">
+                  각 카드의 혜택을 한눈에 확인할 수 있습니다.
+                </span>
               </p>
             </div>
 
@@ -234,8 +239,13 @@ export default function Home() {
                 혜택 자동 계산
               </h3>
               <p className="text-gray-600 text-center">
-                결제 시 자동으로 최고의 혜택을 주는 카드를 추천하고 적용된
-                혜택을 계산해 드립니다.
+                <span className="whitespace-nowrap">
+                  결제 시 자동으로 최고의 혜택을 주는
+                </span>
+                <br />
+                <span className="whitespace-nowrap">
+                  카드를 추천하고 적용된 혜택을 계산해 드립니다.
+                </span>
               </p>
             </div>
 
@@ -247,8 +257,13 @@ export default function Home() {
                 안전한 결제 시스템
               </h3>
               <p className="text-gray-600 text-center">
-                최신 보안 기술로 카드 정보를 안전하게 보호하며 간편한 결제
-                경험을 제공합니다.
+                <span className="whitespace-nowrap">
+                  최신 보안 기술로 카드 정보를 안전하게 보호하며
+                </span>
+                <br />
+                <span className="whitespace-nowrap">
+                  간편한 결제 경험을 제공합니다.
+                </span>
               </p>
             </div>
           </div>
@@ -296,127 +311,141 @@ export default function Home() {
               교통
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="cafe" className="bg-gray-50 p-6 rounded-lg">
-            <div className="flex flex-col md:flex-row gap-6 items-center">
-              <div className="md:w-1/3">
-                <Image
-                  src="/starbucks-logo.png"
-                  alt="스타벅스 로고"
-                  width={200}
-                  height={200}
-                  className="mx-auto"
-                />
-              </div>
-              <div className="md:w-2/3">
-                <h3 className="text-xl font-bold mb-3">카페/베이커리 할인</h3>
-                <p className="text-gray-600 mb-4">
-                  삼성카드 taptap O, NEW우리V카드 등 다양한 카드로 스타벅스에서
-                  할인 혜택을 받을 수 있습니다.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    삼성카드 taptap O
-                  </span>
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    현대카드 M Black
-                  </span>
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    NEW우리V카드
-                  </span>
+          <div className="relative h-[300px]">
+            <TabsContent
+              value="cafe"
+              className="bg-gray-50 p-6 rounded-lg absolute inset-0"
+            >
+              <div className="flex flex-col md:flex-row gap-6 items-center h-full">
+                <div className="md:w-1/3 flex items-center justify-center">
+                  <Image
+                    src="/starbucks-logo.png"
+                    alt="스타벅스 로고"
+                    width={200}
+                    height={200}
+                    className="mx-auto"
+                  />
+                </div>
+                <div className="md:w-2/3">
+                  <h3 className="text-xl font-bold mb-3">카페/베이커리 할인</h3>
+                  <p className="text-gray-600 mb-4">
+                    삼성카드 taptap O, NEW우리V카드 등 다양한 카드로
+                    스타벅스에서 할인 혜택을 받을 수 있습니다.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      삼성카드 taptap O
+                    </span>
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      현대카드 M Black
+                    </span>
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      NEW우리V카드
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </TabsContent>
-          <TabsContent value="shopping" className="bg-gray-50 p-6 rounded-lg">
-            <div className="flex flex-col md:flex-row gap-6 items-center">
-              <div className="md:w-1/3">
-                <Image
-                  src="/coupang-logo.png"
-                  alt="쿠팡 로고"
-                  width={200}
-                  height={200}
-                  className="mx-auto"
-                />
-              </div>
-              <div className="md:w-2/3">
-                <h3 className="text-xl font-bold mb-3">온라인 쇼핑 캐시백</h3>
-                <p className="text-gray-600 mb-4">
-                  카드의정석 SHOPPING+, 현대카드 M 등으로 쿠팡에서 결제하면
-                  캐시백 혜택을 받을 수 있습니다.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    신한카드 Mr.Life
-                  </span>
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    현대카드 M
-                  </span>
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    카드의정석 SHOPPING+
-                  </span>
+            </TabsContent>
+            <TabsContent
+              value="shopping"
+              className="bg-gray-50 p-6 rounded-lg absolute inset-0"
+            >
+              <div className="flex flex-col md:flex-row gap-6 items-center h-full">
+                <div className="md:w-1/3 flex items-center justify-center">
+                  <Image
+                    src="/coupang-logo.png"
+                    alt="쿠팡 로고"
+                    width={200}
+                    height={200}
+                    className="mx-auto"
+                  />
+                </div>
+                <div className="md:w-2/3">
+                  <h3 className="text-xl font-bold mb-3">온라인 쇼핑 캐시백</h3>
+                  <p className="text-gray-600 mb-4">
+                    카드의정석 SHOPPING+, 현대카드 M 등으로 쿠팡에서 결제하면
+                    캐시백 혜택을 받을 수 있습니다.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      신한카드 Mr.Life
+                    </span>
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      현대카드 M
+                    </span>
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      카드의정석 SHOPPING+
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </TabsContent>
-          <TabsContent value="dining" className="bg-gray-50 p-6 rounded-lg">
-            <div className="flex flex-col md:flex-row gap-6 items-center">
-              <div className="md:w-1/3">
-                <Image
-                  src="/baemin-logo.png"
-                  alt="배달의민족 로고"
-                  width={200}
-                  height={200}
-                  className="mx-auto"
-                />
-              </div>
-              <div className="md:w-2/3">
-                <h3 className="text-xl font-bold mb-3">배달앱 할인</h3>
-                <p className="text-gray-600 mb-4">
-                  배민 한그릇카드, 카드의정석 오하CHECK 등으로 배달앱에서
-                  결제하면 할인 혜택을 받을 수 있습니다.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    배민 한그릇카드
-                  </span>
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    카드의정석 오하CHECK
-                  </span>
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    KB국민 My WE:SH 카드
-                  </span>
+            </TabsContent>
+            <TabsContent
+              value="dining"
+              className="bg-gray-50 p-6 rounded-lg absolute inset-0"
+            >
+              <div className="flex flex-col md:flex-row gap-6 items-center h-full">
+                <div className="md:w-1/3 flex items-center justify-center">
+                  <Image
+                    src="/baemin-logo.png"
+                    alt="배달의민족 로고"
+                    width={200}
+                    height={200}
+                    className="mx-auto"
+                  />
+                </div>
+                <div className="md:w-2/3">
+                  <h3 className="text-xl font-bold mb-3">배달앱 할인</h3>
+                  <p className="text-gray-600 mb-4">
+                    배민 한그릇카드, 카드의정석 오하CHECK 등으로 배달앱에서
+                    결제하면 할인 혜택을 받을 수 있습니다.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      배민 한그릇카드
+                    </span>
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      카드의정석 오하CHECK
+                    </span>
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      KB국민 My WE:SH 카드
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </TabsContent>
-          <TabsContent value="transport" className="bg-gray-50 p-6 rounded-lg">
-            <div className="flex flex-col md:flex-row gap-6 items-center">
-              <div className="md:w-1/3">
-                <Image
-                  src="/korail-logo.png"
-                  alt="대중교통 로고"
-                  width={200}
-                  height={200}
-                  className="mx-auto"
-                />
-              </div>
-              <div className="md:w-2/3">
-                <h3 className="text-xl font-bold mb-3">대중교통 할인</h3>
-                <p className="text-gray-600 mb-4">
-                  카카오 T 하나카드, 신한카드 B.Big(삑) 등으로 대중교통 이용 시
-                  할인 혜택을 받을 수 있습니다.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    카카오 T 하나카드
-                  </span>
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    신한카드 B.Big(삑)
-                  </span>
+            </TabsContent>
+            <TabsContent
+              value="transport"
+              className="bg-gray-50 p-6 rounded-lg absolute inset-0"
+            >
+              <div className="flex flex-col md:flex-row gap-6 items-center h-full">
+                <div className="md:w-1/3 flex items-center justify-center">
+                  <Image
+                    src="/korail-logo.png"
+                    alt="대중교통 로고"
+                    width={200}
+                    height={200}
+                    className="mx-auto"
+                  />
+                </div>
+                <div className="md:w-2/3">
+                  <h3 className="text-xl font-bold mb-3">대중교통 할인</h3>
+                  <p className="text-gray-600 mb-4">
+                    카카오 T 하나카드, 신한카드 B.Big(삑) 등으로 대중교통 이용
+                    시 할인 혜택을 받을 수 있습니다.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      카카오 T 하나카드
+                    </span>
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      신한카드 B.Big(삑)
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
+          </div>
         </Tabs>
       </section>
 
@@ -436,7 +465,7 @@ export default function Home() {
           </div>
 
           <div className="max-w-3xl mx-auto">
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion type="multiple" className="w-full">
               <AccordionItem value="item-1">
                 <AccordionTrigger className="text-left cursor-pointer">
                   페이득은 어떤 서비스인가요?

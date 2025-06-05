@@ -8,16 +8,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { fetchWithoutAuth } from "@/lib/api-fetch";
 
-const REDIRECT_AFTER_SUCCESS = "/login";
 const REDIRECT_AFTER_FAIL = "/pwInquiry";
 const DEFAULT_ERROR_MESSAGE = "비밀번호 변경에 실패했습니다.";
 
@@ -37,7 +37,8 @@ export default function ChangePasswordPage() {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [errorMessage, setErrorMessage] = useState("");
+  const [message, setMessage] = useState("");
+  const [showDialog, setShowDialog] = useState(false);
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
   const handleErrorResponse = (response: Response, data: ErrorResponse) => {
@@ -50,23 +51,25 @@ export default function ChangePasswordPage() {
       });
       setErrors(fieldErrors);
     } else {
-      setErrorMessage(data.message || DEFAULT_ERROR_MESSAGE);
+      setMessage(data.message || DEFAULT_ERROR_MESSAGE);
       const code = data.response?.errorCode;
       const NON_REDIRECT_CODES = ["USR_02"]; // 필요 시 추가
       setShouldRedirect(!NON_REDIRECT_CODES.includes(code ?? ""));
+      setShowDialog(true);
     }
   };
 
   const handleChangePassword = async () => {
     setErrors({});
-    setErrorMessage("");
+    setMessage("");
     setShouldRedirect(false);
 
     const username = sessionStorage.getItem("findPasswordUsername");
 
     if (!username) {
-      setErrorMessage("사용자 정보가 유실되었습니다. 다시 시도해주세요.");
+      setMessage("사용자 정보가 유실되었습니다. 다시 시도해주세요.");
       setShouldRedirect(true);
+      setShowDialog(true);
       return;
     }
 
@@ -91,22 +94,14 @@ export default function ChangePasswordPage() {
         return;
       }
 
-      setErrorMessage("비밀번호가 성공적으로 변경되었습니다.");
+      setMessage("비밀번호가 성공적으로 변경되었습니다.");
       sessionStorage.clear();
-      setTimeout(() => {
-        router.push(REDIRECT_AFTER_SUCCESS);
-      }, 2000);
+      setShowDialog(true);
     } catch (err) {
       console.error(err);
-      setErrorMessage("비밀번호 변경 요청 중 오류가 발생했습니다.");
+      setMessage("비밀번호 변경 요청 중 오류가 발생했습니다.");
       setShouldRedirect(true);
-    }
-  };
-
-  const handleDialogConfirm = () => {
-    setErrorMessage("");
-    if (shouldRedirect) {
-      router.push(REDIRECT_AFTER_FAIL);
+      setShowDialog(true);
     }
   };
 
@@ -125,7 +120,10 @@ export default function ChangePasswordPage() {
         <Card className="shadow-sm border-gray-100">
           <CardContent className="py-6 space-y-8">
             <div className="space-y-2">
-              <Label>새로운 비밀번호</Label>
+              <Label>
+                새로운 비밀번호
+                <span className="text-red-500 ml-1">*</span>
+              </Label>
               <div className="relative">
                 <Input
                   type={showNew ? "text" : "password"}
@@ -144,7 +142,10 @@ export default function ChangePasswordPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>새로운 비밀번호 확인</Label>
+              <Label>
+                새로운 비밀번호 확인
+                <span className="text-red-500 ml-1">*</span>
+              </Label>
               <div className="relative">
                 <Input
                   type={showConfirm ? "text" : "password"}
@@ -169,25 +170,42 @@ export default function ChangePasswordPage() {
             )}
 
             <Button
-              className="w-full bg-black text-white text-sm py-3 mt-6"
+              className="w-full bg-black text-white text-sm py-3 mt-6 disabled:bg-gray-300 disabled:cursor-not-allowed"
               onClick={handleChangePassword}
+              disabled={!newPassword || !confirmPassword}
             >
               비밀번호 변경
             </Button>
           </CardContent>
         </Card>
 
-        <Dialog open={!!errorMessage} onOpenChange={() => setErrorMessage("")}>
-          <DialogContent className="bg-white">
-            <DialogHeader>
-              <DialogTitle>알림</DialogTitle>
-              <DialogDescription>{errorMessage}</DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button onClick={handleDialogConfirm}>확인</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+          <AlertDialogContent className="bg-white">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-gray-900">
+                알림
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-700">
+                {message}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction
+                onClick={() => {
+                  setShowDialog(false);
+                  if (message === "비밀번호가 성공적으로 변경되었습니다.") {
+                    router.push("/login");
+                  } else if (shouldRedirect) {
+                    router.push(REDIRECT_AFTER_FAIL);
+                  }
+                }}
+                className="bg-black hover:bg-gray-700 text-white"
+              >
+                확인
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

@@ -336,6 +336,7 @@ export default function MyPage() {
                         readOnly={!addressEditable}
                         onChange={handleInputChange}
                         className={addressEditable ? "" : "bg-gray-50"}
+                        placeholder="주소를 설정하세요"
                       />
                     </div>
                   </div>

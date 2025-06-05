@@ -10,7 +10,6 @@ import { HeaderNavBar } from "@/components/header-nav-bar";
 import { Utensils, CreditCard, ShoppingBag, Film, Bus } from "lucide-react";
 import Footer from "@/components/footer-bar";
 import { fetchWithAuth } from "@/lib/api-fetch";
-import Loading from "@/components/loading";
 
 // API 응답 타입 정의
 interface BenefitCondition {
@@ -232,8 +231,28 @@ function CardBenefitsContent() {
     }
   };
 
+  // 카드사별 URL 매핑
+  const getCompanyUrl = (company: string) => {
+    switch (company) {
+      case "WOORI":
+        return "https://www.wooricard.com";
+      case "SAMSUNG":
+        return "https://www.samsungcard.com";
+      case "HYUNDAI":
+        return "https://www.hyundaicard.com";
+      case "KOOKMIN":
+        return "https://card.kbcard.com";
+      case "SHINHAN":
+        return "https://www.shinhancard.com";
+      case "LOTTE":
+        return "https://www.lottecard.co.kr";
+      default:
+        return "#";
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-[1000px] flex flex-col bg-gray-50">
       {/* 상단 네비게이션 바 */}
       <HeaderNavBar />
 
@@ -275,7 +294,42 @@ function CardBenefitsContent() {
 
           {/* 로딩 상태 */}
           {isLoading ? (
-            <Loading message="카드 정보를 불러오는 중입니다" size="large" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[1, 2, 3].map((index) => (
+                <Card
+                  key={index}
+                  className="overflow-hidden bg-white relative flex flex-col animate-pulse"
+                >
+                  <div className="absolute top-4 right-4 w-14 h-6 bg-gray-200 rounded-full" />
+
+                  <div className="relative flex justify-center items-center h-[200px]">
+                    <div className="absolute w-40 h-40 rounded-full bg-gray-200" />
+                    <div className="w-28 h-44 bg-gray-200 rounded-lg" />
+                  </div>
+
+                  <CardContent className="px-6 flex flex-col flex-1">
+                    <div className="h-7 w-3/4 bg-gray-200 rounded mb-4" />
+
+                    <div className="flex-1">
+                      <div className="h-5 w-24 bg-gray-200 rounded mb-3" />
+                      <div className="space-y-3">
+                        {[1, 2, 3].map((i) => (
+                          <div key={i} className="flex items-start">
+                            <div className="w-5 h-5 bg-gray-200 rounded-full mr-2" />
+                            <div className="h-5 flex-1 bg-gray-200 rounded" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 mt-6">
+                      <div className="flex-1 h-10 bg-gray-200 rounded" />
+                      <div className="flex-1 h-10 bg-gray-200 rounded" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           ) : filteredCards.length === 0 ? (
             <div className="text-center py-12">
               <CreditCard className="mx-auto h-12 w-12 text-gray-300 mb-4" />
@@ -342,7 +396,12 @@ function CardBenefitsContent() {
                       >
                         상세 정보
                       </Button>
-                      <Button className="flex-1 bg-black hover:bg-gray-800 text-white">
+                      <Button
+                        className="flex-1 bg-black hover:bg-gray-800 text-white"
+                        onClick={() =>
+                          window.open(getCompanyUrl(card.company), "_blank")
+                        }
+                      >
                         카드 신청
                       </Button>
                     </div>

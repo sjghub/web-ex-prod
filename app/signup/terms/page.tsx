@@ -159,21 +159,12 @@ export default function SignupTermsPage() {
                     설정하고 회사가 승인한 이메일 주소와 비밀번호를 의미합니다.
                   </p>
 
-                  <h3 className="font-bold mb-2">
-                    제 3 조 (약관의 효력 및 변경)
-                  </h3>
+                  <h3 className="font-bold mb-2">제 3 조 (약관 외 준칙)</h3>
                   <p className="mb-2">
-                    1. 회사는 본 약관의 내용을 회원이 쉽게 알 수 있도록 서비스
-                    초기 화면에 게시합니다.
-                  </p>
-                  <p className="mb-2">
-                    2. 회사는 관련 법령을 위배하지 않는 범위에서 본 약관을
-                    개정할 수 있습니다.
-                  </p>
-                  <p className="mb-4">
-                    3. 회사가 약관을 개정할 경우에는 적용일자 및 개정사유를
-                    명시하여 현행 약관과 함께 서비스 초기 화면에 그 적용일자 7일
-                    전부터 공지합니다.
+                    이 약관에서 정하지 아니한 사항에 대해서는 법령 또는 회사가
+                    정한 서비스의 개별약관, 운영정책 및 규칙 등(이하 세부지침)의
+                    규정에 따릅니다. 또한 본 약관과 세부지침이 충돌할 경우에는
+                    세부지침에 따릅니다.
                   </p>
                 </div>
               )}
@@ -223,7 +214,7 @@ export default function SignupTermsPage() {
                   </p>
                   <ul className="list-disc pl-5 mb-4">
                     <li>필수항목: 이름, 생년월일, 휴대폰번호, 이메일</li>
-                    <li>선택항목: 주소, 직업, 관심분야</li>
+                    <li>선택항목: 주소</li>
                   </ul>
 
                   <h3 className="font-bold mb-2">

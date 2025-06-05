@@ -118,7 +118,7 @@ const PincodeForm = forwardRef<{ resetPassword: () => void }, PincodeFormProps>(
             </Button>
 
             <p className="text-xs text-gray-400 text-center mt-4">
-              * 생년월일, 전화번호 등 추측하기 쉬운 번호는 사용하지 마세요.
+              * 생년월일, 연속된 숫자 등 추측하기 쉬운 번호는 사용을 금합니다.
             </p>
 
             {onForgotPassword && (
