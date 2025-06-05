@@ -10,6 +10,12 @@ import { MonthSelectBox, YearSelectBox } from "@/components/ui/selectbox";
 import { VirtualKeypad } from "@/components/virtual-keypad";
 import { fetchAddCard } from "@/lib/api/fetchAddCard";
 import {
+  CardCompanyData,
+  detectCardCompany,
+  getKoreanCompanyName,
+  loadCardCompanyData,
+} from "@/lib/card-company";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -39,6 +45,8 @@ export default function CardRegisterPage() {
   const [showKeypad, setShowKeypad] = useState(false);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [companyData, setCompanyData] = useState<CardCompanyData[]>([]);
+  const [cardCompany, setCardCompany] = useState("");
   const keypadRef = useRef<HTMLDivElement>(null);
 
   const inputRefs = [
@@ -105,6 +113,17 @@ export default function CardRegisterPage() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    loadCardCompanyData().then(setCompanyData);
+  }, []);
+
+  useEffect(() => {
+    const total =
+      cardParts.part1 + cardParts.part2 + cardParts.part3 + cardParts.part4;
+    const company = detectCardCompany(total, companyData);
+    setCardCompany(company || "");
+  }, [cardParts, companyData]);
 
   useEffect(() => {
     const total =
@@ -231,6 +250,11 @@ export default function CardRegisterPage() {
                     />
                   ))}
                 </div>
+                {cardCompany && (
+                  <p className="text-xs text-gray-600 pl-1">
+                    카드사: {getKoreanCompanyName(cardCompany)}
+                  </p>
+                )}
                 {errors.cardNumber && (
                   <p className="text-xs text-red-500 pl-1">
                     {errors.cardNumber}
