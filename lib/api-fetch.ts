@@ -1,12 +1,14 @@
 import { refreshAccessToken } from "./auth";
 
-const API_URL_SERVICE = "http://localhost:8080/service/api";
-const API_URL_AUTH = "http://localhost:8080/auth/api";
+const API_URL_SERVICE = "/service/api";
+const API_URL_AUTH = "/auth/api";
 
 interface RequestOptions extends RequestInit {
   retryCount?: number;
 }
+
 type HeaderStrategy = "json" | "multipart" | "none";
+
 export const fetchWithAuth = async (
   endpoint: string,
   options: RequestOptions = {},
@@ -21,13 +23,14 @@ export const fetchWithAuth = async (
   const headers: Record<string, string> = {
     ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
     ...((options.headers || {}) as Record<string, string>),
+    "x-internal-domain": baseUrl + endpoint,
   };
 
   if (headerType === "json") {
     headers["Content-Type"] = "application/json";
   }
   try {
-    const response = await fetch(`${baseUrl}${endpoint}`, {
+    const response = await fetch(`/api`, {
       ...fetchOptions,
       headers,
       credentials: "include", // 쿠키를 포함하여 요청
@@ -35,21 +38,22 @@ export const fetchWithAuth = async (
 
     if (response.status === 401) {
       const data = await response.json();
-
-      // 토큰 만료 에러인 경우에만 재시도
-      if (data.response?.errorCode === "AUT_02" && retryCount < 1) {
+      if (data.response?.errorCode === "AUTH_02" && retryCount < 1) {
         const refreshSuccess = await refreshAccessToken();
-
         if (refreshSuccess) {
           // 토큰 재발급 성공 시 원래 요청 재시도
-          return fetchWithAuth(endpoint, {
-            ...options,
-            retryCount: retryCount + 1,
-          });
+          return fetchWithAuth(
+            endpoint,
+            {
+              ...options,
+              retryCount: retryCount + 1,
+            },
+            headerType,
+            baseUrl,
+          );
         }
       }
     }
-
     return response;
   } catch (error) {
     console.error("API 요청 실패:", error);
@@ -65,11 +69,11 @@ export const fetchWithoutAuth = async (
   const headers = {
     "Content-Type": "application/json",
     ...options.headers,
+    "x-internal-domain": API_URL_AUTH + endpoint,
   };
 
   try {
-    console.log("API 요청:", `${API_URL_AUTH}${endpoint}`, options);
-    const response = await fetch(`${API_URL_AUTH}${endpoint}`, {
+    const response = await fetch(`/api`, {
       ...options,
       headers,
       credentials: "include", // 쿠키를 포함하여 요청

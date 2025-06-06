@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Bell, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { fetchWithAuth } from "@/lib/api-fetch";
 
 interface TopNavBarProps {
   onSearch?: (query: string) => void;
@@ -14,7 +15,7 @@ const COOKIE_NAMES = {
   refreshToken: "refreshToken",
 };
 
-const API_URL = "http://localhost:8080/auth/api/logout";
+const API_URL = "/api/logout";
 
 const getCookie = (name: string): string | null => {
   const matches = document.cookie.match(
@@ -30,15 +31,24 @@ export default function TopNavBar({ onSearch }: TopNavBarProps) {
     const accessToken = getCookie(COOKIE_NAMES.accessToken);
 
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          Authorization: accessToken ? `Bearer ${accessToken}` : "",
+      console.log("로그아웃 요청 시작");
+      const response = await fetchWithAuth(
+        API_URL,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            Authorization: accessToken ? `Bearer ${accessToken}` : "",
+          },
         },
-      });
+        "json",
+        "/auth",
+      );
+
+      console.log("로그아웃 요청 완료", response);
 
       if (!response.ok) {
+        console.error("로그아웃 실패:", response.status);
         const text = await response.text();
         console.error("로그아웃 실패 응답:", response.status, text);
         throw new Error("로그아웃에 실패했습니다.");

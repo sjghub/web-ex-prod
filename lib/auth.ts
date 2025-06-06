@@ -1,7 +1,5 @@
 import { CommonResponse } from "@/types/api-response";
-
-const API_URL = "http://localhost:8080/api/auth";
-
+import { fetchWithoutAuth } from "./api-fetch";
 interface TokenResponse {
   accessToken: string;
 }
@@ -27,9 +25,9 @@ export const removeCookie = (name: string) => {
 // 토큰 재발급 요청
 export const refreshAccessToken = async (): Promise<boolean> => {
   try {
-    const response = await fetch(`${API_URL}/refresh`, {
+    const response = await fetchWithoutAuth(`/refresh`, {
       method: "POST",
-      credentials: "include", // 쿠키를 포함하여 요청
+      credentials: "include",
     });
 
     if (!response.ok) {
