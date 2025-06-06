@@ -87,7 +87,7 @@ export default function Home() {
           }`}
         >
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-medium text-center text-white mb-6">
-            <span className="text-gray-300">쓸수록 이득, </span>
+            <span className="text-gray-300">쓸수록 개이득, </span>
             페이
             <span className="inline-block ml-2 -rotate-20">득</span>
           </h1>
