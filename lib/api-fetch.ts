@@ -38,21 +38,22 @@ export const fetchWithAuth = async (
 
     if (response.status === 401) {
       const data = await response.json();
-
-      // 토큰 만료 에러인 경우에만 재시도
-      if (data.response?.errorCode === "AUT_02" && retryCount < 1) {
+      if (data.response?.errorCode === "AUTH_02" && retryCount < 1) {
         const refreshSuccess = await refreshAccessToken();
-
         if (refreshSuccess) {
           // 토큰 재발급 성공 시 원래 요청 재시도
-          return fetchWithAuth(endpoint, {
-            ...options,
-            retryCount: retryCount + 1,
-          });
+          return fetchWithAuth(
+            endpoint,
+            {
+              ...options,
+              retryCount: retryCount + 1,
+            },
+            headerType,
+            baseUrl,
+          );
         }
       }
     }
-
     return response;
   } catch (error) {
     console.error("API 요청 실패:", error);
