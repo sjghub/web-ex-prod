@@ -1,8 +1,5 @@
 import { CommonResponse } from "@/types/api-response";
 import { fetchWithoutAuth } from "./api-fetch";
-
-const API_URL = "/auth";
-
 interface TokenResponse {
   accessToken: string;
 }
