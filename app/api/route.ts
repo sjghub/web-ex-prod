@@ -50,15 +50,6 @@ async function proxyFetchWithModifiedEndpoint(
   });
 }
 
-// ✅ 공통 endpoint 가공 함수 (원하면 여기서 rewrite 로직 구성 가능)
-function rewriteEndpoint(originalEndpoint: string): string {
-  // 예: /service/user → /internal/user 로 rewrite
-  return originalEndpoint.replace(/^\/service\/user/, "/internal/user");
-
-  // 또는 그대로 반환
-  // return originalEndpoint;
-}
-
 // ✅ GET 핸들러
 export async function GET(req: NextRequest) {
   const endpoint = req.headers.get("x-internal-domain");
