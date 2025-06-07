@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button";
 import Logo from "./logo";
 import { fetchWithAuth } from "@/lib/api-fetch";
 import { removeCookie } from "@/lib/auth";
-
+const COOKIE_NAMES = {
+  accessToken: "accessToken",
+  refreshToken: "refreshToken",
+};
 const NAV_ITEMS = [
   { path: "/dashboard", label: "홈", key: "home" },
   { path: "/mycard", label: "카드 관리", key: "cardManagement" },
@@ -16,21 +19,34 @@ const NAV_ITEMS = [
   },
   { path: "/mypage", label: "내 정보", key: "myInfo" },
 ];
-
+const getCookie = (name: string): string | null => {
+  const matches = document.cookie.match(
+    new RegExp("(^| )" + name + "=([^;]+)"),
+  );
+  return matches ? decodeURIComponent(matches[2]) : null;
+};
 export function HeaderNavBar() {
   const router = useRouter();
   const pathname = usePathname();
 
   const handleLogout = async () => {
+    const accessToken = getCookie(COOKIE_NAMES.accessToken);
     try {
+      console.log("로그아웃 요청 시작");
       const response = await fetchWithAuth(
-        "/logout",
+        "/api/logout",
         {
           method: "POST",
+          credentials: "include",
+          headers: {
+            Authorization: accessToken ? `Bearer ${accessToken}` : "",
+          },
         },
         "json",
-        "http://localhost:8080/auth/api",
+        "/auth",
       );
+
+      console.log("로그아웃 요청 완료", response);
 
       if (!response.ok) {
         const text = await response.text();
