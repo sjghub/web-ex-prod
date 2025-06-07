@@ -1,7 +1,18 @@
 // api/fetchMerchants.ts
 
 import { fetchWithAuth } from "@/lib/api-fetch";
+const statusMap: Record<string, string> = {
+  "모든 상태": "ALL",
+  활성: "ACTIVE",
+  비활성: "INACTIVE",
+};
 
+const sortMap: Record<string, string> = {
+  최신순: "NEWEST",
+  이름순: "NAME_ASC",
+  거래건수순: "TRANSACTION_COUNT",
+  금액순: "AMOUNT",
+};
 export interface MerchantApiResponse {
   id: number;
   merchantName: string;
@@ -37,8 +48,10 @@ export const fetchMerchants = async (
   sortOrder = "최신순",
   searchQuery = "",
 ): Promise<PaginatedMerchantData> => {
+  const mappedStatus = statusMap[statusFilter] || "ALL";
+  const mappedSort = sortMap[sortOrder] || "NEWEST";
   const response = await fetchWithAuth(
-    `/admin/merchants?page=${page}&size=${size}&status=${statusFilter}&sort=${sortOrder}&search=${searchQuery}`,
+    `/admin/merchants?page=${page}&size=${size}&status=${mappedStatus}&sort=${mappedSort}&search=${searchQuery}`,
   );
   const data = await response.json();
   if (!data.success) {
