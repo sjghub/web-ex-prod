@@ -8,7 +8,10 @@ async function proxyFetchWithModifiedEndpoint(
   newEndpoint: string,
 ): Promise<Response> {
   const method = req.method;
-  const backendUrl = new URL(newEndpoint, "http://localhost:8080").toString();
+  const backendUrl = new URL(
+    newEndpoint,
+    "https://internal-alb.example.com",
+  ).toString();
 
   // 🔁 클라이언트 요청 헤더 복사 (필요 시 필터링)
   const headers = new Headers();
