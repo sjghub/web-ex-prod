@@ -33,7 +33,18 @@ export interface PaginatedTransactionData {
   totalElements: number;
   pageable: Pageable;
 }
+const statusMap: Record<string, string> = {
+  "모든 상태": "ALL",
+  승인: "APPROVED",
+  취소: "CANCELLED",
+};
 
+const sortMap: Record<string, string> = {
+  최신순: "NEWEST",
+  오래된순: "OLDEST",
+  금액높은순: "AMOUNT_DESC",
+  금액낮은순: "AMOUNT_ASC",
+};
 export const fetchMerchantTransactions = async (
   page = 1,
   size = 5,
@@ -41,8 +52,10 @@ export const fetchMerchantTransactions = async (
   sortOrder = "최신순",
   searchQuery = "",
 ): Promise<PaginatedTransactionData> => {
+  const mappedStatus = statusMap[statusFilter] || "ALL";
+  const mappedSort = sortMap[sortOrder] || "NEWEST";
   const response = await fetchWithAuth(
-    `/admin/merchants/payments?page=${page}&size=${size}&status=${statusFilter}&sort=${sortOrder}&search=${searchQuery}`,
+    `/admin/merchants/payments?page=${page}&size=${size}&status=${mappedStatus}&sort=${mappedSort}&search=${searchQuery}`,
   );
 
   const data = await response.json();

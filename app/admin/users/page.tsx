@@ -65,15 +65,29 @@ interface PagedResponse {
   totalPages: number;
   totalElements: number;
 }
+const statusMap: Record<string, string> = {
+  전체: "ALL",
+  활성: "ACTIVE",
+  비활성: "INACTIVE",
+  임시: "TEMPORARY",
+};
 
+const sortMap: Record<string, string> = {
+  "기본 정렬": "DEFAULT",
+  이름순: "NAME_ASC",
+  가입일순: "JOINED_AT",
+  상태순: "STATUS",
+};
 const fetchUsers = async (
   page: number,
   status: string,
   sort: string,
   search: string,
 ): Promise<PagedResponse> => {
+  const mappedStatus = statusMap[status] || "ALL";
+  const mappedSort = sortMap[sort] || "DEFAULT";
   const response = await fetchWithAuth(
-    `/admin/users?page=${page}&size=${USERS_PER_PAGE}&status=${status}&sort=${sort}&search=${search}`,
+    `/admin/users?page=${page}&size=${USERS_PER_PAGE}&status=${mappedStatus}&sort=${mappedSort}&search=${search}`,
   );
   const data = await response.json();
   return data.success
